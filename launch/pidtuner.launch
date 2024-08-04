@@ -1,8 +1,4 @@
 <launch>
-  <!-- Shared Configuration -->
-  <!--<rosparam file="$(find pidtuner)/config/joint.yaml" />-->
-
-  <!-- Tool -->
   <node
     name="pidtuner"
     pkg="pidtuner"
@@ -10,8 +6,6 @@
     required="true"
     output="screen"
   />
-
-  <!-- Analog/Digital I/O -->
   <node
     name="analog"
     pkg="rosserial_python"
