@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(pituner)
+project(pidtuner)
 
 add_compile_options(-std=c++11)
 
@@ -23,7 +23,7 @@ add_message_files(
   PositionCommand.msg
   PositionFeedback.msg
   StepCommand.msg
-  Steps.msg
+  Step.msg
   Configuration.msg
 )
 
@@ -45,7 +45,7 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${pituner_INCLUDE_DIRS}
+  ${pidtuner_INCLUDE_DIRS}
 )
 
 add_executable(
@@ -56,7 +56,7 @@ add_executable(
 add_dependencies(
   pidtuner
   ${catkin_EXPORTED_TARGETS}
-  ${pituner_EXPORTED_TARGETS}
+  ${pidtuner_EXPORTED_TARGETS}
 )
 
 target_link_libraries(
