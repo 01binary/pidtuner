@@ -10,6 +10,8 @@
 #define USE_USBCON
 
 #include <ros.h>                        // ROS communication
+#include <angles/angles.h>
+#include <control_toolbox/pid.h>
 #include <pidtuner/VelocityCommand.h>
 #include <pidtuner/VelocityFeedback.h>
 #include <pidtuner/PositionCommand.h>
