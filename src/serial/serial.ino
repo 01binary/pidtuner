@@ -9,35 +9,29 @@
 
 #define USE_USBCON
 
-#include <ros.h>                // ROS communication
-#include <pidtuner/Adc.h>       // Analog read request
-#include <pidtuner/Pwm.h>       // Analog write request
-#include <QuadratureEncoder.h>  // QuadratureEncoder library
+#include <ros.h>                        // ROS communication
+#include <pidtuner/VelocityCommand.h>
+#include <pidtuner/VelocityFeedback.h>
+#include <pidtuner/PositionCommand.h>
+#include <pidtuner/PositionFeedback.h>
+#include <pidtuner/StepCommand.h>
+#include <pidtuner/Configuration.h>
+#include <QuadratureEncoder.h>          // QuadratureEncoder library
 
 /*----------------------------------------------------------*\
 | Constants
 \*----------------------------------------------------------*/
 
-// ROS topics and spin rate
 const char VELOCITY_COMMAND_TOPIC[] = "velocity";
 const char VELOCITY_FEEDBACK_TOPIC[] = "velocity_feedback";
 const char POSITION_COMMAND_TOPIC[] = "position";
+const char POSITION_FEEDBACK_TOPIC[] = "position_feedback";
 const char STEP_COMMAND_TOPIC[] = "step";
 const char CONFIGURATION_COMMAND_TOPIC[] = "configuration";
+
 const double RATE_HZ = 50.0;
 const int DELAY = 1000.0 / RATE_HZ;
 const int STARTUP_DELAY = 3000;
-
-// PWM pins
-const int LPWM = 3;
-const int RPWM = 11;
-
-// ADC pins
-const int ADC = A0;
-
-// Quadrature pins
-const int A = 2;
-const int B = 7;
 
 /*----------------------------------------------------------*\
 | Declarations
@@ -46,34 +40,52 @@ const int B = 7;
 void velocityCommand(const pidtuner::VelocityCommand& msg);
 void velocityFeedback();
 void positionCommand(const pidtuner::PositionCommand& msg);
-void stepCommand(const pidtuner::Steps& msg);
+void positionFeedback();
+void stepCommand(const pidtuner::StepCommand& msg);
 void configurationCommand(const pidtuner::Configuration& msg);
 
 /*----------------------------------------------------------*\
 | Variables
 \*----------------------------------------------------------*/
 
+// PWM pins
+int lpwmPin = 3;
+int rpwmPin = 11;
+
+// ADC pins
+int adcPin = A0;
+
+// Quadrature pins
+int aPin = 2;
+int bPin = 7;
+
 // Absolute encoder reading
-int16_t adc = 0;
+uint16_t absolute = 0;
 
 // Relative encoder reading
 int32_t quadrature = 0;
 
 // Relative encoder
-Encoders encoder(A, B);
+Encoders* pEncoder;
 
 // PWM command
-int32_t pwm = 0;
+int32_t command = 0;
 
-// Command start time
+// Output start time
 ros::Time start;
 
 // PID error
 int32_t error = 0;
 
 // Velocity feedback publisher
+pidtuner::VelocityFeedback velocityFeedbackMsg;
 ros::Publisher velocityPub(
-  VELOCITY_FEEDBACK_TOPIC, &velocityFeedback);
+  VELOCITY_FEEDBACK_TOPIC, &velocityFeedbackMsg);
+
+// Position feedback publisher
+pidtuner::PositionFeedback positionFeedbackMsg;
+ros::Publisher positionPub(
+  POSITION_FEEDBACK_TOPIC, &positionFeedbackMsg);
 
 // Velocity command subscriber
 ros::Subscriber<pidtuner::VelocityCommand> velocitySub(
@@ -100,18 +112,24 @@ ros::NodeHandle node;
 
 void initAdc()
 {
-  pinMode(ADC, INPUT_PULLUP);
+  pinMode(adcPin, INPUT_PULLUP);
+}
+
+void initQuadrature()
+{
+  pEncoder = new Encoders(aPin, bPin);
 }
 
 void initPwm()
 {
-  pinMode(LPWM, OUTPUT);
-  pinMode(RPWM, OUTPUT);
+  pinMode(lpwmPin, OUTPUT);
+  pinMode(rpwmPin, OUTPUT);
 }
 
 void setup()
 {
   initAdc();
+  initQuadrature();
   initPwm();
 
   node.initNode();
@@ -131,8 +149,8 @@ void setup()
 
 void loop()
 {
-  adc = (int16_t)analogRead(ADC);
-  quadrature = encoder.getEncoderCount();
+  absolute = (uint16_t)analogRead(adcPin);
+  quadrature = pEncoder->getEncoderCount();
 
   node.spinOnce();
 
@@ -148,12 +166,12 @@ void velocityFeedback()
 {
   pidtuner::VelocityFeedback msg;
 
-  msg.PWM = pwm;
-  msg.ADC = adc;
+  msg.command = command;
+  msg.absolute = absolute;
   msg.quadrature = quadrature;
   msg.start = start;
 
-  pub.publish(&msg);
+  velocityPub.publish(&msg);
 }
 
 void positionCommand(const pidtuner::PositionCommand& msg)
@@ -161,7 +179,7 @@ void positionCommand(const pidtuner::PositionCommand& msg)
   // TODO: process command
 }
 
-void stepCommand(const pidtuner::Steps& msg)
+void stepCommand(const pidtuner::StepCommand& msg)
 {
   // TODO: process command
 }
@@ -170,4 +188,3 @@ void configurationCommand(const pidtuner::Configuration& msg)
 {
   // TODO: process command
 }
-
