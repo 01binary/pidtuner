@@ -1,7 +1,7 @@
 #include <ros.h>
 #include <cmath>
 
-struct pid
+struct PID
 {
   double Kp;    // Proportional gain
   double Ki;    // Integral gain
@@ -18,7 +18,7 @@ struct pid
   double i;     // Integral term
   double d;     // Derivative term
 
-  pid():
+  PID():
     Kp(10.0), Ki(1.0), Kd(1.0),
     pe(0.0), ie(0.0), de(0.0),
     iMin(0.0), iMax(0.0),

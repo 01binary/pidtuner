@@ -9,14 +9,15 @@
 
 #define USE_USBCON
 
-#include <ros.h>                        // ROS communication
+#include <ros.h>
 #include <pidtuner/VelocityCommand.h>
 #include <pidtuner/VelocityFeedback.h>
 #include <pidtuner/PositionCommand.h>
 #include <pidtuner/PositionFeedback.h>
 #include <pidtuner/StepCommand.h>
 #include <pidtuner/Configuration.h>
-#include <QuadratureEncoder.h>          // QuadratureEncoder library
+#include <QuadratureEncoder.h>
+#include "pid.h"
 
 /*----------------------------------------------------------*\
 | Constants
@@ -60,13 +61,16 @@ int aPin = 2;
 int bPin = 7;
 
 // Absolute encoder reading
-uint16_t absolute = 0;
+uint16_t absolute;
 
-// Relative encoder reading
-int32_t quadrature = 0;
+// Quadrature encoder reading
+int32_t quadrature;
 
-// Relative encoder
+// Quadrature encoder
 Encoders* pEncoder;
+
+// PID controller
+PID* pPID;
 
 // PWM command
 int32_t command = 0;
@@ -186,5 +190,34 @@ void stepCommand(const pidtuner::StepCommand& msg)
 
 void configurationCommand(const pidtuner::Configuration& msg)
 {
-  // TODO: process command
+  // Configure PWM
+  if (lpwmPin != msg.LPWMPin || rpwmPin != msg.RPWMpin)
+  {
+    lpwmPin = msg.LPWMpin;
+    rpwmPin = msg.RPWMpin;
+    initPwm();
+  }
+
+  // Configure ADC
+  if (msg.ADCpin != adcPin)
+  {
+    adcPin = msg.ADCPin;
+    initAdc();
+  }
+
+  // Configure Quadrature
+  if (msg.Apin != aPin || msg.Bpin != bPin)
+  {
+    aPin = msg.Apin;
+    bPin = msg.Bpin;
+    initQuadrature();
+  }
+
+  // Configure PID
+  pPID->configure(
+    msg.Kp,
+    msg.Ki,
+    msg.Di,
+    msg.iMin,
+    msg.iMax);
 }
