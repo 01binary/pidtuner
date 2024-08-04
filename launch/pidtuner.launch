@@ -1,0 +1,22 @@
+<launch>
+  <!-- Shared Configuration -->
+  <!--<rosparam file="$(find pidtuner)/config/joint.yaml" />-->
+
+  <!-- Tool -->
+  <node
+    name="pidtuner"
+    pkg="pidtuner"
+    type="pidtuner"
+    required="true"
+    output="screen"
+  />
+
+  <!-- Analog/Digital I/O -->
+  <node
+    name="analog"
+    pkg="rosserial_python"
+    type="serial_node.py"
+    args="/dev/ttyACM0"
+    required="true"
+  />
+</launch>
