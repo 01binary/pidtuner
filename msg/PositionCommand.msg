@@ -1,2 +1,2 @@
-uint16 position
+uint16 goal
 uint16 tolerance

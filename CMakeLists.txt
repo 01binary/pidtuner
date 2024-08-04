@@ -22,6 +22,7 @@ add_message_files(
   VelocityFeedback.msg
   PositionCommand.msg
   PositionFeedback.msg
+  EmergencyStop.msg
   StepCommand.msg
   Step.msg
   Configuration.msg

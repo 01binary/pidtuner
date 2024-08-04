@@ -30,9 +30,14 @@ const char POSITION_FEEDBACK_TOPIC[] = "position_feedback";
 const char STEP_COMMAND_TOPIC[] = "step";
 const char CONFIGURATION_COMMAND_TOPIC[] = "configuration";
 
-const double RATE_HZ = 50.0;
-const int DELAY = 1000.0 / RATE_HZ;
-const int STARTUP_DELAY = 3000;
+const int RATE = 50;
+
+enum Mode
+{
+  VELOCITY,
+  POSITION,
+  STEP
+};
 
 /*----------------------------------------------------------*\
 | Declarations
@@ -43,7 +48,9 @@ void velocityFeedback();
 void positionCommand(const pidtuner::PositionCommand& msg);
 void positionFeedback();
 void stepCommand(const pidtuner::StepCommand& msg);
+void stepFeedback();
 void configurationCommand(const pidtuner::Configuration& msg);
+void stop(const pidtuner::EmergencyStop& msg);
 
 /*----------------------------------------------------------*\
 | Variables
@@ -70,16 +77,39 @@ int32_t quadrature;
 Encoders* pEncoder;
 
 // PID controller
-PID* pPID;
+PID pid;
 
 // PWM command
-int32_t command = 0;
+double command;
+uint8_t lpwm;
+uint8_t rpwm;
 
-// Output start time
-ros::Time start;
+// Position or velocity control mode
+Mode mode;
 
-// PID error
-int32_t error = 0;
+// PID goal
+uint16_t goal;
+
+// PID tolerance
+uint16_t tolerance;
+
+// Steps
+std::vector<pidtuner::Step> steps;
+
+// Update rate
+ros::Rate rate(RATE);
+
+// Start time
+ros::Time start = ros::Time::now();
+
+// Update time
+ros::Time time = ros::Time::now();
+
+// Time step
+ros::Duration timeStep;
+
+// Emergency stop
+bool stop;
 
 // Velocity feedback publisher
 pidtuner::VelocityFeedback velocityFeedbackMsg;
@@ -153,24 +183,64 @@ void setup()
 
 void loop()
 {
-  absolute = (uint16_t)analogRead(adcPin);
-  quadrature = pEncoder->getEncoderCount();
+  ros::Time now = ros::Time::now();
+  timeStep = now - time;
+  time = now;
+
+  read();
+
+  velocityFeedback();
+  positionFeedback();
+  stepFeedback();
+
+  write();
 
   node.spinOnce();
+  rate.sleep();
+}
 
-  delay(DELAY);
+void read()
+{
+  absolute = (uint16_t)analogRead(adcPin);
+  quadrature = pEncoder->getEncoderCount();
+}
+
+void write()
+{
+  analogWrite(lpwmPin, lpwm);
+  analogWrite(rpwmPin, rpwm);
 }
 
 void velocityCommand(const pidtuner::VelocityCommand& msg)
 {
-  // TODO: process command
+  mode = VELOCITY;
+  start = ros::Time::now();
+  lpwm = msg.LPWM;
+  rpwm = msg.RPWM;
+  command = msg.LPWM - msg.RPWM;
+  stop = false;
+}
+
+void positionCommand(const pidtuner::PositionCommand& msg)
+{
+  mode = POSITION;
+  start = row::Time::now();
+  stop = false;
+
+  goal = msg.goal;
+  tolerance = msg.tolerance;
+
+  pid.reset();
 }
 
 void velocityFeedback()
 {
   pidtuner::VelocityFeedback msg;
 
+  msg.header.time = time;
   msg.command = command;
+  msg.LPWM = lpwm;
+  msg.RPWM = rpwm;
   msg.absolute = absolute;
   msg.quadrature = quadrature;
   msg.start = start;
@@ -178,14 +248,90 @@ void velocityFeedback()
   velocityPub.publish(&msg);
 }
 
-void positionCommand(const pidtuner::PositionCommand& msg)
+void positionFeedback()
 {
-  // TODO: process command
+  if (mode != POSITION || stop) return;
+
+  double error = double(goal - absolute);
+
+  if (uint16_t(abs(error)) > tolerance)
+  {
+    command = pid.getCommand(error, timeStep);
+    
+    if (command < 0.0)
+    {
+      // -RPWM
+      rpwm = (uint8_t)abs(command);
+      lpwm = 0;
+    }
+    else
+    {
+      // +LPWM
+      lpwm = (uint8_t)command;
+      rpwm = 0;
+    }
+  }
+  else
+  {
+    command = 0;
+    lpwm = 0;
+    rpwm = 0;
+  }
+
+  pidtuner::PositionFeedback msg;
+
+  msg.header.time = time;
+  msg.pe = pid.pe;
+  msg.ie = pid.ie;
+  msg.de = pid.de;
+  msg.p = pid.p;
+  msg.i = pid.i;
+  msg.d = pid.d;
 }
 
 void stepCommand(const pidtuner::StepCommand& msg)
 {
-  // TODO: process command
+  mode = STEP;
+  start = ros::Time::now();
+  stop = false;
+
+  if (!msg.steps.empty())
+  {
+    steps = msg.steps;
+  }
+}
+
+void stepFeedback()
+{
+  if (mode != STEP || stop) return;
+
+  ros::Duration elapsed = time - start;
+  double elapsedSec = double(elapsed) / 1000.0;
+  
+  for (int step = 0; step < steps.size(); step++)
+  {
+    if (steps[step].time >= elapsedSec)
+    {
+      lpwm = steps[step].LPWM;
+      rpwm = steps[step].RPWM;
+      command = lpwm - rpwm;
+      break;
+    }
+  }
+}
+
+void stop(const pidtuner::EmergencyStop& msg)
+{
+  stop = msg.stop;
+
+  if (stop)
+  {
+    mode = VELOCITY;
+    command = 0;
+    lpwm = 0;
+    rpwm = 0;
+    pid.reset();
+  }
 }
 
 void configurationCommand(const pidtuner::Configuration& msg)
@@ -214,7 +360,8 @@ void configurationCommand(const pidtuner::Configuration& msg)
   }
 
   // Configure PID
-  pPID->configure(
+  pid.reset();
+  pid.configure(
     msg.Kp,
     msg.Ki,
     msg.Di,

@@ -1,3 +1,3 @@
 uint8 LPWM
 uint8 RPWM
-float32 Time
+float32 time
