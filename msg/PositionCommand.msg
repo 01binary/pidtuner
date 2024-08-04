@@ -1,0 +1,2 @@
+uint16 position
+uint16 tolerance
