@@ -43,32 +43,3 @@ catkin_package(
     control_toolbox
     message_runtime
 )
-
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ${pidtuner_INCLUDE_DIRS}
-)
-
-add_executable(
-  pidtuner
-  src/pidtuner.cpp
-)
-
-add_dependencies(
-  pidtuner
-  ${catkin_EXPORTED_TARGETS}
-  ${pidtuner_EXPORTED_TARGETS}
-)
-
-target_link_libraries(
-  pidtuner
-  ${catkin_LIBRARIES}
-)
-
-install(
-  TARGETS
-    pidtuner
-  RUNTIME
-  DESTINATION
-    ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
