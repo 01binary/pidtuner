@@ -1,15 +1,15 @@
 #include <ros.h>
-#include <cmath>
 
-struct PID
+class PID
 {
+public:
   double Kp;    // Proportional gain
   double Ki;    // Integral gain
   double Kd;    // Derivative gain
 
   double pe;    // Proportional error
   double ie;    // Integral error
-  double de;    // Drivative error
+  double de;    // Derivative error
 
   double iMin;  // Min integral
   double iMax;  // Max integral
@@ -18,6 +18,7 @@ struct PID
   double i;     // Integral term
   double d;     // Derivative term
 
+public:
   PID():
     Kp(10.0), Ki(1.0), Kd(1.0),
     pe(0.0), ie(0.0), de(0.0),
@@ -26,16 +27,17 @@ struct PID
   {
   }
 
-  double getCommand(double error, uint64_t dt)
+public:
+  double getCommand(double error, double dt)
   {
     // Calculate integral error
-    ie += (dt / 1e9) * pe;
+    ie += dt * pe;
 
     // Limit integral error
-    if (Ki && iMax) ie = std::clamp(ie, iMin / Ki, iMax / Ki);
+    if (Ki && iMax) ie = constrain(ie, iMin / Ki, iMax / Ki);
 
     // Calculate derivative error
-    de = (error - pe) / (dt / 1e9);
+    de = (error - pe) / dt;
     pe = error;
 
     // Calculate proportional contribution
@@ -45,7 +47,7 @@ struct PID
     i = Ki * ie;
 
     // Limit integral contribution
-    if (Ki && iMax) i = std::clamp(i, iMin, iMax);
+    if (Ki && iMax) i = constrain(i, iMin, iMax);
 
     // Calculate derivative contribution
     d = Kd * de;
