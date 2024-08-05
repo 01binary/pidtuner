@@ -38,7 +38,7 @@ const int RATE = 50;
 const double TIMESTEP = 1.0 / double(RATE);
 const int STARTUP_DELAY = 15000;
 
-const int[] ADC_PINS =
+const int ADC_PINS[] =
 {
   A0,
   A1,
