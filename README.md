@@ -44,13 +44,13 @@ roslaunch pidtuner pidtuner.launch
 
 ```
 rostopic pub /configuration pidtuner/Configuration \
-"{ LPWMpin: 3, RPWMpin: 11, ADCpin: 1, csPin: 0, Apin: 2, Bpin: 7, Kp: 10, Ki: 1, Kd: 1 }" -1
+"{ LPWMpin: 3, RPWMpin: 11, ADCpin: 0, csPin: 0, Apin: 2, Bpin: 7, Kp: 200, Ki: 1, Kd: 1, iMin: 0, iMax: 100 }" -1
 ```
 
 ## Velocity
 
 ```
-rostopic pub /velocity pidtuner/VelocityCommand "{ LPWM: 0, RPWM: 0 }" -1
+rostopic pub /velocity pidtuner/VelocityCommand "{ LPWM: 10, RPWM: 0 }" -1
 ```
 
 ## Position

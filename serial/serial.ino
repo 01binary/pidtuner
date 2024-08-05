@@ -416,11 +416,19 @@ void configurationCommand(const pidtuner::Configuration& msg)
   }
 
   // Configure PID
-  pid.reset();
-  pid.configure(
-    msg.Kp,
-    msg.Ki,
-    msg.Di,
-    msg.iMin,
-    msg.iMax);
+  if (
+    pid.Kp != msg.Kp ||
+    pid.Ki != msg.Ki ||
+    pid.Kd != msg.Kd ||
+    pid.iMin != msg.iMin ||
+    pid.iMax != msg.iMax)
+  {
+    pid.reset();
+    pid.configure(
+      msg.Kp,
+      msg.Ki,
+      msg.Kd,
+      msg.iMin,
+      msg.iMax);
+  }
 }
