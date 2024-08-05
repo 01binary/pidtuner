@@ -7,8 +7,6 @@
 | Includes
 \*----------------------------------------------------------*/
 
-#define USE_USBCON
-
 #include <ros.h>
 #include <ros/time.h>
 #include <pidtuner/VelocityCommand.h>
@@ -19,6 +17,8 @@
 #include <pidtuner/Configuration.h>
 #include <pidtuner/EmergencyStop.h>
 #include <QuadratureEncoder.h>
+#include "encoder.h"
+#include "pwm.h"
 #include "pid.h"
 
 /*----------------------------------------------------------*\
@@ -67,18 +67,24 @@ int rpwmPin = 11;
 // ADC pins
 int adcPin = A0;
 
+// SPI pins
+int csPin = 0;
+
 // Quadrature pins
 int aPin = 2;
 int bPin = 7;
 
 // Absolute encoder reading
-uint16_t absolute;
+double absolute;
+
+// Absolute encoder
+Encoder* absoluteEncoder;
 
 // Quadrature encoder reading
 int32_t quadrature;
 
 // Quadrature encoder
-Encoders* pEncoder;
+Encoders* quadratureEncoder;
 
 // PID controller
 PID pid;
@@ -92,10 +98,10 @@ uint8_t rpwm;
 Mode mode;
 
 // PID goal
-uint16_t goal;
+double goal;
 
 // PID tolerance
-uint16_t tolerance;
+double tolerance;
 
 // Steps
 pidtuner::Step* steps;
@@ -146,14 +152,28 @@ ros::NodeHandle node;
 | Initialization
 \*----------------------------------------------------------*/
 
-void initAdc()
+void initAbsolute()
 {
-  pinMode(adcPin, INPUT_PULLUP);
+  delete absoluteEncoder;
+
+  if (adcPin)
+  {
+    absoluteEncoder = new ADCEncoder(adcPin);
+  }
+  else if (csPin)
+  {
+    absoluteEncoder = new AS5045Encoder(csPin);
+  }
+  else
+  {
+    absoluteEncoder = nullptr;
+  }
 }
 
 void initQuadrature()
 {
-  pEncoder = new Encoders(aPin, bPin);
+  delete quadratureEncoder;
+  quadratureEncoder = new Encoders(aPin, bPin);
 }
 
 void initPwm()
@@ -164,7 +184,7 @@ void initPwm()
 
 void setup()
 {
-  initAdc();
+  initAbsolute();
   initQuadrature();
   initPwm();
 
@@ -179,6 +199,8 @@ void setup()
   node.subscribe(configSub);
 
   node.negotiateTopics();
+
+  delay(5000);
 }
 
 ros::Time getTime()
@@ -202,8 +224,8 @@ void loop()
   read();
 
   velocityFeedback();
-  positionFeedback();
-  stepFeedback();
+  //positionFeedback();
+  //stepFeedback();
 
   write();
 
@@ -212,8 +234,11 @@ void loop()
 
 void read()
 {
-  absolute = (uint16_t)analogRead(adcPin);
-  quadrature = pEncoder->getEncoderCount();
+  if (absoluteEncoder)
+    absolute = absoluteEncoder->read();
+
+  if (quadratureEncoder)
+    quadrature = quadratureEncoder->getEncoderCount();
 }
 
 void write()
@@ -228,7 +253,7 @@ void velocityCommand(const pidtuner::VelocityCommand& msg)
   start = getTime();
   lpwm = msg.LPWM;
   rpwm = msg.RPWM;
-  command = msg.LPWM - msg.RPWM;
+  command = pwmToCommand(msg.LPWM, msg.RPWM);
   stop = false;
 }
 
@@ -253,6 +278,7 @@ void velocityFeedback()
   msg.RPWM = rpwm;
   msg.absolute = absolute;
   msg.quadrature = quadrature;
+  msg.time = time;
   msg.start = start;
 
   velocityPub.publish(&msg);
@@ -262,24 +288,12 @@ void positionFeedback()
 {
   if (mode != POSITION || stop) return;
 
-  double error = double(goal - absolute);
+  double error = goal - absolute;
 
-  if (uint16_t(abs(error)) > tolerance)
+  if (abs(error) > tolerance)
   {
     command = pid.getCommand(error, timeStep.toSec());
-    
-    if (command < 0.0)
-    {
-      // -RPWM
-      rpwm = (uint8_t)abs(command);
-      lpwm = 0;
-    }
-    else
-    {
-      // +LPWM
-      lpwm = (uint8_t)command;
-      rpwm = 0;
-    }
+    commandToPwm(command, lpwm, rpwm);
   }
   else
   {
@@ -359,10 +373,11 @@ void configurationCommand(const pidtuner::Configuration& msg)
   }
 
   // Configure ADC
-  if (msg.ADCpin != adcPin)
+  if (msg.ADCpin != adcPin || msg.csPin != csPin)
   {
     adcPin = msg.ADCpin;
-    initAdc();
+    csPin = msg.csPin;
+    initAbsolute();
   }
 
   // Configure Quadrature

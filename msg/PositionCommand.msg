@@ -1,2 +1,2 @@
-uint16 goal
-uint16 tolerance
+float64 goal
+float64 tolerance

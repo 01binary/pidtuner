@@ -1,6 +1,7 @@
 float64 command     # PWM command (+LPWM -RPWM)
 uint8 LPWM          # LPWM speed
 uint8 RPWM          # RPWM speed
-uint16 absolute     # ADC reading
-int16 quadrature    # Quadrature ticks
+float64 absolute    # ADC reading
+int32 quadrature    # Quadrature ticks
+time time           # Current time
 time start          # Last command start time
