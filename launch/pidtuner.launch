@@ -1,13 +1,13 @@
 <launch>
   <node
-    name="pidtuner"
-    pkg="pidtuner"
-    type="pidtuner"
+    name="bridge"
+    pkg="rosbridge_server"
+    type="rosbridge_websocket.launch"
     required="true"
     output="screen"
   />
   <node
-    name="analog"
+    name="hardware"
     pkg="rosserial_python"
     type="serial_node.py"
     args="/dev/ttyACM0"

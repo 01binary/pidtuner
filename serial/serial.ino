@@ -1,6 +1,7 @@
 /*
     serial.ino
     Arduino Serial Node
+    Recommended Arduino Mega or Giga
 */
 
 /*----------------------------------------------------------*\
@@ -35,6 +36,27 @@ const char STOP_COMMAND_TOPIC[] = "stop";
 
 const int RATE = 50;
 const double TIMESTEP = 1.0 / double(RATE);
+const int STARTUP_DELAY = 15000;
+
+const int[] ADC_PINS =
+{
+  A0,
+  A1,
+  A2,
+  A3,
+  A4,
+  A5,
+  A6,
+  A7,
+  A8,
+  A9,
+  A10,
+  A11,
+  A12,
+  A13,
+  A14,
+  A15
+};
 
 enum Mode
 {
@@ -156,13 +178,13 @@ void initAbsolute()
 {
   delete absoluteEncoder;
 
-  if (adcPin)
-  {
-    absoluteEncoder = new ADCEncoder(adcPin);
-  }
-  else if (csPin)
+  if (csPin)
   {
     absoluteEncoder = new AS5045Encoder(csPin);
+  }
+  else if (adcPin)
+  {
+    absoluteEncoder = new ADCEncoder(ADC_PINS[adcPin]);
   }
   else
   {
@@ -202,7 +224,7 @@ void setup()
 
   node.negotiateTopics();
 
-  delay(5000);
+  delay(STARTUP_DELAY);
 }
 
 ros::Time getTime()
