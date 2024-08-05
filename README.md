@@ -1,6 +1,6 @@
 # pidtuner
 
-PID Tuning ROS App
+This application can help you characterize a DC motor and tune a PID controller for it.
 
 ## Install Packages
 
@@ -9,6 +9,7 @@ sudo apt-get install ros-${ROS_DISTRO}-rosserial-arduino
 sudo apt-get install ros-${ROS_DISTRO}-rosserial
 
 cd ~/catkin_ws/src
+
 rosdep install -y --from-paths . --ignore-src --rosdistro noetic
 ```
 
@@ -37,6 +38,13 @@ This will start the Arduino Serial node:
 
 ```
 roslaunch pidtuner pidtuner.launch
+```
+
+## Configuration
+
+```
+rostopic pub /configuration pidtuner/Configuration \
+"{ LPWMpin: 3, RPWMpin: 11, ADCpin: 1, csPin: 0, Apin: 2, Bpin: 7, Kp: 10, Ki: 1, Kd: 1 }" -1
 ```
 
 ## Velocity

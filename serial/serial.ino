@@ -173,7 +173,9 @@ void initAbsolute()
 void initQuadrature()
 {
   delete quadratureEncoder;
-  quadratureEncoder = new Encoders(aPin, bPin);
+
+  if (aPin && bPin)
+    quadratureEncoder = new Encoders(aPin, bPin);
 }
 
 void initPwm()
