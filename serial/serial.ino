@@ -26,17 +26,16 @@
 | Constants
 \*----------------------------------------------------------*/
 
-const char VELOCITY_COMMAND_TOPIC[] = "velocity";
-const char VELOCITY_FEEDBACK_TOPIC[] = "velocity_feedback";
-const char POSITION_COMMAND_TOPIC[] = "position";
-const char POSITION_FEEDBACK_TOPIC[] = "position_feedback";
-const char STEP_COMMAND_TOPIC[] = "step";
-const char CONFIGURATION_COMMAND_TOPIC[] = "configuration";
-const char STOP_COMMAND_TOPIC[] = "stop";
+const char VELOCITY_COMMAND[] = "velocity";
+const char VELOCITY_FEEDBACK[] = "velocity_feedback";
+const char POSITION_COMMAND[] = "position";
+const char POSITION_FEEDBACK[] = "position_feedback";
+const char STEP_COMMAND[] = "step";
+const char CONFIGURATION_COMMAND[] = "configuration";
+const char STOP_COMMAND[] = "stop";
 
 const int RATE = 50;
 const double TIMESTEP = 1.0 / double(RATE);
-const int STARTUP_DELAY = 15000;
 
 const int ADC_PINS[] =
 {
@@ -117,7 +116,7 @@ uint8_t lpwm;
 uint8_t rpwm;
 
 // Position or velocity control mode
-Mode mode;
+Mode mode = VELOCITY;
 
 // PID goal
 double goal;
@@ -144,28 +143,32 @@ bool stop;
 // Velocity feedback publisher
 pidtuner::VelocityFeedback velocityFeedbackMsg;
 ros::Publisher velocityPub(
-  VELOCITY_FEEDBACK_TOPIC, &velocityFeedbackMsg);
+  VELOCITY_FEEDBACK, &velocityFeedbackMsg);
 
 // Position feedback publisher
 pidtuner::PositionFeedback positionFeedbackMsg;
 ros::Publisher positionPub(
-  POSITION_FEEDBACK_TOPIC, &positionFeedbackMsg);
+  POSITION_FEEDBACK, &positionFeedbackMsg);
 
 // Velocity command subscriber
 ros::Subscriber<pidtuner::VelocityCommand> velocitySub(
-  VELOCITY_COMMAND_TOPIC, velocityCommand);
+  VELOCITY_COMMAND, velocityCommand);
 
 // Position command subscriber
 ros::Subscriber<pidtuner::PositionCommand> positionSub(
-  POSITION_COMMAND_TOPIC, positionCommand);
+  POSITION_COMMAND, positionCommand);
 
 // Step command subscriber
 ros::Subscriber<pidtuner::StepCommand> stepSub(
-  STEP_COMMAND_TOPIC, stepCommand);
+  STEP_COMMAND, stepCommand);
 
 // Configuration command subscriber
 ros::Subscriber<pidtuner::Configuration> configSub(
-  CONFIGURATION_COMMAND_TOPIC, configurationCommand);
+  CONFIGURATION_COMMAND, configurationCommand);
+
+// Emergency stop command subscriber
+ros::Subscriber<pidtuner::EmergencyStop> stopSub(
+  STOP_COMMAND, emergencyStop);
 
 // ROS node
 ros::NodeHandle node;
@@ -223,8 +226,6 @@ void setup()
   node.subscribe(configSub);
 
   node.negotiateTopics();
-
-  delay(STARTUP_DELAY);
 }
 
 ros::Time getTime()
@@ -334,6 +335,8 @@ void positionFeedback()
   msg.p = pid.p;
   msg.i = pid.i;
   msg.d = pid.d;
+
+  positionPub.publish(&msg);
 }
 
 void stepCommand(const pidtuner::StepCommand& msg)
@@ -382,6 +385,7 @@ void emergencyStop(const pidtuner::EmergencyStop& msg)
     lpwm = 0;
     rpwm = 0;
     pid.reset();
+    write();
   }
 }
 
