@@ -224,8 +224,8 @@ void loop()
   read();
 
   velocityFeedback();
-  //positionFeedback();
-  //stepFeedback();
+  positionFeedback();
+  stepFeedback();
 
   write();
 
@@ -333,16 +333,15 @@ void stepFeedback()
 {
   if (mode != STEP || stop) return;
 
-  ros::Duration elapsed = time - start;
-  double elapsedSec = elapsed.toSec();
+  double elapsed = (time - start).toSec();
   
   for (int step = 0; step < stepCount; step++)
   {
-    if (steps[step].time >= elapsedSec)
+    if (steps[step].time >= elapsed)
     {
       lpwm = steps[step].LPWM;
       rpwm = steps[step].RPWM;
-      command = lpwm - rpwm;
+      command = pwmToCommand(lpwm, rpwm);
       break;
     }
   }
