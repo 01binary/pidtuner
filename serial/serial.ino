@@ -32,7 +32,7 @@ const char POSITION_COMMAND[] = "position";
 const char POSITION_FEEDBACK[] = "position_feedback";
 const char STEP_COMMAND[] = "step";
 const char CONFIGURATION_COMMAND[] = "configuration";
-const char STOP_COMMAND[] = "stop";
+const char ESTOP_COMMAND[] = "estop";
 
 const int RATE = 50;
 const double TIMESTEP = 1.0 / double(RATE);
@@ -168,7 +168,7 @@ ros::Subscriber<pidtuner::Configuration> configSub(
 
 // Emergency stop command subscriber
 ros::Subscriber<pidtuner::EmergencyStop> stopSub(
-  STOP_COMMAND, emergencyStop);
+  ESTOP_COMMAND, emergencyStop);
 
 // ROS node
 ros::NodeHandle node;
@@ -224,6 +224,7 @@ void setup()
   node.subscribe(positionSub);
   node.subscribe(stepSub);
   node.subscribe(configSub);
+  node.subscribe(stopSub);
 
   node.negotiateTopics();
 }
@@ -311,20 +312,20 @@ void velocityFeedback()
 
 void positionFeedback()
 {
-  if (mode != POSITION || stop) return;
+  if (mode != POSITION) return;
 
   double error = goal - absolute;
 
-  if (abs(error) > tolerance)
-  {
-    command = pid.getCommand(error, timeStep.toSec());
-    commandToPwm(command, lpwm, rpwm);
-  }
-  else
+  if (stop || abs(error) < tolerance)
   {
     command = 0;
     lpwm = 0;
     rpwm = 0;
+  }
+  else
+  {
+    command = pid.getCommand(error, timeStep.toSec());
+    commandToPwm(command, lpwm, rpwm);
   }
 
   pidtuner::PositionFeedback msg;
@@ -347,10 +348,13 @@ void stepCommand(const pidtuner::StepCommand& msg)
 
   if (msg.steps_length)
   {
-    delete[] steps;
+    pidtuner::Step* oldSteps = steps;
+    pidtuner::Step* newSteps = new pidtuner::Step[msg.steps_length];
 
-    steps = new pidtuner::Step[msg.steps_length];
-    memcpy(steps, msg.steps, msg.steps_length * sizeof(pidtuner::Step));
+    memcpy(newSteps, msg.steps, msg.steps_length * sizeof(pidtuner::Step));
+
+    steps = newSteps;
+    delete[] oldSteps;
 
     stepCount = msg.steps_length;
   }
@@ -380,12 +384,10 @@ void emergencyStop(const pidtuner::EmergencyStop& msg)
 
   if (stop)
   {
-    mode = VELOCITY;
     command = 0;
     lpwm = 0;
     rpwm = 0;
     pid.reset();
-    write();
   }
 }
 

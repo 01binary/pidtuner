@@ -68,5 +68,5 @@ rostopic pub /step pidtuner/StepCommand "{ steps: [{ LPWM: 255, RPWM: 0, time: 1
 ## Emergency Stop
 
 ```
-rostopic pub /stop pidtuner/EmergencyStop "{ stop: true }" -1
+rostopic pub /estop pidtuner/EmergencyStop "{ stop: true }" -1
 ```
