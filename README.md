@@ -44,7 +44,19 @@ roslaunch pidtuner pidtuner.launch
 
 ```
 rostopic pub /configuration pidtuner/Configuration \
-"{ LPWMpin: 3, RPWMpin: 11, ADCpin: 0, csPin: 0, Apin: 2, Bpin: 7, Kp: 200, Ki: 1, Kd: 1, iMin: 0, iMax: 100 }" -1
+"{
+    LPWMpin: 3, \
+    RPWMpin: 11, \
+    ADCpin: 0, \
+    csPin: 0, \
+    Apin: 2, \
+    Bpin: 7, \
+    Kp: 200, \
+    Ki: 1, \
+    Kd: 1, \
+    iMin: 0, \
+    iMax: 100 \
+}" -1
 ```
 
 ## Velocity
@@ -62,7 +74,10 @@ rostopic pub /position pidtuner/PositionCommand "{ goal: 0.0, tolerance: 0.0 }" 
 ## Step
 
 ```
-rostopic pub /step pidtuner/StepCommand "{ steps: [{ LPWM: 255, RPWM: 0, time: 1 }] }" -1
+rostopic pub /step pidtuner/StepCommand "{ steps: [ \
+    { command: 0.5, time: 0.0 } \
+    { command: 0.0, time: 4.0 } \
+]}" -1
 ```
 
 ## Emergency Stop
