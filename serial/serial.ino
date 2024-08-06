@@ -127,6 +127,7 @@ double tolerance;
 // Steps
 pidtuner::Step* steps;
 int stepCount;
+bool loopSteps;
 
 // Start time
 ros::Time start;
@@ -357,14 +358,27 @@ void stepCommand(const pidtuner::StepCommand& msg)
     delete[] oldSteps;
 
     stepCount = msg.steps_length;
+    loopSteps = msg.loop;
   }
 }
 
 void stepFeedback()
 {
-  if (mode != STEP || stop) return;
+  if (mode != STEP || !stepCount || stop) return;
 
+  double total = steps[stepCount - 1].time + 1.0;
   double elapsed = (time - start).toSec();
+
+  if (elapsed > total && !loopSteps)
+  {
+    mode = VELOCITY;
+    command = 0.0;
+    lpwm = 0;
+    rpwm = 0;
+    return;
+  }
+
+  elapsed = fmod(elapsed, total);
   
   for (int step = 0; step < stepCount; step++)
   {

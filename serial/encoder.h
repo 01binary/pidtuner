@@ -32,7 +32,10 @@ private:
   struct AS5045
   {
     unsigned int position : 14;
+    AS5045(): position(0) {}
   };
+
+  AS5045 data;
 
 public:
   int csPin;
@@ -65,7 +68,6 @@ public:
     delayMicroseconds(8);
 
     // Read
-    AS5045 data;
     *((uint16_t*)&data) = SPI.transfer16(0x0);
 
     // Deselect
