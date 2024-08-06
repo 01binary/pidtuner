@@ -50,7 +50,7 @@ rostopic pub /configuration pidtuner/Configuration \
 ## Velocity
 
 ```
-rostopic pub /velocity pidtuner/VelocityCommand "{ LPWM: 10, RPWM: 0 }" -1
+rostopic pub /velocity pidtuner/VelocityCommand "{ command: 0.5 }" -1
 ```
 
 ## Position
