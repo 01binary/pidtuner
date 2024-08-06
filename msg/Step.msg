@@ -1,3 +1,2 @@
-uint8 LPWM
-uint8 RPWM
+float64 command
 float32 time

@@ -1,20 +1,23 @@
-void commandToPwm(double command, uint8_t& lpwm, uint8_t& rpwm)
+const double MAX_PWM = 0b11111111;
+const double NORM_PWM = 1 / MAX_PWM;
+
+void commandToPwm(double norm, uint8_t& lpwm, uint8_t& rpwm)
 {
-  if (command < 0.0)
-    {
-      // -LPWM
-      lpwm = (uint8_t)abs(command);
-      rpwm = 0;
-    }
-    else
-    {
-      // +RPWM
-      rpwm = (uint8_t)command;
-      lpwm = 0;
-    }
+  if (norm < 0.0)
+  {
+    // -LPWM
+    lpwm = uint8_t(abs(norm) * MAX_PWM);
+    rpwm = 0;
+  }
+  else
+  {
+    // +RPWM
+    rpwm = uint8_t(norm * MAX_PWM);
+    lpwm = 0;
+  }
 }
 
 double pwmToCommand(uint8_t lpwm, uint8_t rpwm)
 {
-  return double(rpwm - lpwm);
+  return double(rpwm) * NORM_PWM - double(lpwm) * NORM_PWM;
 }

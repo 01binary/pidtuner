@@ -277,10 +277,10 @@ void velocityCommand(const pidtuner::VelocityCommand& msg)
 {
   mode = VELOCITY;
   start = getTime();
-  lpwm = msg.LPWM;
-  rpwm = msg.RPWM;
-  command = pwmToCommand(msg.LPWM, msg.RPWM);
+  command = msg.command;
   stop = false;
+
+  commandToPwm(command, lpwm, rpwm);
 }
 
 void positionCommand(const pidtuner::PositionCommand& msg)
@@ -370,9 +370,8 @@ void stepFeedback()
   {
     if (steps[step].time >= elapsed)
     {
-      lpwm = steps[step].LPWM;
-      rpwm = steps[step].RPWM;
-      command = pwmToCommand(lpwm, rpwm);
+      command = steps[step].command;
+      commandToPwm(command, lpwm, rpwm);
       break;
     }
   }
