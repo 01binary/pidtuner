@@ -1,2 +1,2 @@
-float64 goal
-float64 tolerance
+float32 goal
+float32 tolerance

@@ -1,2 +1,2 @@
-float64 command
-float64 time
+float32 command
+float32 time

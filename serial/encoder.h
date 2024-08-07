@@ -1,12 +1,12 @@
 #include <SPI.h>
 
-const double ADC_MAX = double(0b1111111111);
-const double AS5045_MAX = double(0b111111111111);
+const float ADC_MAX = float(0b1111111111);
+const float AS5045_MAX = float(0b111111111111);
 
 class Encoder
 {
 public:
-  virtual double read();
+  virtual float read();
 };
 
 class ADCEncoder: public Encoder
@@ -20,9 +20,9 @@ public:
     pinMode(adcPin, INPUT_PULLUP);
   }
 
-  double read()
+  float read()
   {
-    return double(analogRead(adcPin)) / ADC_MAX;
+    return float(analogRead(adcPin)) / ADC_MAX;
   }
 };
 
@@ -70,7 +70,7 @@ public:
   }
 
 public:
-  double read()
+  float read()
   {
     // Select
     digitalWrite(csPin, LOW);
@@ -83,6 +83,6 @@ public:
     digitalWrite(csPin, HIGH);
 
     // Convert
-    return double(data.position) / double(AS5045_MAX);
+    return float(data.position) / float(AS5045_MAX);
   }
 };

@@ -1,6 +1,6 @@
-float64 pe
-float64 ie
-float64 de
-float64 p
-float64 i
-float64 d
+float32 pe
+float32 ie
+float32 de
+float32 p
+float32 i
+float32 d

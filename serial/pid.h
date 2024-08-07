@@ -3,20 +3,20 @@
 class PID
 {
 public:
-  double Kp;    // Proportional gain
-  double Ki;    // Integral gain
-  double Kd;    // Derivative gain
+  float Kp;    // Proportional gain
+  float Ki;    // Integral gain
+  float Kd;    // Derivative gain
 
-  double pe;    // Proportional error
-  double ie;    // Integral error
-  double de;    // Derivative error
+  float pe;    // Proportional error
+  float ie;    // Integral error
+  float de;    // Derivative error
 
-  double iMin;  // Min integral
-  double iMax;  // Max integral
+  float iMin;  // Min integral
+  float iMax;  // Max integral
 
-  double p;     // Proportional term
-  double i;     // Integral term
-  double d;     // Derivative term
+  float p;     // Proportional term
+  float i;     // Integral term
+  float d;     // Derivative term
 
 public:
   PID():
@@ -28,7 +28,7 @@ public:
   }
 
 public:
-  double getCommand(double error, double dt)
+  float getCommand(float error, float dt)
   {
     // Calculate integral error
     ie += dt * pe;
@@ -57,11 +57,11 @@ public:
   }
 
   void configure(
-    double Kp,
-    double Ki,
-    double Kd,
-    double iMin,
-    double iMax)
+    float Kp,
+    float Ki,
+    float Kd,
+    float iMin,
+    float iMax)
   {
     this->Kp = Kp;
     this->Ki = Ki;

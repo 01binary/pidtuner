@@ -74,10 +74,13 @@ rostopic pub /position pidtuner/PositionCommand "{ goal: 0.0, tolerance: 0.0 }" 
 ## Step
 
 ```
-rostopic pub /step pidtuner/StepCommand "{ steps: [ \
-    { command: 0.5, time: 0.0 } \
-    { command: 0.0, time: 4.0 } \
-]}" -1
+rostopic pub /step pidtuner/StepCommand "{
+    loop: true, \
+    steps: [ \
+        { command: 0.5, time: 0.0 }, \
+        { command: 0.0, time: 4.0 } \
+    ] \
+}" -1
 ```
 
 ## Emergency Stop

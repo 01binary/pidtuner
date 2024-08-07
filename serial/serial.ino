@@ -35,7 +35,7 @@ const char CONFIGURATION_COMMAND[] = "configuration";
 const char ESTOP_COMMAND[] = "estop";
 
 const int RATE = 50;
-const double TIMESTEP = 1.0 / double(RATE);
+const float TIMESTEP = 1.0 / float(RATE);
 
 const int ADC_PINS[] =
 {
@@ -100,7 +100,7 @@ int aPin = 18;
 int bPin = 19;
 
 // Absolute encoder reading
-double absolute;
+float absolute;
 
 // Absolute encoder
 Encoder* absoluteEncoder;
@@ -115,7 +115,7 @@ Encoders* quadratureEncoder;
 PID pid;
 
 // PWM command
-double command;
+float command;
 uint8_t lpwm;
 uint8_t rpwm;
 
@@ -123,10 +123,10 @@ uint8_t rpwm;
 Mode mode = VELOCITY;
 
 // PID goal
-double goal;
+float goal;
 
 // PID tolerance
-double tolerance;
+float tolerance;
 
 // Steps
 pidtuner::Step* steps;
@@ -319,7 +319,7 @@ void positionFeedback()
 {
   if (mode != POSITION) return;
 
-  double error = goal - absolute;
+  float error = goal - absolute;
 
   if (stop || abs(error) < tolerance)
   {
@@ -350,6 +350,7 @@ void stepCommand(const pidtuner::StepCommand& msg)
   mode = STEP;
   start = getTime();
   stop = false;
+  stepCount = 0;
 
   if (msg.steps_length)
   {
@@ -370,10 +371,10 @@ void stepFeedback()
 {
   if (mode != STEP || !stepCount || stop) return;
 
-  double total = steps[stepCount - 1].time + 1.0;
-  double elapsed = (time - start).toSec();
+  float total = steps[stepCount - 1].time + 1.0;
+  float elapsed = (time - start).toSec();
 
-  if (elapsed > total && !loopSteps)
+  /*if (elapsed > total && !loopSteps)
   {
     mode = VELOCITY;
     command = 0.0;
@@ -392,7 +393,10 @@ void stepFeedback()
       commandToPwm(command, lpwm, rpwm);
       break;
     }
-  }
+  }*/
+
+  command = steps[0].command;
+  commandToPwm(command, lpwm, rpwm);
 }
 
 void emergencyStop(const pidtuner::EmergencyStop& msg)
