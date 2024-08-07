@@ -26,16 +26,25 @@ public:
   }
 };
 
+// AS5045 (SPI)    | Arduino Mega (SPI)
+// ------------------------------------
+// GND (black)     | GND
+// 5V (red)        | 5V
+// SS (green)      | CS (53)
+// SCK (yellow)    | SCK (52)
+// MISO (white)    | MOSI (51)
+// MOSI (orange)   | MISO (50)
+
 class AS5045Encoder: public Encoder
 {
 private:
-  struct AS5045
+  struct AS5045Data
   {
-    unsigned int position : 14;
-    AS5045(): position(0) {}
+    unsigned int position : 12;
+    AS5045Data(): position(0) {}
   };
 
-  AS5045 data;
+  AS5045Data data;
 
 public:
   int csPin;

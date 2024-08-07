@@ -82,18 +82,22 @@ void emergencyStop(const pidtuner::EmergencyStop& msg);
 \*----------------------------------------------------------*/
 
 // PWM pins
+// https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
 int lpwmPin = 3;
 int rpwmPin = 11;
 
 // ADC pins
-int adcPin = A0;
+// https://www.arduino.cc/reference/en/language/functions/analog-io/analogread/
+int adcPin = 0;
 
 // SPI pins
-int csPin = 0;
+// https://www.arduino.cc/reference/en/language/functions/communication/spi/
+int csPin = 53;
 
 // Quadrature pins
-int aPin = 2;
-int bPin = 7;
+// https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
+int aPin = 18;
+int bPin = 19;
 
 // Absolute encoder reading
 double absolute;
