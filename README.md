@@ -48,12 +48,12 @@ rostopic pub /configuration pidtuner/Configuration \
     LPWMpin: 3, \
     RPWMpin: 11, \
     ADCpin: 0, \
-    csPin: 0, \
-    Apin: 2, \
-    Bpin: 7, \
+    csPin: 53, \
+    Apin: 18, \
+    Bpin: 19, \
     Kp: 200, \
-    Ki: 1, \
-    Kd: 1, \
+    Ki: 10, \
+    Kd: 10, \
     iMin: 0, \
     iMax: 100 \
 }" -1

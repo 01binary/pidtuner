@@ -83,8 +83,8 @@ void emergencyStop(const pidtuner::EmergencyStop& msg);
 
 // PWM pins
 // https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
-int lpwmPin = 3;
-int rpwmPin = 11;
+int lpwmPin = 11;
+int rpwmPin = 3;
 
 // ADC pins
 // https://www.arduino.cc/reference/en/language/functions/analog-io/analogread/
