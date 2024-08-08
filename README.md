@@ -77,8 +77,8 @@ rostopic pub /position pidtuner/PositionCommand "{ goal: 0.0, tolerance: 0.0 }" 
 rostopic pub /step pidtuner/StepCommand "{
     loop: true, \
     steps: [ \
-        { command: 0.5, time: 0.0 }, \
-        { command: 0.0, time: 4.0 } \
+        { command: 0.5, duration: 4.0 }, \
+        { command: 0.0, duration: 4.0 }
     ] \
 }" -1
 ```

@@ -36,6 +36,7 @@ const char ESTOP_COMMAND[] = "estop";
 
 const int RATE = 50;
 const float TIMESTEP = 1.0 / float(RATE);
+const int STARTUP_DELAY = 3000;
 
 const int ADC_PINS[] =
 {
@@ -65,6 +66,17 @@ enum Mode
 };
 
 /*----------------------------------------------------------*\
+| Types
+\*----------------------------------------------------------*/
+
+struct Step
+{
+  float time;
+  float duration;
+  float command;
+};
+
+/*----------------------------------------------------------*\
 | Declarations
 \*----------------------------------------------------------*/
 
@@ -76,6 +88,7 @@ void stepCommand(const pidtuner::StepCommand& msg);
 void stepFeedback();
 void configurationCommand(const pidtuner::Configuration& msg);
 void emergencyStop(const pidtuner::EmergencyStop& msg);
+void stop();
 
 /*----------------------------------------------------------*\
 | Variables
@@ -129,9 +142,12 @@ float goal;
 float tolerance;
 
 // Steps
-pidtuner::Step* steps;
+Step* steps;
+float elapsed;
+float total;
+int step;
 int stepCount;
-bool loopSteps;
+bool stepLoop;
 
 // Start time
 ros::Time start;
@@ -140,10 +156,10 @@ ros::Time start;
 ros::Time time;
 
 // Time step
-ros::Duration timeStep;
+float dt;
 
 // Emergency stop
-bool stop;
+bool estop;
 
 // Velocity feedback publisher
 pidtuner::VelocityFeedback velocityFeedbackMsg;
@@ -246,10 +262,8 @@ ros::Time getTime()
 void loop()
 {
   ros::Time now = getTime();
-  timeStep = now - time;
-
-  if (timeStep.toSec() < TIMESTEP) return;
- 
+  dt = (now - time).toSec();
+  if (dt < TIMESTEP) return;
   time = now;
 
   read();
@@ -283,7 +297,7 @@ void velocityCommand(const pidtuner::VelocityCommand& msg)
   mode = VELOCITY;
   start = getTime();
   command = msg.command;
-  stop = false;
+  estop = false;
 
   commandToPwm(command, lpwm, rpwm);
 }
@@ -292,7 +306,7 @@ void positionCommand(const pidtuner::PositionCommand& msg)
 {
   mode = POSITION;
   start = getTime();
-  stop = false;
+  estop = false;
 
   goal = msg.goal;
   tolerance = msg.tolerance;
@@ -302,6 +316,9 @@ void positionCommand(const pidtuner::PositionCommand& msg)
 
 void velocityFeedback()
 {
+  // Publishing too soon causes "tried to publish before configured" error
+  if (millis() < STARTUP_DELAY) return;
+
   pidtuner::VelocityFeedback msg;
 
   msg.command = command;
@@ -311,6 +328,9 @@ void velocityFeedback()
   msg.quadrature = quadrature;
   msg.time = time;
   msg.start = start;
+  msg.dt = dt;
+  msg.elapsed = elapsed;
+  msg.step = step;
 
   velocityPub.publish(&msg);
 }
@@ -321,20 +341,21 @@ void positionFeedback()
 
   float error = goal - absolute;
 
-  if (stop || abs(error) < tolerance)
+  if (estop || abs(error) < tolerance)
   {
-    command = 0;
-    lpwm = 0;
-    rpwm = 0;
+    stop();
   }
   else
   {
-    command = pid.getCommand(error, timeStep.toSec());
+    command = pid.getCommand(error, dt);
     commandToPwm(command, lpwm, rpwm);
   }
 
   pidtuner::PositionFeedback msg;
 
+  msg.position = absolute;
+  msg.goal = goal;
+  msg.tolerance = tolerance;
   msg.pe = pid.pe;
   msg.ie = pid.ie;
   msg.de = pid.de;
@@ -349,67 +370,73 @@ void stepCommand(const pidtuner::StepCommand& msg)
 {
   mode = STEP;
   start = getTime();
-  stop = false;
+  estop = false;
   stepCount = 0;
+  step = 0;
+  total = 0.0;
 
   if (msg.steps_length)
   {
-    pidtuner::Step* oldSteps = steps;
-    pidtuner::Step* newSteps = new pidtuner::Step[msg.steps_length];
+    Step* oldSteps = steps;
+    Step* newSteps = new Step[msg.steps_length];
 
-    memcpy(newSteps, msg.steps, msg.steps_length * sizeof(pidtuner::Step));
+    for (int n = 0; n < msg.steps_length; n++)
+    {
+      newSteps[n].time = total;
+      newSteps[n].duration = msg.steps[n].duration;
+      newSteps[n].command = msg.steps[n].command;
+      total = total + msg.steps[n].duration;
+    }
 
     steps = newSteps;
-    delete[] oldSteps;
-
     stepCount = msg.steps_length;
-    loopSteps = msg.loop;
+    stepLoop = msg.loop;
+
+    delete[] oldSteps;
   }
 }
 
 void stepFeedback()
 {
-  if (mode != STEP || !stepCount || stop) return;
+  if (mode != STEP || !stepCount || estop) return;
 
-  float total = steps[stepCount - 1].time + 1.0;
-  float elapsed = (time - start).toSec();
+  elapsed = (time - start).toSec();
 
-  /*if (elapsed > total && !loopSteps)
+  if (elapsed > total)
   {
-    mode = VELOCITY;
-    command = 0.0;
-    lpwm = 0;
-    rpwm = 0;
-    return;
+    if (stepLoop)
+    {
+      // Loop playback
+      elapsed = fmod(elapsed, total);
+      step = 0;
+    }
+    else
+    {
+      // Stop playback
+      stop();
+      return;
+    }
   }
 
-  elapsed = fmod(elapsed, total);
-  
-  for (int step = 0; step < stepCount; step++)
-  {
-    if (steps[step].time >= elapsed)
-    {
-      command = steps[step].command;
-      commandToPwm(command, lpwm, rpwm);
-      break;
-    }
-  }*/
+  if (elapsed >= steps[step].time + steps[step].duration)
+    step++;
 
-  command = steps[0].command;
+  command = steps[step].command;
   commandToPwm(command, lpwm, rpwm);
 }
 
 void emergencyStop(const pidtuner::EmergencyStop& msg)
 {
-  stop = msg.stop;
+  estop = msg.stop;
+  if (estop) stop();
+}
 
-  if (stop)
-  {
-    command = 0;
-    lpwm = 0;
-    rpwm = 0;
-    pid.reset();
-  }
+void stop()
+{
+  mode = VELOCITY;
+  command = 0;
+  lpwm = 0;
+  rpwm = 0;
 }
 
 void configurationCommand(const pidtuner::Configuration& msg)

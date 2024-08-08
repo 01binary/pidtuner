@@ -1,2 +1,2 @@
 float32 command
-float32 time
+float32 duration
