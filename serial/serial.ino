@@ -18,6 +18,7 @@
 #include <pidtuner/Configuration.h>
 #include <pidtuner/EmergencyStop.h>
 #include <QuadratureEncoder.h>
+#include "performer.h"
 #include "encoder.h"
 #include "pwm.h"
 #include "pid.h"
@@ -63,17 +64,6 @@ enum Mode
   VELOCITY,
   POSITION,
   STEP
-};
-
-/*----------------------------------------------------------*\
-| Types
-\*----------------------------------------------------------*/
-
-struct Step
-{
-  float time;
-  float duration;
-  float command;
 };
 
 /*----------------------------------------------------------*\
@@ -142,12 +132,7 @@ float goal;
 float tolerance;
 
 // Steps
-Step* steps;
-float elapsed;
-float total;
-int step;
-int stepCount;
-bool stepLoop;
+performer steps;
 
 // Start time
 ros::Time start;
@@ -329,8 +314,8 @@ void velocityFeedback()
   msg.time = time;
   msg.start = start;
   msg.dt = dt;
-  msg.elapsed = elapsed;
-  msg.step = step;
+  msg.elapsed = steps.elapsed;
+  msg.step = steps.step;
 
   velocityPub.publish(&msg);
 }
@@ -371,58 +356,23 @@ void stepCommand(const pidtuner::StepCommand& msg)
   mode = STEP;
   start = getTime();
   estop = false;
-  stepCount = 0;
-  step = 0;
-  total = 0.0;
-
-  if (msg.steps_length)
-  {
-    Step* oldSteps = steps;
-    Step* newSteps = new Step[msg.steps_length];
-
-    for (int n = 0; n < msg.steps_length; n++)
-    {
-      newSteps[n].time = total;
-      newSteps[n].duration = msg.steps[n].duration;
-      newSteps[n].command = msg.steps[n].command;
-      total = total + msg.steps[n].duration;
-    }
-
-    steps = newSteps;
-    stepCount = msg.steps_length;
-    stepLoop = msg.loop;
-
-    delete[] oldSteps;
-  }
+  steps.play(msg);
 }
 
 void stepFeedback()
 {
-  if (mode != STEP || !stepCount || estop) return;
+  if (mode != STEP || estop) return;
 
-  elapsed = (time - start).toSec();
+  command = steps.getCommand(start, time);
 
-  if (elapsed > total)
+  if (steps.done)
   {
-    if (stepLoop)
-    {
-      // Loop playback
-      elapsed = fmod(elapsed, total);
-      step = 0;
-    }
-    else
-    {
-      // Stop playback
-      stop();
-      return;
-    }
+    stop();
   }
-
-  if (elapsed >= steps[step].time + steps[step].duration)
-    step++;
-
-  command = steps[step].command;
-  commandToPwm(command, lpwm, rpwm);
+  else
+  {
+    commandToPwm(command, lpwm, rpwm);
+  }
 }
 
 void emergencyStop(const pidtuner::EmergencyStop& msg)
