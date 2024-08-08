@@ -28,6 +28,7 @@ public:
 
   // Whether playback is complete
   bool done;
+
 public:
   performer():
     steps(nullptr),
