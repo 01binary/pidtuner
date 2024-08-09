@@ -91,14 +91,26 @@ int csPin = 53;
 int aPin = 18;
 int bPin = 19;
 
+// Min normalized PWM command
+float pwmMin = 0.0;
+
+// Max normalized PWM command
+float pwmMax = 1.0;
+
 // Whether to invert PWM commands
-bool invertPwm;
+bool pwmInvert;
+
+// Min normalized absolute encoder reading
+float absoluteMin = 0.0;
+
+// Max normalized absolute encoder reading
+float absoluteMax = 1.0;
 
 // Whether to invert absolute encoder readings
-bool invertAbsolute;
+bool absoluteInvert;
 
 // Whether to invert quadrature encoder readings
-bool invertQuadrature;
+bool quadratureInvert;
 
 //
 // State
@@ -455,7 +467,13 @@ void configurationCommand(const pidtuner::Configuration& msg)
       msg.iMax);
   }
 
-  invertPwm = msg.invertPwm;
-  invertQuadrature = msg.invertQuadrature;
-  invertAbsolute = msg.invertAbsolute;
+  pwmMin = msg.pwmMin;
+  pwmMax = msg.pwmMax;
+  pwmInvert = msg.pwmInvert;
+
+  quadratureInvert = msg.quadratureInvert;
+
+  absoluteMin = msg.absoluteMin;
+  absoluteMax = msg.absoluteMax;
+  absoluteInvert = msg.absoluteInvert;
 }
