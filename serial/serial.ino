@@ -136,7 +136,7 @@ float command;
 uint8_t lpwm;
 uint8_t rpwm;
 
-// Position or velocity control mode
+// Control mode
 Mode mode = VELOCITY;
 
 // PID goal
