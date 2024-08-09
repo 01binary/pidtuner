@@ -300,10 +300,24 @@ void laugh()
 void read()
 {
   if (absoluteEncoder)
-    absolute = absoluteEncoder->read();
+  {
+    absolute = clamp(absoluteEncoder->read(), absoluteMin, absoluteMax);
+
+    if (absoluteInvert)
+    {
+      absolute = 1.0 - absolute;
+    }
+  }
 
   if (quadratureEncoder)
+  {
     quadrature = quadratureEncoder->getEncoderCount();
+
+    if (quadratureInvert)
+    {
+      quadrature = -quadrature;
+    }
+  }
 }
 
 void write()
@@ -319,7 +333,7 @@ void velocityCommand(const pidtuner::VelocityCommand& msg)
   command = msg.command;
   estop = false;
 
-  commandToPwm(command, lpwm, rpwm);
+  commandToPwm(command, pwmMin, pwmMax, pwmInvert, lpwm, rpwm);
 }
 
 void positionCommand(const pidtuner::PositionCommand& msg)
@@ -368,7 +382,7 @@ void positionFeedback()
   else
   {
     command = pid.getCommand(error, dt);
-    commandToPwm(command, lpwm, rpwm);
+    commandToPwm(command, pwmMin, pwmMax, pwmInvert, lpwm, rpwm);
   }
 
   pidtuner::PositionFeedback msg;
@@ -406,7 +420,7 @@ void stepFeedback()
   }
   else
   {
-    commandToPwm(command, lpwm, rpwm);
+    commandToPwm(command, pwmMin, pwmMax, pwmInvert, lpwm, rpwm);
   }
 }
 
