@@ -122,8 +122,11 @@ performer steps;
 // Start time
 ros::Time start;
 
-// Update time
+// Current time
 ros::Time time;
+
+// Elapsed time
+float elapsed;
 
 // Time step
 float dt;
@@ -231,16 +234,34 @@ ros::Time getTime()
 
 void loop()
 {
+  live();
+  love();
+  laugh();
+}
+
+void live()
+{
   ros::Time now = getTime();
   dt = (now - time).toSec();
+  elapsed = (now - start).toSec();
+
+  if (dt >= TIMESTEP) time = now;
+}
+
+void love()
+{
   if (dt < TIMESTEP) return;
-  time = now;
 
   read();
 
   velocityFeedback();
   positionFeedback();
   stepFeedback();
+}
+
+void laugh()
+{
+  if (dt < TIMESTEP) return;
 
   write();
 
@@ -299,7 +320,7 @@ void velocityFeedback()
   msg.time = time;
   msg.start = start;
   msg.dt = dt;
-  msg.elapsed = steps.elapsed;
+  msg.elapsed = elapsed;
   msg.step = steps.step;
 
   velocityPub.publish(&msg);
@@ -341,14 +362,14 @@ void stepCommand(const pidtuner::StepCommand& msg)
   mode = STEP;
   start = getTime();
   estop = false;
-  steps.play(msg);
+  steps.play(start, msg);
 }
 
 void stepFeedback()
 {
   if (mode != STEP || estop) return;
 
-  command = steps.getCommand(start, time);
+  command = steps.getCommand(time);
 
   if (steps.done)
   {

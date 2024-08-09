@@ -1,0 +1,5 @@
+- Add command invert, quadrature invert, absolute invert parameters
+- Test configuration, switching PWM pins
+- Test configuration, switching from AS5045 to ADC
+- Test configuration, switching quadrature pins
+- Test configuration, changing p i d imin imax parameters

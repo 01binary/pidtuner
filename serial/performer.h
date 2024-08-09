@@ -26,6 +26,9 @@ public:
   // Whether to loop or stop when done
   bool loop;
 
+  // Time playback started or looped
+  ros::Time start;
+
   // Whether playback is complete
   bool done;
 
@@ -42,18 +45,18 @@ public:
   }
 
 public:
-  double getCommand(ros::Time start, ros::Time time)
+  double getCommand(ros::Time time)
   {
     if (!stepCount || done) return 0.0;
 
     elapsed = (time - start).toSec();
 
-    if (elapsed > total)
+    if (elapsed >= total)
     {
       if (loop)
       {
         // Loop playback
-        elapsed = fmod(elapsed, total);
+        start = time;
         step = 0;
       }
       else
@@ -63,14 +66,16 @@ public:
         return 0.0;
       }
     }
-
-    if (elapsed >= steps[step].time + steps[step].duration)
+    else if (elapsed >= steps[step].time + steps[step].duration)
+    {
+      // Continue playback
       step++;
+    }
 
     return steps[step].command;
   }
 
-  void play(const pidtuner::StepCommand& msg)
+  void play(ros::Time time, const pidtuner::StepCommand& msg)
   {
     stepCount = 0;
     step = 0;
@@ -93,6 +98,7 @@ public:
       stepCount = msg.steps_length;
       loop = msg.loop;
       done = false;
+      start = time;
 
       delete[] oldSteps;
     }
