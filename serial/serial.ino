@@ -69,6 +69,10 @@ void stop();
 | Variables
 \*----------------------------------------------------------*/
 
+//
+// Settings
+//
+
 // PWM pins
 // https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
 int lpwmPin = 11;
@@ -86,6 +90,19 @@ int csPin = 53;
 // https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 int aPin = 18;
 int bPin = 19;
+
+// Whether to invert PWM commands
+bool invertPwm;
+
+// Whether to invert absolute encoder readings
+bool invertAbsolute;
+
+// Whether to invert quadrature encoder readings
+bool invertQuadrature;
+
+//
+// State
+//
 
 // Absolute encoder reading
 float absolute;
@@ -437,4 +454,8 @@ void configurationCommand(const pidtuner::Configuration& msg)
       msg.iMin,
       msg.iMax);
   }
+
+  invertPwm = msg.invertPwm;
+  invertQuadrature = msg.invertQuadrature;
+  invertAbsolute = msg.invertAbsolute;
 }
