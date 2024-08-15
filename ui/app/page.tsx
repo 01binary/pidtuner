@@ -1,8 +1,9 @@
-import styles from "./page.module.css";
+import styles from "./velocity.module.css";
 
-const Home = () => (
-  <main>
-  </main>
+const Velocity = () => (
+  <div>
+    Velocity control
+  </div>
 );
 
-export default Home;
+export default Velocity;
