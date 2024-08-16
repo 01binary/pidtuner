@@ -30,7 +30,7 @@ button {
   -moz-appearance: none;
   color: white;
   min-width: 6rem;
-  opacity: 0.9;
+  opacity: 0.8;
   transition: opacity 0.3s ease-out;
 
   background-image: repeating-linear-gradient(
@@ -57,4 +57,8 @@ button.warning {
 
 button.danger {
   background-color: var(--danger);
+}
+
+button.estop {
+  padding: 6px 16px;
 }

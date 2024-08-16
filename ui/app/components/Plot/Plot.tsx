@@ -1,7 +1,7 @@
 "use client";
 
 import * as d3 from "d3";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import styles from "./Plot.module.css";
 import data from "./sample.json";
 
@@ -146,14 +146,22 @@ export const Plot = () => {
   return (
     <>
       <section className={styles.plotHeader}>
+        <img src="icon.svg" width="48" height="48" />
+
         <h1>Motor Control</h1>
 
         <div className={styles.plotToolbar}>
-          <button onClick={handleExport}>
+          <button
+            onClick={handleExport}
+            title="Export measurements"
+          >
             Export
           </button>
-          <button className="warning">
-            Stop
+          <button
+            className="warning estop"
+            title="Emergency stop"
+          >
+            <img src="/stop.svg" width="24" height="24" />
           </button>
         </div>
       </section>
