@@ -6,7 +6,7 @@ import styles from "./Plot.module.css";
 import data from "./sample.json";
 
 const HEIGHT = 300;
-const MARGIN_LEFT = 48;
+const MARGIN_LEFT = 56;
 const MARGIN_TOP = 8;
 const MARGIN_RIGHT = 8;
 const MARGIN_BOTTOM = 32;
@@ -67,21 +67,21 @@ export const Plot = () => {
   );
 
   useEffect(() => {
-    setWidth(plotRef.current?.clientWidth ?? 0)
+    setWidth(plotRef.current?.clientWidth ?? 0);
   }, []);
 
   useEffect(() => {
     d3
       .select(axisBottomRef.current)
       .call(d3.axisBottom(x).tickSize(TICK_SIZE))
-      .call(g => g.select(".domain").remove())
+      .call(g => g.select(".domain").remove());
   }, [x]);
 
   useEffect(() => {
     d3
       .select(axisLeftRef.current)
       .call(d3.axisLeft(y)
-      .tickSize(TICK_SIZE))
+      .tickSize(TICK_SIZE));
   }, [y]);
 
   const absolute = useMemo(() => data.map(({ absolute }) => absolute), []);
@@ -105,6 +105,29 @@ export const Plot = () => {
       height={HEIGHT}
       className={styles.plot}
     >
+      <defs>
+        <pattern
+          id="dotFill"
+          patternUnits="userSpaceOnUse"
+          width="16"
+          height="16"
+        >
+          <circle
+            cx="1"
+            cy="1"
+            r="1.5"
+            fill="#dddddd"
+            stroke="none"
+          />
+        </pattern>
+      </defs>
+      <rect
+        x={MARGIN_LEFT - 6}
+        y={0}
+        width={width ?? 0 - MARGIN_LEFT}
+        height={HEIGHT - MARGIN_BOTTOM - MARGIN_TOP}
+        fill="url(#dotFill)"
+      />
       <g
         ref={axisBottomRef}
         className={styles.axisBottom}
