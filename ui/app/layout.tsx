@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Plot } from "./components/Plot";
-import { Navigation } from "./components/Navigation";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,10 +22,6 @@ export default function RootLayout({
           <h1>Motor Control</h1>
           <Plot />
         </header>
-
-        <nav>
-          <Navigation />
-        </nav>
 
         <main>
           {children}
