@@ -8,3 +8,9 @@
   --darkGray: #3B4A51;
   --lightGray: #898989;
 }
+
+body {
+  max-width: 1280px;
+  margin: auto;
+  padding: 0 24px;
+}
