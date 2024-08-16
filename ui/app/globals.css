@@ -5,6 +5,8 @@
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 
+  --primary: #376be8;
+  --danger: #ec008c;
   --darkGray: #3B4A51;
   --lightGray: #898989;
 }
@@ -13,4 +15,21 @@ body {
   max-width: 1280px;
   margin: auto;
   padding: 0 24px;
+}
+
+button {
+  cursor: pointer;
+  padding: 10px 16px;
+  background-color: var(--primary);
+  border-radius: 8px;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: white;
+  min-width: 6rem;
+}
+
+button.danger {
+  background-color: var(--danger);
 }

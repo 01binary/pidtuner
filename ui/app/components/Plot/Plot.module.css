@@ -1,12 +1,26 @@
-.plotPane {
+.plotHeader {
+  display: flex;
+  flex-direction: row;
+}
+
+.plotToolbar {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.plotStrip {
+  display: flex;
+  flex-direction: row;
+}
+
+.plotScroll {
   width: 100%;
   overflow-x: auto;
   padding-bottom: 8px;
-}
-
-.plotArea {
-  display: flex;
-  flex-direction: row;
 }
 
 .plot text {

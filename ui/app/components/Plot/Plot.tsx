@@ -1,7 +1,7 @@
 "use client";
 
 import * as d3 from "d3";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Plot.module.css";
 import data from "./sample.json";
 
@@ -84,6 +84,25 @@ export const Plot = () => {
       .tickSize(TICK_SIZE));
   }, [y]);
 
+  const handleExport = useCallback(() => {
+    const text = data
+      .reduce((lines, { time, command, absolute }) => ([
+        ...lines,
+        `${time},${command},${absolute}`
+      ]), ['time,command,absolute'])
+      .join('\r\n');
+
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', 'output.csv');
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+  }, []);
+
   const absolute = useMemo(() => data.map(({ absolute }) => absolute), []);
   const command = useMemo(() => data.map(({ command }) => command), []);
 
@@ -99,73 +118,93 @@ export const Plot = () => {
   }
 
   return (
-    <div className={styles.plotArea}>
-      <svg
-        width={AXIS_LEFT_WIDTH}
-        height={HEIGHT}
-        className={styles.axisLeft}
-      >
-        <g
-          ref={axisLeftRef}
-          transform={`translate(${AXIS_LEFT_OFFSET}, 0)`}
-        />
-      </svg>
+    <>
+      <section className={styles.plotHeader}>
+        <h1>Motor Control</h1>
 
-      <div className={styles.plotPane}>
+        <div className={styles.plotToolbar}>
+          <button onClick={handleExport}>
+            Export
+          </button>
+          <button className="danger">
+            Stop
+          </button>
+        </div>
+      </section>
+
+      <section className={styles.plotStrip}>
+        {/* Left Axis that doesn't scroll */}
         <svg
-          width={width}
+          width={AXIS_LEFT_WIDTH}
           height={HEIGHT}
-          className={styles.plot}
+          className={styles.axisLeft}
         >
-          <defs>
-            <pattern
-              id="dotFill"
-              patternUnits="userSpaceOnUse"
-              width="19.925"
-              height="25.8"
-            >
-              <circle
-                cx="5"
-                cy="9"
-                r="1.5"
-                fill="#dddddd"
-                stroke="none"
-              />
-            </pattern>
-          </defs>
-
-          <rect
-            x={0}
-            y={0}
-            width={width ?? 0 - MARGIN_LEFT}
-            height={HEIGHT - MARGIN_BOTTOM - MARGIN_TOP}
-            fill="url(#dotFill)"
-          />
-
           <g
-            ref={axisBottomRef}
-            className={styles.axisBottom}
-            transform={`translate(0,${HEIGHT - MARGIN_BOTTOM + SPACING})`}
+            ref={axisLeftRef}
+            transform={`translate(${AXIS_LEFT_OFFSET}, 0)`}
           />
-
-          <line
-            className={styles.axisBottom__domain}
-            x1={SPACING_HALF}
-            y1={HEIGHT - MARGIN_BOTTOM + SPACING}
-            x2={width ?? 0 - MARGIN_RIGHT}
-            y2={HEIGHT - MARGIN_BOTTOM + SPACING}
-            strokeWidth="1"
-          />
-          {legend.map(({ samples, color, label }) => (
-            <Series
-              key={label}
-              samples={samples}
-              color={color}
-              {...layoutProps}
-            />
-          ))}
         </svg>
-      </div>
-    </div>
+
+        {/* Scrolling plot */}
+        <div className={styles.plotScroll}>
+          <svg
+            width={width}
+            height={HEIGHT}
+            className={styles.plot}
+          >
+            {/* Dot pattern */}
+            <defs>
+              <pattern
+                id="dotFill"
+                patternUnits="userSpaceOnUse"
+                width="19.925"
+                height="25.8"
+              >
+                <circle
+                  cx="5"
+                  cy="9"
+                  r="1.5"
+                  fill="#dddddd"
+                  stroke="none"
+                />
+              </pattern>
+            </defs>
+
+            {/* Rectangle that fills the plot with dot pattern */}
+            <rect
+              width={width ?? 0 - MARGIN_LEFT}
+              height={HEIGHT - MARGIN_BOTTOM - MARGIN_TOP}
+              fill="url(#dotFill)"
+            />
+
+            {/* Bottom axis tick marks */}
+            <g
+              ref={axisBottomRef}
+              className={styles.axisBottom}
+              transform={`translate(0,${HEIGHT - MARGIN_BOTTOM + SPACING})`}
+            />
+
+            {/* Bottom axis domain */}
+            <line
+              className={styles.axisBottom__domain}
+              x1={SPACING_HALF}
+              y1={HEIGHT - MARGIN_BOTTOM + SPACING}
+              x2={width ?? 0 - MARGIN_RIGHT}
+              y2={HEIGHT - MARGIN_BOTTOM + SPACING}
+              strokeWidth="1"
+            />
+
+            {legend.map(({ samples, color, label }) => (
+              <Series
+                key={label}
+                samples={samples}
+                color={color}
+                {...layoutProps}
+              />
+            ))}
+          </svg>
+        </div>
+      </section>
+    </>
   );
 };
