@@ -10,8 +10,12 @@ const MARGIN_LEFT = 56;
 const MARGIN_TOP = 8;
 const MARGIN_RIGHT = 8;
 const MARGIN_BOTTOM = 32;
+const AXIS_LEFT_WIDTH = 64;
+const AXIS_LEFT_OFFSET = 48;
 const TICK_SIZE = 8;
 const SPACING = 8;
+const SPACING_HALF = 4;
+const SAMPLE_WIDTH = 3;
 
 type SeriesProps = {
   samples: number[],
@@ -32,7 +36,7 @@ const Series = ({
 
   const x = d3.scaleLinear(
     [0, samples.length - 1],
-    [MARGIN_LEFT, width - MARGIN_RIGHT]);
+    [SPACING_HALF, width - MARGIN_RIGHT]);
 
   const y = d3.scaleLinear(
     d3.extent(samples),
@@ -52,23 +56,19 @@ const Series = ({
 }
 
 export const Plot = () => {
-  const plotRef = useRef<SVGSVGElement>(null);
   const axisLeftRef = useRef<SVGGElement>(null);
   const axisBottomRef = useRef<SVGGElement>(null);
-  const [width, setWidth] = useState<number | undefined>();
+
+  const width = (data.length * SAMPLE_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT;
 
   const x = d3.scaleLinear(
     [0, data[data.length - 1].time],
-    [MARGIN_LEFT, width ?? 0 - MARGIN_RIGHT]);
+    [SPACING_HALF, width - SPACING_HALF]);
 
   const y = d3.scaleLinear(
     [-1, 1],
     [HEIGHT - MARGIN_BOTTOM, MARGIN_TOP]
   );
-
-  useEffect(() => {
-    setWidth(plotRef.current?.clientWidth ?? 0);
-  }, []);
 
   useEffect(() => {
     d3
@@ -99,61 +99,73 @@ export const Plot = () => {
   }
 
   return (
-    <svg
-      ref={plotRef}
-      width={width}
-      height={HEIGHT}
-      className={styles.plot}
-    >
-      <defs>
-        <pattern
-          id="dotFill"
-          patternUnits="userSpaceOnUse"
-          width="16"
-          height="16"
-        >
-          <circle
-            cx="1"
-            cy="1"
-            r="1.5"
-            fill="#dddddd"
-            stroke="none"
-          />
-        </pattern>
-      </defs>
-      <rect
-        x={MARGIN_LEFT - 6}
-        y={0}
-        width={width ?? 0 - MARGIN_LEFT}
-        height={HEIGHT - MARGIN_BOTTOM - MARGIN_TOP}
-        fill="url(#dotFill)"
-      />
-      <g
-        ref={axisBottomRef}
-        className={styles.axisBottom}
-        transform={`translate(0,${HEIGHT - MARGIN_BOTTOM + SPACING})`}
-      />
-      <line
-        className={styles.axisBottom__domain}
-        x1={MARGIN_LEFT}
-        y1={HEIGHT - MARGIN_BOTTOM + SPACING}
-        x2={width ?? 0 - MARGIN_RIGHT}
-        y2={HEIGHT - MARGIN_BOTTOM + SPACING}
-        strokeWidth="1"
-      />
-      <g
-        ref={axisLeftRef}
+    <div className={styles.plotArea}>
+      <svg
+        width={AXIS_LEFT_WIDTH}
+        height={HEIGHT}
         className={styles.axisLeft}
-        transform={`translate(${MARGIN_LEFT - MARGIN_LEFT / 4},0)`}
-      />
-      {legend.map(({ samples, color, label }) => (
-        <Series
-          key={label}
-          samples={samples}
-          color={color}
-          {...layoutProps}
+      >
+        <g
+          ref={axisLeftRef}
+          transform={`translate(${AXIS_LEFT_OFFSET}, 0)`}
         />
-      ))}
-    </svg>
+      </svg>
+
+      <div className={styles.plotPane}>
+        <svg
+          width={width}
+          height={HEIGHT}
+          className={styles.plot}
+        >
+          <defs>
+            <pattern
+              id="dotFill"
+              patternUnits="userSpaceOnUse"
+              width="19.925"
+              height="25.8"
+            >
+              <circle
+                cx="5"
+                cy="9"
+                r="1.5"
+                fill="#dddddd"
+                stroke="none"
+              />
+            </pattern>
+          </defs>
+
+          <rect
+            x={0}
+            y={0}
+            width={width ?? 0 - MARGIN_LEFT}
+            height={HEIGHT - MARGIN_BOTTOM - MARGIN_TOP}
+            fill="url(#dotFill)"
+          />
+
+          <g
+            ref={axisBottomRef}
+            className={styles.axisBottom}
+            transform={`translate(0,${HEIGHT - MARGIN_BOTTOM + SPACING})`}
+          />
+
+          <line
+            className={styles.axisBottom__domain}
+            x1={SPACING_HALF}
+            y1={HEIGHT - MARGIN_BOTTOM + SPACING}
+            x2={width ?? 0 - MARGIN_RIGHT}
+            y2={HEIGHT - MARGIN_BOTTOM + SPACING}
+            strokeWidth="1"
+          />
+          {legend.map(({ samples, color, label }) => (
+            <Series
+              key={label}
+              samples={samples}
+              color={color}
+              {...layoutProps}
+            />
+          ))}
+        </svg>
+      </div>
+    </div>
   );
 };

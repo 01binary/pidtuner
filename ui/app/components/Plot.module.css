@@ -1,5 +1,12 @@
-.plot {
+.plotPane {
   width: 100%;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.plotArea {
+  display: flex;
+  flex-direction: row;
 }
 
 .plot text {
@@ -24,6 +31,7 @@
 
 .axisLeft {
   color: var(--lightGray);
+  flex-shrink: 0;
 }
 
 .axisLeft text {
