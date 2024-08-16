@@ -1,3 +1,5 @@
 export const Velocity = () => (
-  null
+  <section>
+    <h2>Velocity</h2>
+  </section>
 )

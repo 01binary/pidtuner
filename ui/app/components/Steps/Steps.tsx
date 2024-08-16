@@ -1,3 +1,5 @@
 export const Steps = () => (
-  null
+  <section>
+    <h2>Steps</h2>
+  </section>
 );

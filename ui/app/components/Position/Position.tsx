@@ -1,3 +1,5 @@
 export const Position = () => (
-  null
+  <section>
+    <h2>Position</h2>
+  </section>
 );
