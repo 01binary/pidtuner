@@ -126,7 +126,7 @@ export const Plot = () => {
           <button onClick={handleExport}>
             Export
           </button>
-          <button className="danger">
+          <button className="warning">
             Stop
           </button>
         </div>

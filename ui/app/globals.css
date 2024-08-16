@@ -6,7 +6,9 @@
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 
   --primary: #376be8;
+  --primaryLight: #6088e4;
   --danger: #ec008c;
+  --warning: #fcd116;
   --darkGray: #3B4A51;
   --lightGray: #898989;
 }
@@ -28,6 +30,29 @@ button {
   -moz-appearance: none;
   color: white;
   min-width: 6rem;
+  opacity: 0.9;
+  transition: opacity 0.3s ease-out;
+
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--primary),
+    var(--primaryLight)
+  );
+}
+
+button:hover {
+  opacity: 1;
+}
+
+button.warning {
+  text-shadow: 0 0 3px #000;
+  background-image: repeating-linear-gradient(
+    -55deg,
+    #000,
+    #000 20px,
+    var(--warning) 20px,
+    var(--warning) 40px
+  );
 }
 
 button.danger {
