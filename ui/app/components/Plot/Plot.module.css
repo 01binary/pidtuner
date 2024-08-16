@@ -13,6 +13,18 @@
   gap: 8px;
 }
 
+@media (max-width: 540px) {
+  .plotHeader {
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 32px;
+  }
+
+  .plotToolbar {
+    justify-content: flex-start;
+  }
+}
+
 .plotStrip {
   display: flex;
   flex-direction: row;
@@ -51,4 +63,26 @@
 
 .axisLeft text {
   fill: var(--darkGray);
+}
+
+.legend {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+  margin-left: 3rem;
+  justify-content: flex-end;
+}
+
+.legendItem {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--darkGray);
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
 }

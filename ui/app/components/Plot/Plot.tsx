@@ -53,7 +53,33 @@ const Series = ({
       d={line(samples)}
     />
   )
-}
+};
+
+type LegendItem = {
+  color: string,
+  label: string,
+  samples: number[],
+};
+
+type LegendProps = {
+  legend: LegendItem[]
+};
+
+const Legend = ({ legend }: LegendProps) => (
+  <section className={styles.legend}>
+    {legend.map(({ color, label }) => (
+      <div key={label} className={styles.legendItem}>
+        <div
+          className={styles.legendColor}
+          style={{ backgroundColor: color }}
+        />
+        <div className={styles.legendText}>
+          {label}
+        </div>
+      </div>
+    ))}
+  </section>
+);
 
 export const Plot = () => {
   const axisLeftRef = useRef<SVGGElement>(null);
@@ -205,6 +231,8 @@ export const Plot = () => {
           </svg>
         </div>
       </section>
+
+      <Legend legend={legend} />
     </>
   );
 };
