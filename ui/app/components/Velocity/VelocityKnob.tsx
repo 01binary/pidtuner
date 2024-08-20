@@ -19,6 +19,12 @@ const getValueFromAngle = (angle: number, invert: boolean) => {
   return invert ? norm : norm;
 };
 
+const getAngleFromPoint = (x: number, y: number, cx: number, cy: number, ox: number, oy: number) => {
+  const sin = y - (cy - oy);
+  const cos = x - (cx - ox);
+  return Math.atan2(sin, cos) + BIAS_ANGLE;
+};
+
 export const VelocityKnob = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const knobRef = useRef<SVGPathElement>(null);
@@ -46,21 +52,12 @@ export const VelocityKnob = () => {
     setOriginY(oy);
   }, []);
 
-  const getAngleFromPoint = useCallback((x: number, y: number) => {
-    const sin = y - (knobCenterY - originY);
-    const cos = x - (knobCenterX - originX);
-    return Math.atan2(sin, cos) + BIAS_ANGLE;
-  }, [knobCenterX, knobCenterY, originX, originY]);
-
   const handleMouseDown = useCallback((e) => {
-    const { offsetX, offsetY } = e.nativeEvent;
-
     e.preventDefault();
     e.stopPropagation();
-
     isMouseDownRef.current = true;
-    prevAngleRef.current = getAngleFromPoint(offsetX, offsetY);
-  }, [getAngleFromPoint]);
+    prevAngleRef.current = angle;
+  }, [getAngleFromPoint, angle]);
 
   const handleMouseUp = useCallback((e) => {
     e.preventDefault();
@@ -75,7 +72,9 @@ export const VelocityKnob = () => {
     if (isMouseDownRef.current) {
       const { offsetX, offsetY } = e.nativeEvent;
 
-      const currentAngle = getAngleFromPoint(offsetX, offsetY);
+      const currentAngle = getAngleFromPoint(
+        offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+
       const lastAngle = prevAngleRef.current;
       const delta = currentAngle - lastAngle;
 
@@ -89,7 +88,7 @@ export const VelocityKnob = () => {
 
       prevAngleRef.current = currentAngle;
     }
-  }, [getAngleFromPoint]);
+  }, [getAngleFromPoint, originX, originY, knobCenterX, knobCenterY]);
 
   return (
     <svg
