@@ -93,13 +93,11 @@ export const VelocityKnob = ({
       const currentAngle = getAngleFromPoint(
         offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
 
-      let delta = currentAngle - offsetAngle - angle;
+      const delta = currentAngle - offsetAngle - angle;
 
-      const nextAngle = angle + delta;
-      
-      console.log('cur', currentAngle, 'prev', angle, 'off', offsetAngle, 'delta', delta, 'next', nextAngle)
+      let nextAngle = angle + delta;
+      if (nextAngle > Math.PI) nextAngle -= Math.PI * 2;
 
-      setAngle(nextAngle);
       handleChange(getValueFromAngle(nextAngle, false));
     }
   }, [angle, originX, originY, knobCenterX, knobCenterY, offsetAngle]);
@@ -138,7 +136,7 @@ export const VelocityKnob = ({
       </g>
 
       <g id="gradationMarks" fill="#D3D3D3">
-        <path fill="red" className={styles.mark} d="M125.2,23.7l0.9-1.6c-1.7-0.8-3.5-1.6-5.3-2.2l-0.5,1.4C121.9,22,123.6,22.8,125.2,23.7z"/>
+        <path className={styles.mark} d="M125.2,23.7l0.9-1.6c-1.7-0.8-3.5-1.6-5.3-2.2l-0.5,1.4C121.9,22,123.6,22.8,125.2,23.7z"/>
         <path className={styles.mark} d="M130.4,27.2l1.5-1.7c-1.6-1.1-3.3-2.1-5-3l-0.9,1.6C127.5,25.1,129,26.1,130.4,27.2z"/>
         <path className={styles.mark} d="M125.2,86.7c-1.6,0.9-3.2,1.7-4.9,2.3l3.3,9c2.2-0.9,4.3-2,6.3-3.2L125.2,86.7z"/>
         <path className={styles.mark} d="M135,31.6l2.2-1.8c-1.4-1.4-2.9-2.6-4.5-3.8l-1.5,1.8C132.5,29,133.8,30.3,135,31.6z"/>
@@ -208,16 +206,16 @@ export const VelocityKnob = ({
       <g id="signs">
         <polygon
           id="plusRight"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           fill="#EC008C"
           points="133.3,104.7 130.1,104.7 130.1,101.5 129.1,101.5 129.1,104.7 125.9,104.7 125.9,105.7 129.1,105.7 129.1,108.9 130.1,108.9 130.1,105.7 133.3,105.7 "
           style={invert ? { visibility: 'hidden' } : { visibility: 'visible' }}
         />
         <polygon
           id="plusLeft"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           fill="#EC008C"
           points="88.1,104.7 84.9,104.7 84.9,101.5 83.9,101.5 83.9,104.7 80.7,104.7 80.7,105.7 83.9,105.7 83.9,108.9 84.9,108.9 84.9,105.7 88.1,105.7 "
           style={invert ? { visibility: 'visible' } : { visibility: 'hidden' }}
@@ -226,8 +224,8 @@ export const VelocityKnob = ({
           id="minusRight"
           x="125.9"
           y="104.7"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           fill="#376BE8"
           width="7.4"
           height="1"
@@ -237,8 +235,8 @@ export const VelocityKnob = ({
           id="minusLeft"
           x="80.7"
           y="104.7"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           fill="#376BE8"
           width="7.4"
           height="1"
