@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./VelocityKnob.module.css";
 
+const MAX_ANGLE = Math.PI * 2;
+const BIAS_ANGLE = Math.PI / 2;
+
 type VelocityKnobProps = {
   value: number,
   min: number,
@@ -32,6 +35,13 @@ export const VelocityKnob = () => {
     setOriginY(oy);
   }, []);
 
+  const getAngleFromOffset = useCallback((x: number, y: number) => {
+    const sin = y - (knobCenterY - originY);
+    const cos = x - (knobCenterX - originX);
+
+    return Math.atan2(sin, cos) + BIAS_ANGLE;
+  }, [knobCenterX, knobCenterY, originX, originY]);
+
   const handleMouseDown = useCallback((e) => {
     isMouseDownRef.current = true;
   }, []);
@@ -43,13 +53,11 @@ export const VelocityKnob = () => {
   const handleMouseMove = useCallback((e) => {
     if (isMouseDownRef.current) {
       const { offsetX, offsetY } = e.nativeEvent;
-      const sin = offsetY - (knobCenterY - originY);
-      const cos = offsetX - (knobCenterX - originX);
-      const angle = Math.atan2(sin, cos) + Math.PI / 2;
+      const angle = getAngleFromOffset(offsetX, offsetY);
 
-      setValue(angle / (Math.PI * 2));
+      setValue(angle / MAX_ANGLE);
     }
-  }, [knobCenterX, knobCenterY, originX, originY]);
+  }, [getAngleFromOffset]);
 
   return (
     <svg
