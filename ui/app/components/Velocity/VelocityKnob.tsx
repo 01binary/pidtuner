@@ -56,8 +56,7 @@ export const VelocityKnob = () => {
     e.preventDefault();
     e.stopPropagation();
     isMouseDownRef.current = true;
-    prevAngleRef.current = angle;
-  }, [getAngleFromPoint, angle]);
+  }, []);
 
   const handleMouseUp = useCallback((e) => {
     e.preventDefault();
@@ -80,15 +79,14 @@ export const VelocityKnob = () => {
 
       let nextAngle = lastAngle + delta;
 
-      if (nextAngle > Math.PI)
-        nextAngle = nextAngle - Math.PI * 2;
+      if (nextAngle > Math.PI) nextAngle -= Math.PI * 2;
 
       setAngle(nextAngle);
       setValue(getValueFromAngle(nextAngle, false));
 
       prevAngleRef.current = currentAngle;
     }
-  }, [getAngleFromPoint, originX, originY, knobCenterX, knobCenterY]);
+  }, [originX, originY, knobCenterX, knobCenterY]);
 
   return (
     <svg
