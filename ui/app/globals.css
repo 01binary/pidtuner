@@ -93,4 +93,5 @@ button.estop {
   flex-direction: row;
   align-items: center;
   padding-left: calc(32px + 8px);
+  flex-wrap: wrap;
 }

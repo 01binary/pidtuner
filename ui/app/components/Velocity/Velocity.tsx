@@ -12,9 +12,8 @@ export const Velocity = () => (
 
     <section className="module__controls">
       <PrimaryInput type="number" value={100} min="-100" max="100" step="1" />
-      <Separator />
+     
       <VelocityKnob />
-      <Separator invert />
     </section>
   </section>
 )
