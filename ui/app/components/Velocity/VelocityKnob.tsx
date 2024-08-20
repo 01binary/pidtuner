@@ -6,7 +6,6 @@ import styles from "./VelocityKnob.module.css";
 const MAX_ANGLE = Math.PI;
 const BIAS_ANGLE = Math.PI / 2;
 const RAD_TO_DEG = 57.2958;
-const DEG_TO_RAD = 0.0174533;
 
 type VelocityKnobProps = {
   value: number,
@@ -33,18 +32,19 @@ export const VelocityKnob = () => {
   const [originX, setOriginX] = useState(0);
   const [originY, setOriginY] = useState(0);
   const [angle, setAngle] = useState(0);
-  const prevAngleRef = useRef(0);
+  const [offsetAngle, setOffsetAngle] = useState(0);
   const isMouseDownRef = useRef(false);
 
   const [value, setValue] = useState(0);
   const invert = false;
 
   useEffect(() => {
-    const { x, y, width, height } = knobRef.current
-      ?.getBoundingClientRect();
+    if (!knobRef.current || !svgRef.current) return;
 
+    const { x, y, width, height } = knobRef.current
+      .getBoundingClientRect();
     const { x: ox, y: oy } = svgRef.current
-      ?.getBoundingClientRect();
+      .getBoundingClientRect();
 
     setKnobCenterX(x + width / 2);
     setKnobCenterY(y + height / 2);
@@ -56,7 +56,13 @@ export const VelocityKnob = () => {
     e.preventDefault();
     e.stopPropagation();
     isMouseDownRef.current = true;
-  }, []);
+
+    const { offsetX, offsetY } = e.nativeEvent;
+    const initialOffset = getAngleFromPoint(
+      offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+
+    setOffsetAngle(initialOffset - angle);
+  }, [knobCenterX, knobCenterY, originX, originY, angle]);
 
   const handleMouseUp = useCallback((e) => {
     e.preventDefault();
@@ -74,19 +80,16 @@ export const VelocityKnob = () => {
       const currentAngle = getAngleFromPoint(
         offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
 
-      const lastAngle = prevAngleRef.current;
-      const delta = currentAngle - lastAngle;
+      let delta = currentAngle - offsetAngle - angle;
 
-      let nextAngle = lastAngle + delta;
-
-      if (nextAngle > Math.PI) nextAngle -= Math.PI * 2;
+      const nextAngle = angle + delta;
+      
+      console.log('cur', currentAngle, 'prev', angle, 'off', offsetAngle, 'delta', delta, 'next', nextAngle)
 
       setAngle(nextAngle);
       setValue(getValueFromAngle(nextAngle, false));
-
-      prevAngleRef.current = currentAngle;
     }
-  }, [originX, originY, knobCenterX, knobCenterY]);
+  }, [angle, originX, originY, knobCenterX, knobCenterY, offsetAngle]);
 
   return (
     <svg
@@ -119,15 +122,6 @@ export const VelocityKnob = () => {
         />
         <circle fill="#FFFFFF" cx="107.4" cy="33.9" r="1.3"/>
       </g>
-      <text
-        fontFamily="'Roboto-Medium', sans-serif, sans-serif"
-        fontSize="12px"
-        fill="red"
-        x={knobCenterX - originX - 11}
-        y={knobCenterY - originY + 4}
-      >
-        {Math.round(value * 100) / 100}
-      </text>
 
       <g style={{ pointerEvents: 'none' }}>
         <text transform="matrix(1 0 0 1 177.2629 16.6725)" fill="#5B5B5B" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
@@ -160,6 +154,45 @@ export const VelocityKnob = () => {
         <text transform="matrix(1 0 0 1 97.1786 119.0267)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           100
         </text>
+        
+        <polygon
+          id="plusRight"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          fill="#EC008C"
+          points="133.3,104.7 130.1,104.7 130.1,101.5 129.1,101.5 129.1,104.7 125.9,104.7 125.9,105.7 129.1,105.7 129.1,108.9 130.1,108.9 130.1,105.7 133.3,105.7 "
+          style={invert ? { visibility: 'hidden' } : { visibility: 'visible' }}
+        />
+        <polygon
+          id="plusLeft"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          fill="#EC008C"
+          points="88.1,104.7 84.9,104.7 84.9,101.5 83.9,101.5 83.9,104.7 80.7,104.7 80.7,105.7 83.9,105.7 83.9,108.9 84.9,108.9 84.9,105.7 88.1,105.7 "
+          style={invert ? { visibility: 'visible' } : { visibility: 'hidden' }}
+        />
+        <rect
+          id="minusRight"
+          x="125.9"
+          y="104.7"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          fill="#376BE8"
+          width="7.4"
+          height="1"
+          style={invert ? { visibility: 'visible' } : { visibility: 'hidden' }}
+        />
+        <rect
+          id="minusLeft"
+          x="80.7"
+          y="104.7"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          fill="#376BE8"
+          width="7.4"
+          height="1"
+          style={invert ? { visibility: 'hidden' } : { visibility: 'visible' }}
+        />
 
         <rect x="73.4" y="110" fill="none" width="68" height="12"/>
         <rect x="73.4" y="-0.1" fill="none" width="68" height="12"/>
@@ -215,9 +248,6 @@ export const VelocityKnob = () => {
           />
         <path fill="#D3D3D3" d="M71.7,48.5l-4.9-0.9c0.6-2,1.4-4,2.3-5.9l4,1.5C72.5,44.9,72,46.7,71.7,48.5z"/>
         <path fill="#D3D3D3" d="M71.1,54.8h-5.7c0.2-2.2,0.6-4.2,1.2-6.3l5,0.9C71.2,51.1,71.1,52.9,71.1,54.8z"/>
-        <rect x="125.9" y="104.7" fillRule="evenodd" clipRule="evenodd" fill="#376BE8" width="7.4" height="1"/>
-        <polygon fillRule="evenodd" clipRule="evenodd" fill="#EC008C" points="88.1,104.7 84.9,104.7 84.9,101.5 83.9,101.5 83.9,104.7 
-          80.7,104.7 80.7,105.7 83.9,105.7 83.9,108.9 84.9,108.9 84.9,105.7 88.1,105.7 "/>
       </g>
     </svg>
   );
