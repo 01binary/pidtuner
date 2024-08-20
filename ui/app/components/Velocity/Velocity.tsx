@@ -1,9 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import { PrimaryInput } from "../PrimaryInput";
 import { Separator } from "../Separator";
-import styles from "./Velocity.module.scss";
 import { VelocityKnob } from "./VelocityKnob";
 
-export const Velocity = () => (
+export const Velocity = () => {
+  const [velocity, setVelocity] = useState(0);
+
+  return (
   <section className="module">
     <section className="module__header">
       <img src="/velocity.svg" width="32" height="32" />
@@ -11,9 +16,20 @@ export const Velocity = () => (
     </section>
 
     <section className="module__controls">
-      <PrimaryInput type="number" value={100} min="-100" max="100" step="1" />
+      <PrimaryInput
+        type="number"
+        value={Math.round(velocity * 100)}
+        onChange={(e) => setVelocity(e.target.value)}
+        min="-100"
+        max="100"
+        step="1"
+      />
      
-      <VelocityKnob />
+      <VelocityKnob
+        velocity={velocity}
+        handleChange={setVelocity}
+      />
     </section>
   </section>
-)
+);
+}

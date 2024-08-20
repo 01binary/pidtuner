@@ -6,3 +6,12 @@
 .velocityKnob text {
   user-select: none;
 }
+
+.mark {
+  cursor: pointer;
+  transition: fill .2s ease-out;
+}
+
+.mark:hover {
+  fill: #3B4A51;
+}
