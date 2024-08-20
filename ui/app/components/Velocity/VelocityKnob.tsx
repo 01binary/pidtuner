@@ -93,10 +93,21 @@ export const VelocityKnob = ({
       const currentAngle = getAngleFromPoint(
         offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
 
-      const delta = currentAngle - offsetAngle - angle;
+      let delta = currentAngle - offsetAngle - angle;
+
+      if (delta < 0) {
+        // Wrap
+        delta += Math.PI * 2;
+      }
+      if (delta > Math.PI) {
+        // Map 0..360 to -180..180.
+        delta -= Math.PI * 2;
+      }
 
       let nextAngle = angle + delta;
-      if (nextAngle > Math.PI) nextAngle -= Math.PI * 2;
+
+      // Prevent crossing over from max positive to max negaive
+      if (nextAngle > Math.PI || nextAngle < -Math.PI) return;
 
       handleChange(getValueFromAngle(nextAngle, false));
     }
