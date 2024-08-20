@@ -1,14 +1,14 @@
 import { Velocity } from "./components/Velocity";
 import { Position } from "./components/Position";
 import { Steps } from "./components/Steps";
-import { Config } from "./components/Config";
+import { Settings } from "./components/Settings";
 
 const Main = () => (
   <>
     <Velocity />
-    <Steps />
     <Position />
-    <Config />
+    <Steps />
+    <Settings />
   </>
 );
 

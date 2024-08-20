@@ -1,0 +1,7 @@
+.separator {
+  user-select: none;
+}
+
+.invert {
+  transform: rotate(180deg);
+}

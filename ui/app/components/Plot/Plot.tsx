@@ -161,7 +161,7 @@ export const Plot = () => {
             className="warning estop"
             title="Emergency stop"
           >
-            <img src="/stop.svg" width="24" height="24" />
+            <img src="/estop.svg" width="24" height="24" />
           </button>
         </div>
       </section>

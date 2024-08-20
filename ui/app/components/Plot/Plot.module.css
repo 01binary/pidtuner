@@ -45,6 +45,7 @@
 
 .axisBottom {
   color: var(--lightGray);
+  user-select: none;
 }
 
 .axisBottom text {
@@ -62,6 +63,7 @@
 .axisLeft {
   color: var(--lightGray);
   flex-shrink: 0;
+  user-select: none;
 }
 
 .axisLeft text {
@@ -75,7 +77,9 @@
   align-items: center;
   margin-top: 1rem;
   margin-left: 3rem;
+  margin-bottom: 1rem;
   justify-content: flex-end;
+  user-select: none;
 }
 
 .legendItem {
