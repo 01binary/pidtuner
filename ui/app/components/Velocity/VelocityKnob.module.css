@@ -15,3 +15,24 @@
 .mark:hover {
   fill: #3B4A51;
 }
+
+.interactiveLabel {
+  cursor: pointer;
+  transition: fill-opacity .2s ease-out;
+}
+
+.interactiveLabel:hover {
+  fill-opacity: 0.5;
+}
+
+.jumpButton {
+  cursor: pointer;
+}
+
+.jumpBorder {
+  visibility: hidden;
+}
+
+.jumpButton:hover .jumpBorder {
+  visibility: visible;
+}

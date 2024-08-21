@@ -43,6 +43,7 @@ export const VelocityKnob = ({
   const [angle, setAngle] = useState(0);
   const [offsetAngle, setOffsetAngle] = useState(0);
   const isMouseDownRef = useRef(false);
+  const invertMultiplier = invert ? -1 : 1;
 
   useEffect(() => {
     if (!knobRef.current || !svgRef.current) return;
@@ -64,7 +65,7 @@ export const VelocityKnob = ({
     if (Math.abs(nextAngle - angle) > 0.0001) {
       setAngle(nextAngle);
     }
-  }, [velocity, angle]);
+  }, [velocity, angle, invert]);
 
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
@@ -107,19 +108,27 @@ export const VelocityKnob = ({
 
       let nextAngle = angle + delta;
 
-      // Prevent crossing over from max positive to max negaive
-      if (nextAngle > Math.PI || nextAngle < -Math.PI) return;
+      // Prevent crossing over from max positive to max negative
+      if (nextAngle > Math.PI || nextAngle < -Math.PI)
+        return;
 
       handleChange(getValueFromAngle(nextAngle, false));
     }
-  }, [angle, originX, originY, knobCenterX, knobCenterY, offsetAngle]);
+  }, [
+    angle,
+    originX,
+    originY,
+    knobCenterX,
+    knobCenterY,
+    offsetAngle,
+    handleChange
+  ]);
 
   const handleMarkClick = useCallback((index: number, forward: boolean = true) => {
     const shouldInvert = forward ? invert : !invert;
     const increment = shouldInvert ? -INCREMENTS[index] : INCREMENTS[index];
-    console.log(increment);
     handleChange(increment);
-  }, [invert]);
+  }, [invert, handleChange]);
 
   return (
     <svg
@@ -132,7 +141,7 @@ export const VelocityKnob = ({
       onMouseUp={handleMouseUp}
     >
       <g
-        id="knob"
+        id="knobInteractive"
         ref={knobRef}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -142,26 +151,16 @@ export const VelocityKnob = ({
           transform: `rotate(${(angle) * RAD_TO_DEG}deg)`
         }}
       >
-        <path d="M107.4,30.5c-0.5,0-0.9,0-1.4,0c-2.3,0-4.2,0.9-5.8,2.7c-2.6,3-6,4.8-9.9,5.4c-1.9,0.3-3.5,1.2-4.6,2.9
+        <path id="knob" d="M107.4,30.5c-0.5,0-0.9,0-1.4,0c-2.3,0-4.2,0.9-5.8,2.7c-2.6,3-6,4.8-9.9,5.4c-1.9,0.3-3.5,1.2-4.6,2.9
           c-0.8,1.3-1.6,2.6-2.4,3.9c-1.1,1.9-1.2,3.8-0.5,5.9c0.7,2,1,4,1,6.1c0,2-0.3,4-1,6.1c-0.7,2.1-0.6,4,0.5,5.9
           c0.8,1.3,1.6,2.6,2.4,3.9c1.1,1.7,2.6,2.6,4.6,2.9c3.9,0.7,7.3,2.5,9.9,5.4c1.6,1.8,3.5,2.7,5.8,2.7c1.2,0,2.5,0,3.7,0
           c2-0.1,3.8-0.9,5.2-2.5c2.5-3,5.7-4.8,9.6-5.7c5.4-1.3,9-7.8,7.4-13c-0.6-1.9-0.8-3.7-0.8-5.6c0-1.9,0.2-3.7,0.8-5.6
           c1.6-5.3-2-11.8-7.4-13c-3.8-0.9-7-2.7-9.6-5.7c-1.4-1.6-3.1-2.4-5.2-2.5C109,30.5,108.2,30.5,107.4,30.5"/>
-        <circle id="dot" fill="#FFFFFF" cx="107.4" cy="33.9" r="1.3"/>
         <circle id="knobCenter" fill="#FFFFFF" cx="107.4" cy="57.4" r="19.6"/>
-        <path
-          d="M107.4,30.5c-0.5,0-0.9,0-1.4,0c-2.3,0-4.2,0.9-5.8,2.7c-2.6,3-6,4.8-9.9,5.4c-1.9,0.3-3.5,1.2-4.6,2.9
-          c-0.8,1.3-1.6,2.6-2.4,3.9c-1.1,1.9-1.2,3.8-0.5,5.9c0.7,2,1,4,1,6.1c0,2-0.3,4-1,6.1c-0.7,2.1-0.6,4,0.5,5.9
-          c0.8,1.3,1.6,2.6,2.4,3.9c1.1,1.7,2.6,2.6,4.6,2.9c3.9,0.7,7.3,2.5,9.9,5.4c1.6,1.8,3.5,2.7,5.8,2.7c1.2,0,2.5,0,3.7,0
-          c2-0.1,3.8-0.9,5.2-2.5c2.5-3,5.7-4.8,9.6-5.7c5.4-1.3,9-7.8,7.4-13c-0.6-1.9-0.8-3.7-0.8-5.6c0-1.9,0.2-3.7,0.8-5.6
-          c1.6-5.3-2-11.8-7.4-13c-3.8-0.9-7-2.7-9.6-5.7c-1.4-1.6-3.1-2.4-5.2-2.5C109,30.5,108.2,30.5,107.4,30.5 M127.1,57.4
-          c0,10.8-8.8,19.6-19.6,19.6c-10.8,0-19.6-8.9-19.6-19.6c0-10.8,8.8-19.6,19.6-19.6c10.8,0,19.6,8.8,19.6,19.6
-          C127.1,57.3,127.1,57.4,127.1,57.4C127.1,57.4,127.1,57.4,127.1,57.4z"
-        />
-        <circle fill="#FFFFFF" cx="107.4" cy="33.9" r="1.3"/>
+        <circle id="dot" fill="#FFFFFF" cx="107.4" cy="33.9" r="1.3"/>
       </g>
 
-      <g id="gradationMarks" fill="#D3D3D3">
+      <g id="gradationMarksInteractive" fill="#D3D3D3">
         <path onClick={() => handleMarkClick(0, true)} className={styles.mark} d="M114.2,19.7c1.8,0.3,3.6,0.8,5.3,1.4l0.5-1.4c-1.8-0.5-3.7-1-5.6-1.2L114.2,19.7z"/>
         <path onClick={() => handleMarkClick(1, true)} className={styles.mark} d="M125.2,23.7l0.9-1.6c-1.7-0.8-3.5-1.6-5.3-2.2l-0.5,1.4C121.9,22,123.6,22.8,125.2,23.7z"/>
         <path onClick={() => handleMarkClick(2, true)} className={styles.mark} d="M130.4,27.2l1.5-1.7c-1.6-1.1-3.3-2.1-5-3l-0.9,1.6C127.5,25.1,129,26.1,130.4,27.2z"/>
@@ -197,81 +196,143 @@ export const VelocityKnob = ({
         <path onClick={() => handleMarkClick(15, false)} className={styles.mark} d="M92.1,98.3l3.3-9c1.7,0.6,3.5,1.1,5.3,1.4l-1.7,9.6C96.6,99.8,94.3,99.2,92.1,98.3z"/>
       </g>
 
-      <g id="textLabels" style={{ pointerEvents: 'none' }}>
+      <g id="textLabelsStatic" style={{ pointerEvents: 'none' }}>
         <text transform="matrix(1 0 0 1 177.2629 16.6725)" fill="#5B5B5B" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? 'RPWM' : 'LPWM'}
         </text>
         <text transform="matrix(1 0 0 1 5.1185 16.6725)" fill="#5B5B5B" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? 'LPWM' : 'RPWM'}
         </text>
-        <text transform="matrix(1 0 0 1 149.6492 105.817)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
+      </g>
+      
+      <g id="textLabelsInteractive">
+        <text onClick={() => handleChange(0.75 * invertMultiplier)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 149.6492 105.817)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? -75 : 75}
         </text>
-        <text transform="matrix(1 0 0 1 149.6492 16.6725)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
+        <text onClick={() => handleChange(0.25 * invertMultiplier)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 149.6492 16.6725)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? -25 : 25}
         </text>
-        <text transform="matrix(1 0 0 1 169.9804 62.0267)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
+        <text onClick={() => handleChange(0.5 * invertMultiplier)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 169.9804 62.0267)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? -50 : 50}
         </text>
-        <text transform="matrix(1 0 0 1 49.5592 16.6725)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
+        <text onClick={() => handleChange(-0.25 * invertMultiplier)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 49.5592 16.6725)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? 25 : -25}
         </text>
-        <text transform="matrix(1 0 0 1 29.2288 62.0267)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
+        <text onClick={() => handleChange(-0.5 * invertMultiplier)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 29.2288 62.0267)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? 50 : -50}
         </text>
-        <text transform="matrix(1 0 0 1 49.5592 105.817)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
+        <text onClick={() => handleChange(-0.75 * invertMultiplier)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 49.5592 105.817)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? 75 : -75}
         </text>
-        <text transform="matrix(1 0 0 1 103.9989 8.9245)" fontFamily="'Roboto-Medium', sans-serif, sans-serif" fontSize="12px">
+        <text onClick={() => handleChange(0)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 103.9989 8.9245)" fontFamily="'Roboto-Medium', sans-serif, sans-serif" fontSize="12px">
           0
         </text>
-        <text transform="matrix(1 0 0 1 97.1786 119.0267)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
+        <text onClick={() => handleChange(1)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 97.1786 119.0267)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           100
         </text>
       </g>
 
       <g id="signs">
-        <polygon
-          id="plusRight"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          fill="#EC008C"
-          points="133.3,104.7 130.1,104.7 130.1,101.5 129.1,101.5 129.1,104.7 125.9,104.7 125.9,105.7 129.1,105.7 129.1,108.9 130.1,108.9 130.1,105.7 133.3,105.7 "
+        <g
+          id="plusRightButton"
           style={invert ? { visibility: 'hidden' } : { visibility: 'visible' }}
-        />
-        <polygon
-          id="plusLeft"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          fill="#EC008C"
-          points="88.1,104.7 84.9,104.7 84.9,101.5 83.9,101.5 83.9,104.7 80.7,104.7 80.7,105.7 83.9,105.7 83.9,108.9 84.9,108.9 84.9,105.7 88.1,105.7 "
+          className={styles.jumpButton}
+          onClick={() => handleChange(velocity + 0.1)}
+        >
+          <polygon
+            className={styles.jumpBorder}
+            fill="white"
+            stroke="#A5A5A5"
+            stroke-miterlimit="10"
+            points="134.9,100.2 124.4,100.2 119.1,105.2 124.4,110.2 134.9,110.2 140.1,105.2"
+          />
+          <polygon
+            id="plusRight"
+            className={styles.jumpLabel}
+            fillRule="evenodd"
+            clipRule="evenodd"
+            fill="#EC008C"
+            points="133.3,104.7 130.1,104.7 130.1,101.5 129.1,101.5 129.1,104.7 125.9,104.7 125.9,105.7 129.1,105.7 129.1,108.9 130.1,108.9 130.1,105.7 133.3,105.7 "
+          />
+        </g>
+
+        <g
+          id="plusLeftButton"
           style={invert ? { visibility: 'visible' } : { visibility: 'hidden' }}
-        />
-        <rect
-          id="minusRight"
-          x="125.9"
-          y="104.7"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          fill="#376BE8"
-          width="7.4"
-          height="1"
+          className={styles.jumpButton}
+          onClick={() => handleChange(velocity + 0.1)}
+        >
+          <polygon
+            className={styles.jumpBorder}
+            fill="white"
+            stroke="#A5A5A5"
+            stroke-miterlimit="10"
+            points="89.6,100.2 79.1,100.2 73.9,105.2 79.1,110.2 89.6,110.2 94.9,105.2 "
+          />
+          <polygon
+            id="plusLeft"
+            className={styles.jumpLabel}
+            fillRule="evenodd"
+            clipRule="evenodd"
+            fill="#EC008C"
+            points="88.1,104.7 84.9,104.7 84.9,101.5 83.9,101.5 83.9,104.7 80.7,104.7 80.7,105.7 83.9,105.7 83.9,108.9 84.9,108.9 84.9,105.7 88.1,105.7 "
+          />
+        </g>
+
+        <g
+          id="minusRightButton"
           style={invert ? { visibility: 'visible' } : { visibility: 'hidden' }}
-        />
-        <rect
-          id="minusLeft"
-          x="80.7"
-          y="104.7"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          fill="#376BE8"
-          width="7.4"
-          height="1"
+          className={styles.jumpButton}
+          onClick={() => handleChange(velocity - 0.1)}
+        >
+          <polygon
+            className={styles.jumpBorder}
+            fill="white"
+            stroke="#A5A5A5"
+            stroke-miterlimit="10"
+            points="134.9,100.2 124.4,100.2 119.1,105.2 124.4,110.2 134.9,110.2 140.1,105.2"
+          />
+          <rect
+            id="minusRight"
+            className={styles.jumpLabel}
+            x="125.9"
+            y="104.7"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            fill="#376BE8"
+            width="7.4"
+            height="1"
+          />
+        </g>
+
+        <g
+          id="minusLeftButton"
           style={invert ? { visibility: 'hidden' } : { visibility: 'visible' }}
-        />
+          className={styles.jumpButton}
+          onClick={() => handleChange(velocity - 0.1)}
+        >
+          <polygon
+            className={styles.jumpBorder}
+            fill="white"
+            stroke="#A5A5A5"
+            stroke-miterlimit="10"
+            points="89.6,100.2 79.1,100.2 73.9,105.2 79.1,110.2 89.6,110.2 94.9,105.2 "
+          />
+          <rect
+            id="minusLeft"
+            className={styles.jumpLabel}
+            x="80.7"
+            y="104.7"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            fill="#376BE8"
+            width="7.4"
+            height="1"
+          />
+        </g>
       </g>
 
-      <g id="ticks">
+      <g id="ticks" style={{ pointerEvents: 'none' }}>
         <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="157.7" y1="58.4" x2="162.8" y2="58.4"/>
         <path fill="none" stroke="#A5A5A5" strokeMiterlimit="10" d="M148,21.6l-3.9,3.9c8.4,8.4,13.7,20,13.7,32.9
           c0,12.8-5.2,24.4-13.6,32.7l3.8,3.8"/>
