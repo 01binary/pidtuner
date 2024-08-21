@@ -130,6 +130,11 @@ export const VelocityKnob = ({
     handleChange(increment);
   }, [invert, handleChange]);
 
+  const handleJump = useCallback((increment: number) => {
+    const nextVelocity = velocity + increment;
+    handleChange(Math.max(Math.min(nextVelocity, 1), -1));
+  }, [velocity, handleChange])
+
   return (
     <svg
       ref={svgRef}
@@ -232,12 +237,12 @@ export const VelocityKnob = ({
         </text>
       </g>
 
-      <g id="signs">
+      <g id="jumpButtons">
         <g
           id="plusRightButton"
           style={invert ? { visibility: 'hidden' } : { visibility: 'visible' }}
           className={styles.jumpButton}
-          onClick={() => handleChange(velocity + 0.1)}
+          onClick={() => handleJump(0.1)}
         >
           <polygon
             className={styles.jumpBorder}
@@ -260,7 +265,7 @@ export const VelocityKnob = ({
           id="plusLeftButton"
           style={invert ? { visibility: 'visible' } : { visibility: 'hidden' }}
           className={styles.jumpButton}
-          onClick={() => handleChange(velocity + 0.1)}
+          onClick={() => handleJump(0.1)}
         >
           <polygon
             className={styles.jumpBorder}
@@ -283,7 +288,7 @@ export const VelocityKnob = ({
           id="minusRightButton"
           style={invert ? { visibility: 'visible' } : { visibility: 'hidden' }}
           className={styles.jumpButton}
-          onClick={() => handleChange(velocity - 0.1)}
+          onClick={() => handleJump(-0.1)}
         >
           <polygon
             className={styles.jumpBorder}
@@ -309,7 +314,7 @@ export const VelocityKnob = ({
           id="minusLeftButton"
           style={invert ? { visibility: 'hidden' } : { visibility: 'visible' }}
           className={styles.jumpButton}
-          onClick={() => handleChange(velocity - 0.1)}
+          onClick={() => handleJump(-0.1)}
         >
           <polygon
             className={styles.jumpBorder}

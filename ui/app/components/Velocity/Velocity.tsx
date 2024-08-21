@@ -28,7 +28,7 @@ export const Velocity = () => {
           max="100"
           step="1"
         />
-      
+        <Separator />
         <VelocityKnob
           velocity={velocity}
           handleChange={setVelocity}
