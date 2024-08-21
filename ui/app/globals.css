@@ -95,3 +95,9 @@ button.estop {
   padding-left: calc(32px + 8px);
   flex-wrap: wrap;
 }
+
+@media (max-width: 600px) {
+  .module__controls {
+    flex-direction: column;
+  }
+}

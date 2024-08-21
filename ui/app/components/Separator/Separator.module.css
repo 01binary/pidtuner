@@ -2,6 +2,12 @@
   user-select: none;
 }
 
-.invert {
+.separator--invert {
   transform: rotate(180deg);
+}
+
+@media (max-width: 600px) {
+  .separator {
+    display: none;
+  }
 }

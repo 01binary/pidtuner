@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 import styles from "./Separator.module.css";
 
 type SeparatorProps = {
@@ -8,7 +10,7 @@ export const Separator = ({ invert }: SeparatorProps) => (
   <img
     className={[
       styles.separator,
-      invert && styles.invert
+      invert && styles['separator--invert']
     ].filter(Boolean).join(' ')}
     src="./separator.svg"
     width="45"
