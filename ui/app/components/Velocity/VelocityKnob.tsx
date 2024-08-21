@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { getValueFromAngle, getAngleFromPoint, getAngleFromValue, RAD_TO_DEG } from "../knobUtils";
+import { useCallback } from "react";
+import { RAD_TO_DEG, useKnob } from "../knobUtils";
 import styles from "./VelocityKnob.module.css";
 
-const INCREMENTS = [0.08, 0.13, 0.18, 0.25, 0.27, 0.33, 0.4, 0.46, 0.50, 0.56, 0.62, 0.68, 0.75, 0.78, 0.85, 0.9];
+const INCREMENTS = [
+  0.08, 0.13, 0.18, 0.25, 0.27, 0.33, 0.4, 0.46, 0.50, 0.56, 0.62, 0.68, 0.75, 0.78, 0.85, 0.9
+];
 
 type VelocityKnobProps = {
   velocity: number;
@@ -17,95 +19,26 @@ export const VelocityKnob = ({
   handleChange,
   invert
 }: VelocityKnobProps) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const knobRef = useRef<SVGPathElement>(null);
-  const [knobCenterX, setKnobCenterX] = useState(0);
-  const [knobCenterY, setKnobCenterY] = useState(0);
-  const [originX, setOriginX] = useState(0);
-  const [originY, setOriginY] = useState(0);
-  const [angle, setAngle] = useState(0);
-  const [offsetAngle, setOffsetAngle] = useState(0);
-  const isMouseDownRef = useRef(false);
-  const invertMultiplier = invert ? -1 : 1;
-
-  useEffect(() => {
-    if (!knobRef.current || !svgRef.current) return;
-
-    const { x, y, width, height } = knobRef.current
-      .getBoundingClientRect();
-    const { x: ox, y: oy } = svgRef.current
-      .getBoundingClientRect();
-
-    setKnobCenterX(x + width / 2);
-    setKnobCenterY(y + height / 2);
-    setOriginX(ox);
-    setOriginY(oy);
-  }, []);
-
-  useEffect(() => {
-    const nextAngle = getAngleFromValue(velocity, invert);
-
-    if (Math.abs(nextAngle - angle) > 0.0001) {
-      setAngle(nextAngle);
-    }
-  }, [velocity, angle, invert]);
-
-  const handleMouseDown = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    isMouseDownRef.current = true;
-
-    const { offsetX, offsetY } = e.nativeEvent;
-    const initialOffset = getAngleFromPoint(
-      offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
-
-    setOffsetAngle(initialOffset - angle);
-  }, [knobCenterX, knobCenterY, originX, originY, angle]);
-
-  const handleMouseUp = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    isMouseDownRef.current = false;
-  }, []);
-
-  const handleMouseMove = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (isMouseDownRef.current) {
-      const { offsetX, offsetY } = e.nativeEvent;
-
-      const currentAngle = getAngleFromPoint(
-        offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
-
-      let delta = currentAngle - offsetAngle - angle;
-
-      if (delta < 0) {
-        // Wrap
-        delta += Math.PI * 2;
-      }
-      if (delta > Math.PI) {
-        // Map 0..360 to -180..180.
-        delta -= Math.PI * 2;
-      }
-
-      let nextAngle = angle + delta;
-
-      // Prevent crossing over from max positive to max negative
-      if (nextAngle > Math.PI || nextAngle < -Math.PI)
-        return;
-
-      handleChange(getValueFromAngle(nextAngle, false));
-    }
-  }, [
-    angle,
-    originX,
-    originY,
+  const {
+    svgRef,
+    knobRef,
+    handleMouseDown,
+    handleMouseUp,
+    handleMouseMove,
     knobCenterX,
     knobCenterY,
-    offsetAngle,
+    originX,
+    originY,
+    angle
+  } = useKnob({
+    value: velocity,
+    invert,
+    range: 'half',
+    wrap: true,
     handleChange
-  ]);
+  })
+
+  const invertMultiplier = invert ? -1 : 1;
 
   const handleMarkClick = useCallback((index: number, forward: boolean = true) => {
     const shouldInvert = forward ? invert : !invert;
@@ -231,7 +164,7 @@ export const VelocityKnob = ({
             className={styles.jumpBorder}
             fill="white"
             stroke="#A5A5A5"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             points="134.9,100.2 124.4,100.2 119.1,105.2 124.4,110.2 134.9,110.2 140.1,105.2"
           />
           <polygon
@@ -254,7 +187,7 @@ export const VelocityKnob = ({
             className={styles.jumpBorder}
             fill="white"
             stroke="#A5A5A5"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             points="89.6,100.2 79.1,100.2 73.9,105.2 79.1,110.2 89.6,110.2 94.9,105.2 "
           />
           <polygon
@@ -277,7 +210,7 @@ export const VelocityKnob = ({
             className={styles.jumpBorder}
             fill="white"
             stroke="#A5A5A5"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             points="134.9,100.2 124.4,100.2 119.1,105.2 124.4,110.2 134.9,110.2 140.1,105.2"
           />
           <rect
@@ -303,7 +236,7 @@ export const VelocityKnob = ({
             className={styles.jumpBorder}
             fill="white"
             stroke="#A5A5A5"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             points="89.6,100.2 79.1,100.2 73.9,105.2 79.1,110.2 89.6,110.2 94.9,105.2 "
           />
           <rect
