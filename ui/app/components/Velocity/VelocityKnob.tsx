@@ -1,32 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getValueFromAngle, getAngleFromPoint, getAngleFromValue, RAD_TO_DEG } from "../knobUtils";
 import styles from "./VelocityKnob.module.css";
 
-const MAX_ANGLE = Math.PI;
-const BIAS_ANGLE = Math.PI / 2;
-const RAD_TO_DEG = 57.2958;
 const INCREMENTS = [0.08, 0.13, 0.18, 0.25, 0.27, 0.33, 0.4, 0.46, 0.50, 0.56, 0.62, 0.68, 0.75, 0.78, 0.85, 0.9];
 
 type VelocityKnobProps = {
   velocity: number;
   handleChange: (velocity: number) => void;
   invert?: boolean;
-};
-
-const getValueFromAngle = (angle: number, invert?: boolean) => {
-  const norm = angle / MAX_ANGLE;
-  return invert ? -norm : norm;
-};
-
-const getAngleFromValue = (norm: number, invert?: boolean) => {
-  return (invert ? -norm : norm) * MAX_ANGLE;
-};
-
-const getAngleFromPoint = (x: number, y: number, cx: number, cy: number, ox: number, oy: number) => {
-  const sin = y - (cy - oy);
-  const cos = x - (cx - ox);
-  return Math.atan2(sin, cos) + BIAS_ANGLE;
 };
 
 export const VelocityKnob = ({
