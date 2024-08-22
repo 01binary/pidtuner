@@ -1,6 +1,8 @@
-import { FC, useCallback } from "react";
+import { FC, useCallback, useRef } from "react";
 import styles from "./VelocitySlider.module.css";
 
+const MIN = 1;
+const MAX = -1;
 const HALF = 55;
 const INCREMENTS = [1, 0.75, 0.5, 0.25];
 
@@ -15,6 +17,10 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
   handleChange,
   invert
 }) => {
+  const borderRef = useRef<SVGRectElement>(null);
+  const sliderRef = useRef<SVGGElement>(null);
+  const isDraggingRef = useRef<boolean>(false);
+  const dragOffsetRef = useRef<number>(0);
   const invertMultiplier = invert ? -1 : 1;
 
   const handleMarkClick = useCallback((
@@ -31,22 +37,128 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
     handleChange(Math.max(Math.min(nextVelocity, 1), -1));
   }, [velocity, handleChange]);
 
+  const handleMouseDown = useCallback((e) => {
+    if (!sliderRef.current || !borderRef.current)
+      return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { clientY: mousePosition } = e;
+    const { y: sliderTop, height: sliderHeight } = sliderRef.current
+      .getBoundingClientRect();
+    const sliderCenter = sliderTop + sliderHeight / 2;
+
+    isDraggingRef.current = true;
+    dragOffsetRef.current = mousePosition - sliderCenter;
+  }, []);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isDraggingRef.current || !borderRef.current)
+      return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { clientY: mousePosition } = e;
+    const { top: min, bottom: max } = borderRef.current
+      .getBoundingClientRect();
+
+    const norm = ((mousePosition - dragOffsetRef.current) - min) / (max - min);
+    const value = norm * (MAX - MIN) + MIN;
+
+    handleChange(Math.max(Math.min(value, MIN), MAX));
+  }, []);
+
+  const handleMouseUp = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    isDraggingRef.current = false;
+  }, []);
+
   return (
     <svg
       className={styles.velocitySlider}
       width="175px"
       height="150px"
       viewBox="0 0 175 150"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <g id="interactiveMarks">
-        <polygon id="t3" onClick={() => handleMarkClick(3, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,65.8 74.2,56.4 77,56.4 74.5,65.8 	"/>
-        <polygon id="t2" onClick={() => handleMarkClick(2, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,54.3 74.2,44.9 80.1,44.9 77.6,54.3 	"/>
-        <polygon id="t1" onClick={() => handleMarkClick(1, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,42.8 74.2,33.4 83.2,33.4 80.7,42.8 	"/>
-        <polygon id="t0" onClick={() => handleMarkClick(0, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="86.3,22 83.7,31.3 74.2,31.3 74.2,22 	"/>
-        <polygon id="b3" onClick={() => handleMarkClick(0, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="86.3,126.4 83.7,117 74.2,117 74.2,126.4 	"/>
-        <polygon id="b2" onClick={() => handleMarkClick(1, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,105.5 74.2,114.9 83.2,114.9 80.7,105.5"/>
-        <polygon id="b1" onClick={() => handleMarkClick(2, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,94 74.2,103.4 80.1,103.4 77.6,94 	"/>
-        <polygon id="b0" onClick={() => handleMarkClick(3, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,82.5 74.2,91.9 77,91.9 74.5,82.5 	"/>
+        <polygon
+          id="t3"
+          onClick={() => handleMarkClick(3, true)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="74.2,65.8 74.2,56.4 77,56.4 74.5,65.8 	"
+        />
+        <polygon
+          id="t2"
+          onClick={() => handleMarkClick(2, true)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="74.2,54.3 74.2,44.9 80.1,44.9 77.6,54.3 	"
+        />
+        <polygon
+          id="t1"
+          onClick={() => handleMarkClick(1, true)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="74.2,42.8 74.2,33.4 83.2,33.4 80.7,42.8 	"
+        />
+        <polygon
+          id="t0"
+          onClick={() => handleMarkClick(0, true)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="86.3,22 83.7,31.3 74.2,31.3 74.2,22 	"
+        />
+        <polygon
+          id="b3"
+          onClick={() => handleMarkClick(0, false)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="86.3,126.4 83.7,117 74.2,117 74.2,126.4 	"
+        />
+        <polygon
+          id="b2"
+          onClick={() => handleMarkClick(1, false)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="74.2,105.5 74.2,114.9 83.2,114.9 80.7,105.5"
+        />
+        <polygon
+          id="b1"
+          onClick={() => handleMarkClick(2, false)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="74.2,94 74.2,103.4 80.1,103.4 77.6,94 	"
+        />
+        <polygon
+          id="b0"
+          onClick={() => handleMarkClick(3, false)}
+          className={styles.mark}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          fill="#D3D3D3"
+          points="74.2,82.5 74.2,91.9 77,91.9 74.5,82.5 	"
+        />
       </g>
 
       <g id="interactiveLabels">
@@ -117,7 +229,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           fill="#EC008C"
           points="90.2,7.3 85.4,7.3 85.4,2.5 83.9,2.5 83.9,7.3 79.1,7.3 79.1,8.8 83.9,8.8 83.9,13.6 85.4,13.6 85.4,8.8 90.2,8.8"
           style={{
-            visibility: invert ? 'hidden' : 'visible'
+            visibility: invert ? "hidden" : "visible",
           }}
         />
         <rect
@@ -130,7 +242,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           width="11.1"
           height="1.5"
           style={{
-            visibility: invert ? 'visible' : 'hidden'
+            visibility: invert ? "visible" : "hidden",
           }}
         />
       </g>
@@ -156,10 +268,10 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           fill="#EC008C"
           points="90.2,139.7 85.4,139.7 85.4,134.9 83.9,134.9 83.9,139.7 79.1,139.7 79.1,141.2 83.9,141.2 83.9,146 85.4,146 85.4,141.2 90.2,141.2"
           style={{
-            visibility: invert ? 'visible' : 'hidden'
+            visibility: invert ? "visible" : "hidden",
           }}
         />
-      
+
         <rect
           id="minusBottom"
           x="79.1"
@@ -170,12 +282,13 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           width="11.1"
           height="1.5"
           style={{
-            visibility: invert ? 'hidden' : 'visible'
+            visibility: invert ? "hidden" : "visible",
           }}
         />
       </g>
 
       <rect
+        ref={borderRef}
         id="border"
         x="70.9"
         y="19.4"
@@ -185,12 +298,41 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         width="27.5"
         height="109.8"
       />
-  
+
       <g id="ticks">
-        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="60.3" y1="74.2" x2="45.5" y2="74.2"/>
-        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="60.3" y1="101.6" x2="52.9" y2="101.6"/>
-        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="60.3" y1="46.7" x2="52.9" y2="46.7"/>
-        <polyline fill="none" stroke="#A5A5A5" strokeMiterlimit="10" points="45.5,129.1 60.3,129.1 60.3,129 60.3,19.2 45.5,19.2 	"/>
+        <line
+          fill="none"
+          stroke="#A5A5A5"
+          strokeMiterlimit="10"
+          x1="60.3"
+          y1="74.2"
+          x2="45.5"
+          y2="74.2"
+        />
+        <line
+          fill="none"
+          stroke="#A5A5A5"
+          strokeMiterlimit="10"
+          x1="60.3"
+          y1="101.6"
+          x2="52.9"
+          y2="101.6"
+        />
+        <line
+          fill="none"
+          stroke="#A5A5A5"
+          strokeMiterlimit="10"
+          x1="60.3"
+          y1="46.7"
+          x2="52.9"
+          y2="46.7"
+        />
+        <polyline
+          fill="none"
+          stroke="#A5A5A5"
+          strokeMiterlimit="10"
+          points="45.5,129.1 60.3,129.1 60.3,129 60.3,19.2 45.5,19.2 	"
+        />
       </g>
 
       <g id="staticLabels">
@@ -212,19 +354,26 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         </text>
       </g>
 
-      <polygon
+      <g
         id="sliderHead"
+        ref={sliderRef}
         className={styles.sliderHead}
-        fill="#FFFFFF"
-        stroke="#000000"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeMiterlimit="10"
-        points="93.2,66 80.2,74.2 93.2,82.5 104.8,82.5 104.8,66"
         style={{
-          transform: `translate(0, ${-velocity * HALF}px)`
+          transform: `translate(0, ${-velocity * HALF}px)`,
         }}
-      />
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        <polygon
+          fill="#FFFFFF"
+          stroke="#000000"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeMiterlimit="10"
+          points="93.2,66 80.2,74.2 93.2,82.5 104.8,82.5 104.8,66"
+        />
+      </g>
     </svg>
   );
 };
