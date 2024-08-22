@@ -40,7 +40,10 @@ export const VelocityKnob = ({
 
   const invertMultiplier = invert ? -1 : 1;
 
-  const handleMarkClick = useCallback((index: number, forward: boolean = true) => {
+  const handleMarkClick = useCallback((
+    index: number,
+    forward: boolean = true
+  ) => {
     const shouldInvert = forward ? invert : !invert;
     const increment = shouldInvert ? -INCREMENTS[index] : INCREMENTS[index];
     handleChange(increment);
@@ -81,7 +84,7 @@ export const VelocityKnob = ({
         <circle id="dot" fill="#FFFFFF" cx="107.4" cy="33.9" r="1.3"/>
       </g>
 
-      <g id="gradationMarksInteractive" fill="#D3D3D3">
+      <g id="marksInteractive" fill="#D3D3D3">
         <path onClick={() => handleMarkClick(0, true)} className={styles.mark} d="M114.2,19.7c1.8,0.3,3.6,0.8,5.3,1.4l0.5-1.4c-1.8-0.5-3.7-1-5.6-1.2L114.2,19.7z"/>
         <path onClick={() => handleMarkClick(1, true)} className={styles.mark} d="M125.2,23.7l0.9-1.6c-1.7-0.8-3.5-1.6-5.3-2.2l-0.5,1.4C121.9,22,123.6,22.8,125.2,23.7z"/>
         <path onClick={() => handleMarkClick(2, true)} className={styles.mark} d="M130.4,27.2l1.5-1.7c-1.6-1.1-3.3-2.1-5-3l-0.9,1.6C127.5,25.1,129,26.1,130.4,27.2z"/>
@@ -117,7 +120,7 @@ export const VelocityKnob = ({
         <path onClick={() => handleMarkClick(15, false)} className={styles.mark} d="M92.1,98.3l3.3-9c1.7,0.6,3.5,1.1,5.3,1.4l-1.7,9.6C96.6,99.8,94.3,99.2,92.1,98.3z"/>
       </g>
 
-      <g id="textLabelsStatic" style={{ pointerEvents: 'none' }}>
+      <g id="labelsStatic" style={{ pointerEvents: 'none' }}>
         <text transform="matrix(1 0 0 1 177.2629 16.6725)" fill="#5B5B5B" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? 'RPWM' : 'LPWM'}
         </text>
@@ -126,7 +129,7 @@ export const VelocityKnob = ({
         </text>
       </g>
       
-      <g id="textLabelsInteractive">
+      <g id="labelsInteractive">
         <text onClick={() => handleChange(0.75 * invertMultiplier)} className={styles.interactiveLabel} transform="matrix(1 0 0 1 149.6492 105.817)" fontFamily="'Roboto-Medium', sans-serif" fontSize="12px">
           {invert ? -75 : 75}
         </text>
