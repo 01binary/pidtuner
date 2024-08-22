@@ -14,7 +14,7 @@
   gap: 8px;
 }
 
-@media (max-width: 540px) {
+@media (max-width: 600px) {
   .plotHeader {
     flex-direction: column;
     gap: 0;

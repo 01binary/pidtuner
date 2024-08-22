@@ -3,3 +3,9 @@
   width: 160px;
   border: none;
 }
+
+@media (max-width: 600px) {
+  .primaryInput {
+    text-align: center;
+  }
+}
