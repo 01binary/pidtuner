@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { PrimaryInput } from "../PrimaryInput";
 import { Separator } from "../Separator";
 import { Module } from "../Module";
+import { VelocitySlider } from "./VelocitySlider";
 import { VelocityKnob } from "./VelocityKnob";
 
 export const Velocity = () => {
@@ -31,6 +32,8 @@ export const Velocity = () => {
         velocity={velocity}
         handleChange={setVelocity}
       />
+      <Separator />
+      <VelocitySlider />
     </Module>
   );
 }

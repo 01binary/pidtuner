@@ -124,16 +124,16 @@ export const VelocityKnob = ({
         <text
           transform="matrix(1 0 0 1 7.0296 25.5429)"
           fill="#5B5B5B"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
         >
           {invert ? 'LPWM' : 'RPWM'}
         </text>
         <text
           transform="matrix(1 0 0 1 266.74 25.5429)"
           fill="#5B5B5B"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
         >
           {invert ? 'RPWM' : 'LPWM'}
         </text>
@@ -143,8 +143,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 71.4851 159.2597)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(-0.75 * invertMultiplier)}
         >
           {-75 * invertMultiplier}
@@ -152,8 +152,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 40.99 93.5742)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(-0.5 * invertMultiplier)}
         >
           {-50 * invertMultiplier}
@@ -161,8 +161,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 71.4851 25.5429)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(-0.25 * invertMultiplier)}
         >
           {-25 * invertMultiplier}
@@ -170,8 +170,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 227.5262 159.2597)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(0.75 * invertMultiplier)}
         >
           {75 * invertMultiplier}
@@ -179,8 +179,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 258.0232 93.5742)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(0.5 * invertMultiplier)}
         >
           {50 * invertMultiplier}
@@ -188,8 +188,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 227.5262 25.5429)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(0.25 * invertMultiplier)}
         >
           {25 * invertMultiplier}
@@ -197,8 +197,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 156.0974 13.9208)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(0)}
         >
           0
@@ -206,8 +206,8 @@ export const VelocityKnob = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 145.867 179.0742)"
-          font-family="'Roboto-Medium'"
-          font-size="18px"
+          fontFamily="'Roboto-Medium'"
+          fontSize="18px"
           onClick={() => handleChange(1)}
         >
           100
@@ -278,8 +278,8 @@ export const VelocityKnob = ({
           className={styles.jumpLabel}
           x="189"
           y="157.7"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           fill="#376BE8"
           width="11.1"
           height="1.5"
@@ -304,8 +304,8 @@ export const VelocityKnob = ({
           className={styles.jumpLabel}
           x="121.1"
           y="157.7"
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           fill="#376BE8"
           width="11.1"
           height="1.5"
@@ -313,16 +313,16 @@ export const VelocityKnob = ({
       </g>
 
       <g id="ticks" style={{ pointerEvents: 'none' }}>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="236.7" y1="88.1" x2="244.3" y2="88.1"/>
-        <path fill="none" stroke="#A5A5A5" stroke-miterlimit="10" d="M222,33l-5.9,5.8c12.7,12.6,20.5,30,20.5,49.3
+        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="236.7" y1="88.1" x2="244.3" y2="88.1"/>
+        <path fill="none" stroke="#A5A5A5" strokeMiterlimit="10" d="M222,33l-5.9,5.8c12.7,12.6,20.5,30,20.5,49.3
           c0,19.2-7.8,36.5-20.3,49.1l5.7,5.7"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="231.4" y1="61.5" x2="236.7" y2="59.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="231.8" y1="113.8" x2="237.1" y2="116"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="85.7" y1="88.1" x2="78.1" y2="88.1"/>
-        <path fill="none" stroke="#A5A5A5" stroke-miterlimit="10" d="M100.4,33l5.9,5.8c-12.7,12.6-20.5,30-20.5,49.3
+        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="231.4" y1="61.5" x2="236.7" y2="59.3"/>
+        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="231.8" y1="113.8" x2="237.1" y2="116"/>
+        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="85.7" y1="88.1" x2="78.1" y2="88.1"/>
+        <path fill="none" stroke="#A5A5A5" strokeMiterlimit="10" d="M100.4,33l5.9,5.8c-12.7,12.6-20.5,30-20.5,49.3
           c0,19.2,7.8,36.5,20.3,49.1l-5.7,5.7"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="91" y1="61.5" x2="85.7" y2="59.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="90.6" y1="113.8" x2="85.4" y2="116"/>
+        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="91" y1="61.5" x2="85.7" y2="59.3"/>
+        <line fill="none" stroke="#A5A5A5" strokeMiterlimit="10" x1="90.6" y1="113.8" x2="85.4" y2="116"/>
       </g>
     </svg>
   );

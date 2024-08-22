@@ -1,16 +1,14 @@
-.velocityKnob {
-  flex-grow: 0;
-  flex-shrink: 0;
+.velocitySlider {
   margin-right: -1rem;
 }
 
 @media (max-width: 600px) {
-  .velocityKnob {
+  .velocitySlider {
     margin-right: initial;
   }
 }
 
-.velocityKnob text {
+.velocitySlider text {
   user-select: none;
 }
 
@@ -23,12 +21,12 @@
   fill: #3B4A51;
 }
 
-.interactiveLabel {
+.label {
   cursor: pointer;
   transition: fill-opacity .2s ease-out;
 }
 
-.interactiveLabel:hover {
+.label:hover {
   fill-opacity: 0.5;
 }
 
