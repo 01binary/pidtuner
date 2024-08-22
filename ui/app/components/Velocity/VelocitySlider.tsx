@@ -1,5 +1,7 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import styles from "./VelocitySlider.module.css";
+
+const INCREMENTS = [0.9, 0.7, 0.4, 0.25];
 
 type VelocitySliderProps = {
   velocity: number;
@@ -12,6 +14,22 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
   handleChange,
   invert
 }) => {
+  const invertMultiplier = invert ? -1 : 1;
+
+  const handleMarkClick = useCallback((
+    index: number,
+    forward: boolean = true
+  ) => {
+    const shouldInvert = forward ? invert : !invert;
+    const increment = shouldInvert ? -INCREMENTS[index] : INCREMENTS[index];
+    handleChange(increment);
+  }, [invert, handleChange]);
+
+  const handleJump = useCallback((increment: number) => {
+    const nextVelocity = velocity + increment;
+    handleChange(Math.max(Math.min(nextVelocity, 1), -1));
+  }, [velocity, handleChange]);
+
   return (
     <svg
       className={styles.velocitySlider}
@@ -20,14 +38,14 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
       viewBox="0 0 175 150"
     >
       <g id="interactiveMarks">
-        <polygon id="t3" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,65.8 74.2,56.4 77,56.4 74.5,65.8 	"/>
-        <polygon id="t2" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,54.3 74.2,44.9 80.1,44.9 77.6,54.3 	"/>
-        <polygon id="t1" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,42.8 74.2,33.4 83.2,33.4 80.7,42.8 	"/>
-        <polygon id="t0" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="86.3,22 83.7,31.3 74.2,31.3 74.2,22 	"/>
-        <polygon id="b3" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="86.3,126.4 83.7,117 74.2,117 74.2,126.4 	"/>
-        <polygon id="b2" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,105.5 74.2,114.9 83.2,114.9 80.7,105.5"/>
-        <polygon id="b1" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,94 74.2,103.4 80.1,103.4 77.6,94 	"/>
-        <polygon id="b0" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,82.5 74.2,91.9 77,91.9 74.5,82.5 	"/>
+        <polygon id="t3" onClick={() => handleMarkClick(3, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,65.8 74.2,56.4 77,56.4 74.5,65.8 	"/>
+        <polygon id="t2" onClick={() => handleMarkClick(2, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,54.3 74.2,44.9 80.1,44.9 77.6,54.3 	"/>
+        <polygon id="t1" onClick={() => handleMarkClick(1, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,42.8 74.2,33.4 83.2,33.4 80.7,42.8 	"/>
+        <polygon id="t0" onClick={() => handleMarkClick(0, true)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="86.3,22 83.7,31.3 74.2,31.3 74.2,22 	"/>
+        <polygon id="b3" onClick={() => handleMarkClick(0, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="86.3,126.4 83.7,117 74.2,117 74.2,126.4 	"/>
+        <polygon id="b2" onClick={() => handleMarkClick(1, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,105.5 74.2,114.9 83.2,114.9 80.7,105.5"/>
+        <polygon id="b1" onClick={() => handleMarkClick(2, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,94 74.2,103.4 80.1,103.4 77.6,94 	"/>
+        <polygon id="b0" onClick={() => handleMarkClick(3, false)} className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,82.5 74.2,91.9 77,91.9 74.5,82.5 	"/>
       </g>
 
       <g id="interactiveLabels">
@@ -75,7 +93,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           clipRule="evenodd"
           fill="#EC008C"
           points="90.2,7.3 85.4,7.3 85.4,2.5 83.9,2.5 83.9,7.3 79.1,7.3 79.1,8.8 83.9,8.8 83.9,13.6 85.4,13.6 85.4,8.8 90.2,8.8"
-
+          style={{ visibility: invert ? 'hidden' : 'visible' }}
         />
         <rect
           id="minusTop"
@@ -86,6 +104,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           fill="#376BE8"
           width="11.1"
           height="1.5"
+          style={{ visibility: invert ? 'visible' : 'hidden' }}
         />
       </g>
 
@@ -108,6 +127,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           clipRule="evenodd"
           fill="#EC008C"
           points="90.2,139.7 85.4,139.7 85.4,134.9 83.9,134.9 83.9,139.7 79.1,139.7 79.1,141.2 83.9,141.2 83.9,146 85.4,146 85.4,141.2 90.2,141.2"
+          style={{ visibility: invert ? 'visible' : 'hidden' }}
         />
       
         <rect
@@ -119,6 +139,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           fill="#376BE8"
           width="11.1"
           height="1.5"
+          style={{ visibility: invert ? 'hidden' : 'visible' }}
         />
       </g>
 

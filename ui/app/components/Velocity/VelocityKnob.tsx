@@ -52,7 +52,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
   const handleJump = useCallback((increment: number) => {
     const nextVelocity = velocity + increment;
     handleChange(Math.max(Math.min(nextVelocity, 1), -1));
-  }, [velocity, handleChange])
+  }, [velocity, handleChange]);
 
   return (
     <svg
