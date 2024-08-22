@@ -1,0 +1,38 @@
+.module {
+  margin: 4px;
+  border: 1px solid var(--lightGray);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.module__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.module__header h2 {
+  user-select: none;
+  margin: 0 8px;
+}
+
+.module__header img {
+  user-select: none;
+}
+
+.module__controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: calc(32px + 8px);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .module__controls {
+    flex-direction: column;
+  }
+}
