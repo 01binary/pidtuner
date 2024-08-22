@@ -1,7 +1,7 @@
 import { FC, useCallback } from "react";
 import styles from "./VelocitySlider.module.css";
 
-const INCREMENTS = [0.9, 0.7, 0.4, 0.25];
+const INCREMENTS = [1, 0.75, 0.5, 0.25];
 
 type VelocitySliderProps = {
   velocity: number;
@@ -54,6 +54,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           transform="matrix(1 0 0 1 17.7052 79.8073)"
           fontFamily="'Roboto-Medium'"
           fontSize="18px"
+          onClick={() => handleChange(0)}
         >
           0
         </text>
@@ -62,6 +63,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           transform="matrix(1 0 0 1 4.5216 134.6168)"
           fontFamily="'Roboto-Medium'"
           fontSize="18px"
+          onClick={() => handleChange(-1)}
         >
           -100
         </text>
@@ -70,6 +72,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           transform="matrix(1 0 0 1 7.4747 24.9982)"
           fontFamily="'Roboto-Medium'"
           fontSize="18px"
+          onClick={() => handleChange(1)}
         >
           100
         </text>
