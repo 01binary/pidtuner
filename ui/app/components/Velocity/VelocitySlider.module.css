@@ -12,6 +12,15 @@
   user-select: none;
 }
 
+.sliderHead {
+  cursor: pointer;
+}
+
+.sliderHead:hover {
+  stroke: #5B5B5B;
+  fill: #A5A5A5;
+}
+
 .mark {
   cursor: pointer;
   transition: fill .2s ease-out;

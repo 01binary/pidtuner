@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, FC } from "react";
 import styles from "./Module.module.css";
 
 type ModuleProps = {
@@ -7,7 +7,7 @@ type ModuleProps = {
   children?: ReactNode
 };
 
-export const Module: React.FC<ModuleProps> = ({
+export const Module: FC<ModuleProps> = ({
   title,
   image,
   children

@@ -33,7 +33,10 @@ export const Velocity = () => {
         handleChange={setVelocity}
       />
       <Separator />
-      <VelocitySlider />
+      <VelocitySlider
+        velocity={velocity}
+        handleChange={setVelocity}
+      />
     </Module>
   );
 }

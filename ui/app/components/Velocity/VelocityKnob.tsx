@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, FC } from "react";
 import { RAD_TO_DEG, useKnob } from "../knobUtils";
 import styles from "./VelocityKnob.module.css";
 
@@ -14,11 +14,11 @@ type VelocityKnobProps = {
   invert?: boolean;
 };
 
-export const VelocityKnob = ({
+export const VelocityKnob: FC<VelocityKnobProps> = ({
   velocity,
   handleChange,
   invert
-}: VelocityKnobProps) => {
+}) => {
   const {
     svgRef,
     knobRef,

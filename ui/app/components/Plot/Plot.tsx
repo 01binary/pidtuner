@@ -1,7 +1,7 @@
 "use client";
 
 import * as d3 from "d3";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import styles from "./Plot.module.css";
 import data from "./sample.json";
 
@@ -25,13 +25,13 @@ type SeriesProps = {
   color: string
 };
 
-const Series = ({
+const Series: FC<SeriesProps> = ({
   samples,
   width,
   height,
   strokeWidth = 1,
   color
-}: SeriesProps) => {
+}) => {
   if (!width) return null;
 
   const x = d3.scaleLinear(
@@ -65,7 +65,7 @@ type LegendProps = {
   legend: LegendItem[]
 };
 
-const Legend = ({ legend }: LegendProps) => (
+const Legend: FC<LegendProps> = ({ legend }) => (
   <section className={styles.legend}>
     {legend.map(({ color, label }) => (
       <div key={label} className={styles.legendItem}>

@@ -1,7 +1,17 @@
-import React from "react";
+import { FC } from "react";
 import styles from "./VelocitySlider.module.css";
 
-export const VelocitySlider = () => {
+type VelocitySliderProps = {
+  velocity: number;
+  handleChange: (velocity: number) => void;
+  invert?: boolean;
+}
+
+export const VelocitySlider: FC<VelocitySliderProps> = ({
+  velocity,
+  handleChange,
+  invert
+}) => {
   return (
     <svg
       className={styles.velocitySlider}
@@ -9,16 +19,6 @@ export const VelocitySlider = () => {
       height="150px"
       viewBox="0 0 175 150"
     >
-      <polygon
-        id="sliderHead"
-        fill="#FFFFFF"
-        stroke="#000000"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeMiterlimit="10"
-        points="93.2,66 80.2,74.2 93.2,82.5 104.8,82.5 104.8,66"
-      />
-
       <g id="interactiveMarks">
         <polygon id="t3" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,65.8 74.2,56.4 77,56.4 74.5,65.8 	"/>
         <polygon id="t2" className={styles.mark} fillRule="evenodd" clipRule="evenodd" fill="#D3D3D3" points="74.2,54.3 74.2,44.9 80.1,44.9 77.6,54.3 	"/>
@@ -57,9 +57,13 @@ export const VelocitySlider = () => {
         </text>
       </g>
 
-      <g id="jumpButtonTop">
+      <g
+        id="jumpButtonTop"
+        className={styles.jumpButton}
+      >
         <polygon
           id="jumpTopBorder"
+          className={styles.jumpBorder}
           fill="none"
           stroke="#A5A5A5"
           strokeMiterlimit="10"
@@ -71,6 +75,7 @@ export const VelocitySlider = () => {
           clipRule="evenodd"
           fill="#EC008C"
           points="90.2,7.3 85.4,7.3 85.4,2.5 83.9,2.5 83.9,7.3 79.1,7.3 79.1,8.8 83.9,8.8 83.9,13.6 85.4,13.6 85.4,8.8 90.2,8.8"
+
         />
         <rect
           id="minusTop"
@@ -84,9 +89,13 @@ export const VelocitySlider = () => {
         />
       </g>
 
-      <g id="jumpButtonBottom">
+      <g
+        id="jumpButtonBottom"
+        className={styles.jumpButton}
+      >
         <polygon
           id="jumpBottomBorder"
+          className={styles.jumpBorder}
           fill="white"
           stroke="#A5A5A5"
           strokeMiterlimit="10"
@@ -149,6 +158,17 @@ export const VelocitySlider = () => {
           LPWM
         </text>
       </g>
+
+      <polygon
+        id="sliderHead"
+        className={styles.sliderHead}
+        fill="#FFFFFF"
+        stroke="#000000"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeMiterlimit="10"
+        points="93.2,66 80.2,74.2 93.2,82.5 104.8,82.5 104.8,66"
+      />
     </svg>
   );
 };
