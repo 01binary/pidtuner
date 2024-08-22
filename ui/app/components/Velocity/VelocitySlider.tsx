@@ -52,30 +52,48 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
       <g id="interactiveLabels">
         <text
           className={styles.label}
-          transform="matrix(1 0 0 1 17.7052 79.8073)"
+          transform="matrix(1 0 0 1 15.6066 24.0709)"
           fontFamily="'Roboto-Medium'"
-          fontSize="18px"
+          fontSize="14px"
+          onClick={() => handleChange(1)}
+        >
+          100
+        </text>
+        <text
+          className={styles.label}
+          transform="matrix(1 0 0 1 23.5636 51.2281)"
+          fontFamily="'Roboto-Medium'"
+          fontSize="14px"
+          onClick={() => handleChange(0.5)}
+        >
+          50
+        </text>
+        <text
+          className={styles.label}
+          transform="matrix(1 0 0 1 31.5206 78.8717)"
+          fontFamily="'Roboto-Medium'"
+          fontSize="14px"
           onClick={() => handleChange(0)}
         >
           0
         </text>
         <text
           className={styles.label}
-          transform="matrix(1 0 0 1 4.5216 134.6168)"
+          transform="matrix(1 0 0 1 18.9699 106.9201)"
           fontFamily="'Roboto-Medium'"
-          fontSize="18px"
-          onClick={() => handleChange(-1)}
+          fontSize="14px"
+          onClick={() => handleChange(-0.5)}
         >
-          -100
+          -50
         </text>
         <text
           className={styles.label}
-          transform="matrix(1 0 0 1 7.4747 24.9982)"
+          transform="matrix(1 0 0 1 11.0128 133.6735)"
           fontFamily="'Roboto-Medium'"
-          fontSize="18px"
-          onClick={() => handleChange(1)}
+          fontSize="14px"
+          onClick={() => handleChange(-1)}
         >
-          100
+          -100
         </text>
       </g>
 
