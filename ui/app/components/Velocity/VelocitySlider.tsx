@@ -1,6 +1,7 @@
 import { FC, useCallback } from "react";
 import styles from "./VelocitySlider.module.css";
 
+const HALF = 55;
 const INCREMENTS = [1, 0.75, 0.5, 0.25];
 
 type VelocitySliderProps = {
@@ -81,12 +82,13 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
       <g
         id="jumpButtonTop"
         className={styles.jumpButton}
+        onClick={() => handleJump(invertMultiplier * 0.1)}
       >
         <polygon
           id="jumpTopBorder"
           className={styles.jumpBorder}
-          fill="none"
           stroke="#A5A5A5"
+          fill="none"
           strokeMiterlimit="10"
           points="92.6,0.5 76.8,0.5 68.9,8 76.8,15.5 92.6,15.5 100.4,8"
         />
@@ -96,7 +98,9 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           clipRule="evenodd"
           fill="#EC008C"
           points="90.2,7.3 85.4,7.3 85.4,2.5 83.9,2.5 83.9,7.3 79.1,7.3 79.1,8.8 83.9,8.8 83.9,13.6 85.4,13.6 85.4,8.8 90.2,8.8"
-          style={{ visibility: invert ? 'hidden' : 'visible' }}
+          style={{
+            visibility: invert ? 'hidden' : 'visible'
+          }}
         />
         <rect
           id="minusTop"
@@ -107,13 +111,16 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           fill="#376BE8"
           width="11.1"
           height="1.5"
-          style={{ visibility: invert ? 'visible' : 'hidden' }}
+          style={{
+            visibility: invert ? 'visible' : 'hidden'
+          }}
         />
       </g>
 
       <g
         id="jumpButtonBottom"
         className={styles.jumpButton}
+        onClick={() => handleJump(invertMultiplier * -0.1)}
       >
         <polygon
           id="jumpBottomBorder"
@@ -130,7 +137,9 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           clipRule="evenodd"
           fill="#EC008C"
           points="90.2,139.7 85.4,139.7 85.4,134.9 83.9,134.9 83.9,139.7 79.1,139.7 79.1,141.2 83.9,141.2 83.9,146 85.4,146 85.4,141.2 90.2,141.2"
-          style={{ visibility: invert ? 'visible' : 'hidden' }}
+          style={{
+            visibility: invert ? 'visible' : 'hidden'
+          }}
         />
       
         <rect
@@ -142,7 +151,9 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
           fill="#376BE8"
           width="11.1"
           height="1.5"
-          style={{ visibility: invert ? 'hidden' : 'visible' }}
+          style={{
+            visibility: invert ? 'hidden' : 'visible'
+          }}
         />
       </g>
 
@@ -192,6 +203,9 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         strokeLinejoin="round"
         strokeMiterlimit="10"
         points="93.2,66 80.2,74.2 93.2,82.5 104.8,82.5 104.8,66"
+        style={{
+          transform: `translate(0, ${-velocity * HALF}px)`
+        }}
       />
     </svg>
   );
