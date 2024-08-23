@@ -14,8 +14,14 @@ export const Steps = () => {
       image={<img src="/step.svg" width="32" height="32" />}
     >
       <Group vertical>
-        <PrimaryInput value={step} />
-        <PrimaryInput label="Grid" value={step} />
+        <PrimaryInput type="number" value={step} />
+        <PrimaryInput
+          type="number"
+          label="Grid"
+          units="s"
+          value={step}
+          autoSize
+        />
       </Group>
     </Module>
   );
