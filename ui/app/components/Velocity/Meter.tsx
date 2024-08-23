@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo, useRef } from "react";
 import styles from "./Meter.module.css";
 
 type MeterProps = {
@@ -27,7 +27,14 @@ export const Meter: FC<MeterProps> = ({
       {label}
     </text>
 
-    <g id="indicator">
+    <g
+      id="indicator"
+      className={styles.indicator}
+      style={{
+        transformOrigin: `72px 99.8px`,
+        transform: `rotate(${value * 40}deg)`,
+      }}
+    >
       <circle id="center" fill="none" cx="72" cy="99.8" r="5.9"/>
       <line fill="none" stroke="#27303B" strokeMiterlimit="10" x1="72" y1="40.1" x2="72" y2="99.8"/>
       <path fill="#27303B" d="M72.3,41.5c1.9-1.1,2.9-4.4,1.6-5.8c-0.6-0.7-1.1-2.2-1.4-3.6c-0.1-0.6-0.9-0.6-1,0
@@ -63,14 +70,14 @@ export const Meter: FC<MeterProps> = ({
       <line fill="#FFFFFF" stroke="#898989" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" x1="107.6" y1="42.8" x2="110" y2="39"/>
       <line fill="#FFFFFF" stroke="#898989" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" x1="111.5" y1="45.4" x2="114.2" y2="41.8"/>
       <line fill="#FFFFFF" stroke="#898989" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" x1="115.2" y1="48.3" x2="121" y2="41.4"/>
-  </g>
+    </g>
 
-  <g id="labels">
-    <text transform="matrix(1 0 0 1 15.0187 39.1716)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">0</text>
-    <text transform="matrix(1 0 0 1 40.3175 24.5037)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">5</text>
-    <text transform="matrix(1 0 0 1 65.5675 18.4348)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">10</text>
-    <text transform="matrix(1 0 0 1 96.2638 23.1145)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">15</text>
-    <text transform="matrix(1 0 0 1 120.7033 37.1716)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">20</text>
-  </g>
+    <g id="labels">
+      <text transform="matrix(1 0 0 1 15.0187 39.1716)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">0</text>
+      <text transform="matrix(1 0 0 1 40.3175 24.5037)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">5</text>
+      <text transform="matrix(1 0 0 1 65.5675 18.4348)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">10</text>
+      <text transform="matrix(1 0 0 1 96.2638 23.1145)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">15</text>
+      <text transform="matrix(1 0 0 1 120.7033 37.1716)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">20</text>
+    </g>
   </svg>
 );
