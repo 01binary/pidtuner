@@ -7,6 +7,7 @@ import { Module } from "../Module";
 import { VelocitySlider } from "./VelocitySlider";
 import { VelocityKnob } from "./VelocityKnob";
 import { Invert } from "./Invert";
+import { Meter } from "./Meter";
 
 export const Velocity = () => {
   const [velocity, setVelocity] = useState(0);
@@ -47,6 +48,17 @@ export const Velocity = () => {
       />
       <Separator invert/>
       <Invert onClick={handleToggleInvert} />
+      <Separator />
+      <Meter
+        value={velocity}
+        label="V"
+        color="#376BE8"
+      />
+      <Meter
+        value={velocity}
+        label="A"
+        color="#EC008C"
+      />
     </Module>
   );
 }
