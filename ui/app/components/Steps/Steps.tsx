@@ -30,7 +30,7 @@ export const Steps = () => {
           />
         </Group>
 
-        <Separator />
+        <Separator spacing={'16px'} />
 
         <Group vertical>
           <button>
@@ -62,6 +62,8 @@ export const Steps = () => {
             </svg>
           </button>
         </Group>
+
+        <Separator spacing={'16px'} />
       </Group>
     </Module>
   );

@@ -1,10 +1,15 @@
+import { FC } from "react";
 import styles from "./Separator.module.css";
 
 type SeparatorProps = {
   invert?: boolean;
+  spacing?: string;
 }
 
-export const Separator = ({ invert }: SeparatorProps) => (
+export const Separator: FC<SeparatorProps> = ({
+  invert,
+  spacing
+}) => (
   <svg
     width="45"
     height="57"
@@ -13,6 +18,9 @@ export const Separator = ({ invert }: SeparatorProps) => (
       styles.separator,
       invert && styles['separator--invert']
     ].filter(Boolean).join(' ')}
+    style={{
+      margin: spacing
+    }}
   >
     <polyline
       points="43.9 1.4 27.4 17.9 .9 17.9"
