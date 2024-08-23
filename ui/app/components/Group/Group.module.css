@@ -5,6 +5,11 @@
   flex-wrap: nowrap;
 }
 
+.center {
+  align-items: center;
+}
+
 .vertical {
   flex-direction: column;
+  justify-content: center;
 }
