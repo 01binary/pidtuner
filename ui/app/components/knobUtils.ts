@@ -4,13 +4,13 @@ export const MAX_ANGLE = Math.PI;
 export const BIAS_ANGLE = Math.PI / 2;
 export const RAD_TO_DEG = 57.2958;
 
-export const getValueFromAngle = (angle: number, invert?: boolean) => {
+export const getValueFromAngle = (angle: number) => {
   const norm = angle / MAX_ANGLE;
-  return invert ? -norm : norm;
+  return norm;
 };
 
-export const getAngleFromValue = (norm: number, invert?: boolean) => {
-  return (invert ? -norm : norm) * MAX_ANGLE;
+export const getAngleFromValue = (norm: number) => {
+  return norm * MAX_ANGLE;
 };
 
 export const getAngleFromPoint = (x: number, y: number, cx: number, cy: number, ox: number, oy: number) => {
@@ -21,7 +21,6 @@ export const getAngleFromPoint = (x: number, y: number, cx: number, cy: number, 
 
 type KnobProps = {
   value: number;
-  invert?: boolean;
   wrap?: boolean;
   range?: 'full' | 'half';
   handleChange: (value: number) => void;
@@ -29,7 +28,6 @@ type KnobProps = {
 
 export const useKnob = ({
   value,
-  invert,
   wrap = true,
   range,
   handleChange
@@ -59,12 +57,12 @@ export const useKnob = ({
   }, []);
 
   useEffect(() => {
-    const nextAngle = getAngleFromValue(value, invert);
+    const nextAngle = getAngleFromValue(value);
 
     if (Math.abs(nextAngle - angle) > 0.0001) {
       setAngle(nextAngle);
     }
-  }, [value, angle, invert]);
+  }, [value, angle]);
 
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
@@ -112,7 +110,7 @@ export const useKnob = ({
       if (range === 'half' && (nextAngle > Math.PI || nextAngle < -Math.PI))
         return;
 
-      handleChange(getValueFromAngle(nextAngle, false));
+      handleChange(getValueFromAngle(nextAngle));
     }
   }, [
     angle,

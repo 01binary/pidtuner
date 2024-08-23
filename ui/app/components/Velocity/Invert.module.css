@@ -1,3 +1,7 @@
-.invertButton {
-  cursor: pointer;
+.invert {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  margin: 0 16px;
 }
