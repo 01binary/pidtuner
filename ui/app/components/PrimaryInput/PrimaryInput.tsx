@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { ChangeEventHandler, FC } from "react";
 import styles from "./PrimaryInput.module.css";
 
 type PrimaryInputProps = {
@@ -8,6 +8,10 @@ type PrimaryInputProps = {
   units?: string;
   value?: any;
   autoSize?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  onChange?: ChangeEventHandler;
 };
 
 export const PrimaryInput: FC<PrimaryInputProps> = ({

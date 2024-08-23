@@ -1,8 +1,8 @@
 .group {
   display: flex;
   flex-direction: row;
-  margin: 16px 0;
   flex-wrap: nowrap;
+  gap: 16px;
 }
 
 .center {

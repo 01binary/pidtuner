@@ -31,9 +31,9 @@ export const Velocity = () => {
         type="number"
         value={Math.round(velocity * 100)}
         onChange={handleChangeVelocity}
-        min="-100"
-        max="100"
-        step="1"
+        min={-100}
+        max={100}
+        step={1}
       />
 
       <Separator />
@@ -56,7 +56,7 @@ export const Velocity = () => {
 
       <Invert onClick={handleToggleInvert} />
 
-      <Separator />
+      <Separator spacingRight="16px" />
 
       <Group>
         <Meter
