@@ -6,12 +6,18 @@ import { Separator } from "../Separator";
 import { Module } from "../Module";
 import { VelocitySlider } from "./VelocitySlider";
 import { VelocityKnob } from "./VelocityKnob";
+import { Invert } from "./Invert";
 
 export const Velocity = () => {
   const [velocity, setVelocity] = useState(0);
+  const [invert, setInvert] = useState(false);
 
   const handleChangeVelocity = useCallback((e) => {
     setVelocity(e.target.value / 100);
+  }, []);
+
+  const handleToggleInvert = useCallback(() => {
+    setInvert(value => !value);
   }, []);
 
   return (
@@ -31,12 +37,16 @@ export const Velocity = () => {
       <VelocityKnob
         velocity={velocity}
         handleChange={setVelocity}
+        invert={invert}
       />
       <Separator />
       <VelocitySlider
         velocity={velocity}
         handleChange={setVelocity}
+        invert={invert}
       />
+      <Separator invert/>
+      <Invert onClick={handleToggleInvert} />
     </Module>
   );
 }
