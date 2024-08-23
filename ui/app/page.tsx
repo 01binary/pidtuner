@@ -6,7 +6,7 @@ import { Settings } from "./components/Settings";
 const Main = () => (
   <>
     <Velocity />
-    <Position />
+    {/*<Position />*/}
     <Steps />
     <Settings />
   </>

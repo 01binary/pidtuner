@@ -1,5 +1,30 @@
+import { FC } from "react";
 import styles from "./PrimaryInput.module.css";
 
-export const PrimaryInput = (props: any) => (
-  <input className={styles.primaryInput} {...props} />
+type PrimaryInputProps = {
+  id?: string;
+  label?: string;
+  value?: any;
+};
+
+export const PrimaryInput: FC<PrimaryInputProps> = ({
+  id,
+  label,
+  ...props
+}) => (
+  <>
+    {label &&
+      <label
+        className={styles.label}
+        htmlFor={id}
+      >
+        {label}
+      </label>
+    }
+    <input
+      id={id}
+      className={styles.primaryInput}
+      {...props}
+    />
+  </>
 );

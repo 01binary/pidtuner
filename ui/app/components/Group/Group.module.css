@@ -1,6 +1,10 @@
 .group {
   display: flex;
-  flex-direction: raw;
+  flex-direction: row;
   margin: 16px 0;
   flex-wrap: nowrap;
+}
+
+.vertical {
+  flex-direction: column;
 }
