@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { PrimaryInput } from "../PrimaryInput";
 import { Separator } from "../Separator";
 import { Module } from "../Module";
+import { Group } from "../Group";
 import { VelocitySlider } from "./VelocitySlider";
 import { VelocityKnob } from "./VelocityKnob";
 import { Invert } from "./Invert";
@@ -34,31 +35,41 @@ export const Velocity = () => {
         max="100"
         step="1"
       />
+
       <Separator />
+
       <VelocityKnob
         velocity={velocity}
         handleChange={setVelocity}
         invert={invert}
       />
+
       <Separator />
+
       <VelocitySlider
         velocity={velocity}
         handleChange={setVelocity}
         invert={invert}
       />
+
       <Separator invert/>
+
       <Invert onClick={handleToggleInvert} />
+
       <Separator />
-      <Meter
-        value={velocity}
-        label="V"
-        color="#376BE8"
-      />
-      <Meter
-        value={velocity}
-        label="A"
-        color="#EC008C"
-      />
+
+      <Group>
+        <Meter
+          value={velocity}
+          label="V"
+          color="#376BE8"
+        />
+        <Meter
+          value={velocity}
+          label="A"
+          color="#EC008C"
+        />
+      </Group>
     </Module>
   );
 }

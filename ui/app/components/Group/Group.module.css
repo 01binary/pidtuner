@@ -1,0 +1,6 @@
+.group {
+  display: flex;
+  flex-direction: raw;
+  margin: 16px 0;
+  flex-wrap: nowrap;
+}
