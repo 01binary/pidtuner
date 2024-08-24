@@ -22,22 +22,16 @@ body {
 button {
   cursor: pointer;
   padding: 10px 16px;
-  background-color: var(--primary);
+  background-color: #CCC;
   border-radius: 8px;
   border: none;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  color: white;
+  color: black;
   min-width: 6rem;
   opacity: 0.8;
   transition: opacity 0.3s ease-out;
-
-  background-image: repeating-linear-gradient(
-    0deg,
-    var(--primary),
-    var(--primaryLight)
-  );
 }
 
 button:hover {

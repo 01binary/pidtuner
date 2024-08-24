@@ -5,6 +5,7 @@ import { Group } from "../Group";
 import { Module } from "../Module";
 import { PrimaryInput } from "../PrimaryInput";
 import { Separator } from "../Separator";
+import { Performer } from "./Performer";
 
 type ControlsProps = {
   step: number;
@@ -87,6 +88,8 @@ export const Steps = () => {
         grid={grid}
         onGridChange={setGrid}
       />
+
+      <Performer />
     </Module>
   );
 };
