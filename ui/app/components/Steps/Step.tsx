@@ -13,7 +13,12 @@ export const Step: FC<StepProps> = ({
   isCurrentStep
 }) => {
   return (
-    <div className={styles.step}>
+    <div
+      className={[
+        styles.step,
+        isCurrentStep && styles.current
+      ].filter(Boolean).join(' ')}
+    >
       <div className={styles.stepLabel}>
         {(to !== undefined && from !== to)
           ? `${from} -> ${to}`

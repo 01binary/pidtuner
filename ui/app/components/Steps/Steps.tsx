@@ -9,12 +9,14 @@ import { Performer } from "./Performer";
 
 type ControlsProps = {
   step: number;
+  onStepChange: (step: number) => void;
   grid: number;
   onGridChange: (grid: number) => void;
 };
 
 const Controls: FC<ControlsProps> = ({
   step,
+  onStepChange,
   grid,
   onGridChange,
 }) => (
@@ -23,8 +25,10 @@ const Controls: FC<ControlsProps> = ({
       <PrimaryInput
         type="number"
         value={step}
+        onChange={(e) => onStepChange(e.target.value)}
         autoSize
       />
+
       <PrimaryInput
         type="number"
         label="Grid"
@@ -82,10 +86,17 @@ export const Steps = () => {
   return (
     <Module
       title="Step"
-      image={<img src="/step.svg" width="32" height="32" />}
+      image={
+        <img
+          src="/step.svg"
+          width="32"
+          height="32"
+        />
+      }
     >
       <Controls
         step={step}
+        onStepChange={setStep}
         grid={grid}
         onGridChange={setGrid}
       />

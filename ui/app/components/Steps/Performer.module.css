@@ -30,6 +30,7 @@
 
 .stepBorder {
   fill: none;
+  transition: fill 0.2s ease-out;
 }
 
 .stepCenter {
@@ -53,15 +54,23 @@
 }
 
 .step:hover .stepBorder {
-  fill: #376BE8;
+  fill: #D3D3D3;
+}
+
+.step.current .stepBorder {
+  fill: var(--primary);
   stroke: none;
 }
 
-.step:hover .stepLabel {
+.step.current .stepLabel {
   color: white;
 }
 
 .step:hover .stepCenter {
+  stroke: white;
+}
+
+.step.current .stepCenter {
   stroke: white;
 }
 
