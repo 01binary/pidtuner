@@ -29,7 +29,7 @@
   flex-direction: row;
   align-items: center;
   padding-left: calc(32px + 8px);
-  flex-wrap: wrap;
+  overflow-x: auto;
 }
 
 @media (max-width: 600px) {

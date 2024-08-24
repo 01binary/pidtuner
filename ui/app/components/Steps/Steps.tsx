@@ -5,7 +5,7 @@ import { Group } from "../Group";
 import { Module } from "../Module";
 import { PrimaryInput } from "../PrimaryInput";
 import { Separator } from "../Separator";
-import { Performer } from "./Performer";
+import { Timeline } from "./Timeline";
 
 type ControlsProps = {
   step: number;
@@ -46,8 +46,6 @@ const Controls: FC<ControlsProps> = ({
       />
     </Group>
 
-    <Separator spacing={'16px'} />
-
     <Group vertical>
       <button title="Play" onClick={onPlay}>
         <svg
@@ -56,7 +54,7 @@ const Controls: FC<ControlsProps> = ({
           viewBox="0 0 24 24"
         >
           <polygon
-            fill="white"
+            fill="#376be8"
             points="22.4,12 1.6,0 1.6,23.9 "
           />
         </svg>
@@ -78,8 +76,6 @@ const Controls: FC<ControlsProps> = ({
         </svg>
       </button>
     </Group>
-
-    <Separator />
   </Group>
 );
 
@@ -111,13 +107,14 @@ export const Steps = () => {
       <Controls
         step={step}
         grid={grid}
+        isPlaying={isPlaying}
         onStepChange={setStep}
         onGridChange={setGrid}
         onPlay={handlePlay}
         onStop={handleStop}
       />
 
-      <Performer
+      <Timeline
         step={step}
         position={position}
         isPlaying={isPlaying}

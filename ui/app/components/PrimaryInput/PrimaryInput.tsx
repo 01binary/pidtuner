@@ -32,7 +32,7 @@ export const PrimaryInput: FC<PrimaryInputProps> = ({
     }
     {units
       ? (
-          <div>
+          <div className={styles.group}>
             <input
               id={id}
               className={[

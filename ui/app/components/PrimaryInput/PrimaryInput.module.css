@@ -17,6 +17,10 @@
   margin-bottom: 16px;
 }
 
+.group {
+  text-wrap: nowrap;
+}
+
 .units {
   font-weight: 500;
   font-size: 32px;

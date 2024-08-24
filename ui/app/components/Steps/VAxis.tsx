@@ -1,5 +1,5 @@
 import { FC } from "react";
-import styles from "./Performer.module.css";
+import styles from "./Timeline.module.css";
 
 type VAxisProps = {
   invert?: boolean;
