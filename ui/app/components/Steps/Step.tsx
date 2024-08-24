@@ -5,12 +5,14 @@ type StepProps = {
   from: number;
   to: number;
   isCurrentStep: boolean;
+  isReadOnly: boolean;
 };
 
 export const Step: FC<StepProps> = ({
   from,
   to,
-  isCurrentStep
+  isCurrentStep,
+  isReadOnly
 }) => {
   return (
     <div

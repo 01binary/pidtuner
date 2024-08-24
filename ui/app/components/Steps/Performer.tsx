@@ -15,11 +15,13 @@ const steps = [
 type PerformerProps = {
   step: number;
   position: number;
+  isPlaying: boolean;
 };
 
 export const Performer: FC<PerformerProps> = ({
   step,
-  position
+  position,
+  isPlaying
 }) => {
   return (
     <section className={styles.performer}>
@@ -30,9 +32,12 @@ export const Performer: FC<PerformerProps> = ({
           from={from}
           to={to}
           isCurrentStep={index === step}
+          isReadOnly={isPlaying}
         />
       ))}
-      <Playhead position={position} />
+      <Playhead
+        position={position}
+      />
     </section>
   );
 };

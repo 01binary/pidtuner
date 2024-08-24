@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { Group } from "../Group";
 import { Module } from "../Module";
 import { PrimaryInput } from "../PrimaryInput";
@@ -9,16 +9,21 @@ import { Performer } from "./Performer";
 
 type ControlsProps = {
   step: number;
-  onStepChange: (step: number) => void;
   grid: number;
+  isPlaying: boolean;
+  onStepChange: (step: number) => void;
   onGridChange: (grid: number) => void;
+  onPlay: () => void;
+  onStop: () => void;
 };
 
 const Controls: FC<ControlsProps> = ({
   step,
-  onStepChange,
   grid,
+  onStepChange,
   onGridChange,
+  onPlay,
+  onStop
 }) => (
   <Group center>
     <Group vertical>
@@ -44,7 +49,7 @@ const Controls: FC<ControlsProps> = ({
     <Separator spacing={'16px'} />
 
     <Group vertical>
-      <button>
+      <button title="Play" onClick={onPlay}>
         <svg
           width="24px"
           height="24px"
@@ -57,7 +62,7 @@ const Controls: FC<ControlsProps> = ({
         </svg>
       </button>
 
-      <button>
+      <button title="Stop" onClick={onStop}>
         <svg
           width="24px"
           height="24px"
@@ -82,6 +87,15 @@ export const Steps = () => {
   const [step, setStep] = useState(0);
   const [position, setPosition] = useState(0);
   const [grid, setGrid] = useState(1);
+  const [isPlaying, setPlaying] = useState(false);
+
+  const handlePlay = useCallback(() => {
+    setPlaying(true);
+  }, []);
+
+  const handleStop = useCallback(() => {
+    setPlaying(false);
+  }, []);
 
   return (
     <Module
@@ -96,14 +110,17 @@ export const Steps = () => {
     >
       <Controls
         step={step}
-        onStepChange={setStep}
         grid={grid}
+        onStepChange={setStep}
         onGridChange={setGrid}
+        onPlay={handlePlay}
+        onStop={handleStop}
       />
 
       <Performer
         step={step}
         position={position}
+        isPlaying={isPlaying}
       />
     </Module>
   );
