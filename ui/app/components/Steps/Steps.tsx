@@ -76,6 +76,7 @@ const Controls: FC<ControlsProps> = ({
 
 export const Steps = () => {
   const [step, setStep] = useState(0);
+  const [position, setPosition] = useState(0);
   const [grid, setGrid] = useState(1);
 
   return (
@@ -89,7 +90,10 @@ export const Steps = () => {
         onGridChange={setGrid}
       />
 
-      <Performer />
+      <Performer
+        step={step}
+        position={position}
+      />
     </Module>
   );
 };

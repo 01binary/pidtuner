@@ -32,6 +32,10 @@
   fill: none;
 }
 
+.stepCenter {
+  stroke: #A0A0A0;
+}
+
 .stepLabel {
   color: black;
   user-select: none;
@@ -55,6 +59,10 @@
 
 .step:hover .stepLabel {
   color: white;
+}
+
+.step:hover .stepCenter {
+  stroke: white;
 }
 
 .controlPoint {
