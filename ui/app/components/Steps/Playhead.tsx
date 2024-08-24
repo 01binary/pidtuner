@@ -13,7 +13,7 @@ export const Playhead: FC<PlayheadProps> = ({
     height="295px"
     viewBox="0 0 18 295"
     className={styles.playhead}
-    style={{ left: position }}
+    style={{ left: position * 146.3 }}
   >
     <polygon
       fill="#FFFFFF"

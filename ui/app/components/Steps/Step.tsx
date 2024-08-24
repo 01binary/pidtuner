@@ -6,13 +6,15 @@ type StepProps = {
   to: number;
   isCurrentStep: boolean;
   isReadOnly: boolean;
+  onSelect: () => void;
 };
 
 export const Step: FC<StepProps> = ({
   from,
   to,
   isCurrentStep,
-  isReadOnly
+  isReadOnly,
+  onSelect
 }) => {
   return (
     <div
@@ -20,6 +22,7 @@ export const Step: FC<StepProps> = ({
         styles.step,
         isCurrentStep && styles.current
       ].filter(Boolean).join(' ')}
+      onClick={onSelect}
     >
       <div className={styles.stepLabel}>
         {(to !== undefined && from !== to)

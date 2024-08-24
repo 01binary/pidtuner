@@ -22,6 +22,7 @@ export const Invert: FC<InvertProps> = ({ onClick }) => (
       <path fill="none" stroke="#424242" strokeLinecap="round" strokeLinejoin="round" d="M67.2,24c0,8.8-6.3,16.1-14.6,17.7"/>
       <polygon fill="#424242" points="45.6,41.6 55.4,37.4 53.2,41.5 55.6,45.5 				"/>
     </svg>
-    <button onClick={onClick}>invert</button>
+
+    <button onClick={onClick}>Invert</button>
   </div>
 );

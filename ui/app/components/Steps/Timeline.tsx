@@ -21,16 +21,18 @@ type TimelineProps = {
   step: number;
   position: number;
   isPlaying: boolean;
+  onSelect: (step: number) => void;
 };
 
 export const Timeline: FC<TimelineProps> = ({
   step,
   position,
-  isPlaying
+  isPlaying,
+  onSelect
 }) => {
   return (
     <section className={styles.timeline}>
-      <VAxis className={styles.vaxis} />
+      <VAxis />
       <div className={styles.scroll}>
         <div className={styles.view}>
           {steps.map(({ from, to }, index) => (
@@ -40,10 +42,11 @@ export const Timeline: FC<TimelineProps> = ({
               to={to}
               isCurrentStep={index === step}
               isReadOnly={isPlaying}
+              onSelect={() => onSelect(index)}
             />
           ))}
           <Playhead
-            position={position}
+            position={step}
           />
         </div>
       </div>

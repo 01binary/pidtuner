@@ -26,25 +26,14 @@ const Controls: FC<ControlsProps> = ({
   onStop
 }) => (
   <Group center>
-    <Group vertical>
-      <PrimaryInput
-        type="number"
-        value={step}
-        onChange={(e) => onStepChange(e.target.value)}
-        autoSize
-      />
+    <PrimaryInput
+      type="number"
+      value={step}
+      onChange={(e) => onStepChange(e.target.value)}
+      autoSize
+    />
 
-      <PrimaryInput
-        type="number"
-        label="Grid"
-        units="s"
-        value={grid}
-        min={0.1}
-        max={100}
-        onChange={(e) => onGridChange(e.target.value)}
-        autoSize
-      />
-    </Group>
+    <Separator />
 
     <Group vertical>
       <button title="Play" onClick={onPlay}>
@@ -93,6 +82,10 @@ export const Steps = () => {
     setPlaying(false);
   }, []);
 
+  const handleSelect = useCallback((selectStep: number) => {
+    setStep(selectStep);
+  }, []);
+
   return (
     <Module
       title="Step"
@@ -118,6 +111,7 @@ export const Steps = () => {
         step={step}
         position={position}
         isPlaying={isPlaying}
+        onSelect={handleSelect}
       />
     </Module>
   );
