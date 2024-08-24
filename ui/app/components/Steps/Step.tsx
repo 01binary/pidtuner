@@ -7,6 +7,7 @@ type StepProps = {
   isCurrentStep: boolean;
   isReadOnly: boolean;
   onSelect: () => void;
+  onChange: (from: number, to: number) => void;
 };
 
 export const Step: FC<StepProps> = ({
@@ -14,7 +15,8 @@ export const Step: FC<StepProps> = ({
   to,
   isCurrentStep,
   isReadOnly,
-  onSelect
+  onSelect,
+  onChange
 }) => {
   return (
     <div

@@ -68,9 +68,22 @@ const Controls: FC<ControlsProps> = ({
   </Group>
 );
 
+const defaultSteps = [
+  { from: 0, to: 0 },
+  { from: -20, to: -20 },
+  { from: 0, to: 0 },
+  { from: 20, to: 20 },
+  { from: 5, to: 5 },
+  { from: 0, to: 0 },
+  { from: 0, to: 0 },
+  { from: 0, to: 0 },
+  { from: 0, to: 0 },
+  { from: 0, to: 0 }
+];
+
 export const Steps = () => {
+  const [steps, setSteps] = useState(defaultSteps);
   const [step, setStep] = useState(0);
-  const [position, setPosition] = useState(0);
   const [grid, setGrid] = useState(1);
   const [isPlaying, setPlaying] = useState(false);
 
@@ -82,8 +95,20 @@ export const Steps = () => {
     setPlaying(false);
   }, []);
 
-  const handleSelect = useCallback((selectStep: number) => {
+  const handleStepSelect = useCallback((selectStep: number) => {
     setStep(selectStep);
+  }, []);
+
+  const handleStepChange = useCallback((
+    stepIndex: number,
+    from: number,
+    to: number
+  ) => {
+    setSteps(steps => steps.map(
+      (step, index) => index === stepIndex
+        ? { from, to }
+        : step
+      ));
   }, []);
 
   return (
@@ -108,10 +133,13 @@ export const Steps = () => {
       />
 
       <Timeline
-        step={step}
-        position={position}
+        time={0}
+        start={0}
+        steps={steps}
+        currentStep={step}
         isPlaying={isPlaying}
-        onSelect={handleSelect}
+        onSelect={handleStepSelect}
+        onStepChange={handleStepChange}
       />
     </Module>
   );

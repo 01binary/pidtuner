@@ -4,30 +4,28 @@ import { Step } from "./Step";
 import { Playhead } from "./Playhead";
 import styles from "./Timeline.module.css";
 
-const steps = [
-  { from: 0, to: 0 },
-  { from: -20, to: -20 },
-  { from: 0, to: 0 },
-  { from: 20, to: 20 },
-  { from: 5, to: 5 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 }
-];
+type PerformanceStep = {
+  from: number;
+  to: number;
+};
 
 type TimelineProps = {
-  step: number;
-  position: number;
+  steps: PerformanceStep[];
+  currentStep: number;
   isPlaying: boolean;
+  start: number;
+  time: number;
   onSelect: (step: number) => void;
+  onStepChange: (step: number, from: number, to: number) => void;
 };
 
 export const Timeline: FC<TimelineProps> = ({
-  step,
-  position,
+  steps,
+  start,
+  time,
+  currentStep,
   isPlaying,
+  onStepChange,
   onSelect
 }) => {
   return (
@@ -40,14 +38,13 @@ export const Timeline: FC<TimelineProps> = ({
               key={index}
               from={from}
               to={to}
-              isCurrentStep={index === step}
+              isCurrentStep={index === currentStep}
               isReadOnly={isPlaying}
               onSelect={() => onSelect(index)}
+              onChange={(from, to) => onStepChange(index, from, to)}
             />
           ))}
-          <Playhead
-            position={step}
-          />
+          <Playhead position={currentStep} />
         </div>
       </div>
     </section>
