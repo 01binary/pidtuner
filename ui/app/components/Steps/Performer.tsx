@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { VAxis } from "./VAxis";
 import { Step } from "./Step";
+import { Playhead } from "./Playhead";
 import styles from "./Performer.module.css";
 
 const steps = [
@@ -13,9 +14,13 @@ const steps = [
 
 type PerformerProps = {
   step: number;
+  position: number;
 };
 
-export const Performer: FC<PerformerProps> = ({ step }) => {
+export const Performer: FC<PerformerProps> = ({
+  step,
+  position
+}) => {
   return (
     <section className={styles.performer}>
       <VAxis />
@@ -27,6 +32,7 @@ export const Performer: FC<PerformerProps> = ({ step }) => {
           isCurrentStep={index === step}
         />
       ))}
+      <Playhead position={position} />
     </section>
   );
 };

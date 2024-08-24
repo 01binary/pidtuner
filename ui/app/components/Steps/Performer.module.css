@@ -20,8 +20,12 @@
 .step {
   margin-top: 8.5px;
   position: relative;
-  border-right: 1px solid var(--lightGray);
+  border-right: 1px solid #d3d3d3;
   height: 261px;
+}
+
+.step:last-of-type {
+  border-right: 1px solid white;
 }
 
 .stepBorder {
