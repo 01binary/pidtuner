@@ -23,6 +23,11 @@ export const Step: FC<StepProps> = ({
   const stepRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
 
+  const height = stepRef.current
+    ?.getBoundingClientRect()?.height ?? 0;
+
+  const half = height / 2;
+
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -70,7 +75,7 @@ export const Step: FC<StepProps> = ({
       onMouseUp={handleMouseUp}
     >
       <div className={styles.stepLabel}>
-        {(to !== undefined && from !== to)
+        {(from !== to)
           ? `${from.toFixed(1)} -> ${to.toFixed(1)}`
           : from.toFixed(1)}
       </div>
@@ -95,9 +100,9 @@ export const Step: FC<StepProps> = ({
           strokeMiterlimit="10"
           strokeDasharray="4,6"
           x1="0"
-          y1="128.9"
+          y1={half}
           x2="145.4"
-          y2="128.9"
+          y2={half}
         />
 
         <g
@@ -105,10 +110,12 @@ export const Step: FC<StepProps> = ({
           className={styles.controlPoint}
           style={{ visibility: isCurrentStep ? 'visible' : 'hidden' }}
         >
-          <rect x="0" y="123" width="13" height="13" fill="white" />
-          <path
-            fill="#FFFFFF"
-            d="M12.1,123.3v11.1H1v-11.1H12.1 M13.1,122.3H0v13.1h13.1V122.3L13.1,122.3z"
+          <rect
+            x="0"
+            y={from * half + half - 6.5}
+            width="13"
+            height="13"
+            fill="white"
           />
         </g>
 
@@ -117,10 +124,12 @@ export const Step: FC<StepProps> = ({
           className={styles.controlPoint}
           style={{ visibility: isCurrentStep ? 'visible' : 'hidden' }}
         >
-          <rect x="132" y="123" width="13" height="13" fill="white" />
-          <path
-            fill="#FFFFFF"
-            d="M144.4,123.3v11.1h-11.1v-11.1H144.4 M145.4,122.3h-13.1v13.1h13.1V122.3L145.4,122.3z"
+          <rect
+            x="132"
+            y={to * half + half - 6.5}
+            width="13"
+            height="13"
+            fill="white"
           />
         </g>
 
@@ -130,9 +139,9 @@ export const Step: FC<StepProps> = ({
           fill="none"
           strokeMiterlimit="10"
           x1="6.6"
-          y1="128.9"
+          y1={from * half + half}
           x2="138.8"
-          y2="128.9"
+          y2={to * half + half}
         />
       </svg>
     </div>
