@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Group } from "../Group";
 import { Module } from "../Module";
 import { PrimaryInput } from "../PrimaryInput";
@@ -87,6 +87,7 @@ export const Steps = () => {
   const [step, setStep] = useState(0);
   const [grid, setGrid] = useState(1);
   const [isPlaying, setPlaying] = useState(false);
+  const [time, setTime] = useState(0);
 
   const handlePlay = useCallback(() => {
     setPlaying(true);
@@ -112,6 +113,14 @@ export const Steps = () => {
       ));
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(t => t + 0.1 > 6 ? 0 : t + 0.1);
+    }, 100);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <Module
       title="Step"
@@ -134,7 +143,7 @@ export const Steps = () => {
       />
 
       <Timeline
-        time={0}
+        time={time}
         start={0}
         grid={grid}
         steps={steps}

@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useState, useEffect, useRef } from "react";
 import { VAxis } from "./VAxis";
 import { Step } from "./Step";
 import { Playhead } from "./Playhead";
@@ -27,7 +27,7 @@ const getPosition = (
   time: number,
   grid: number
 ) => (
-  Math.round((time - start) / grid)
+  (time - start) / grid
 );
 
 export const Timeline: FC<TimelineProps> = ({
@@ -41,7 +41,13 @@ export const Timeline: FC<TimelineProps> = ({
   onSelect
 }) => {
   const timelineRef = useRef<HTMLDivElement>(null);
-  const timelineTop = timelineRef.current?.getBoundingClientRect()?.top ?? 0;
+  const [timelineTop, setTimelineTop] = useState(0);
+
+  useEffect(() => {
+    if (timelineRef.current) {
+      setTimelineTop(timelineRef.current?.getBoundingClientRect()?.top ?? 0);
+    }
+  }, []);
 
   const handleValuePreset = useCallback((value: number) => {
     if (isPlaying) return;
@@ -53,6 +59,7 @@ export const Timeline: FC<TimelineProps> = ({
       <VAxis
         onSetValue={handleValuePreset}
       />
+
       <div className={styles.scroll}>
         <div
           ref={timelineRef}
