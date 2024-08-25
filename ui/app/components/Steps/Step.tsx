@@ -5,6 +5,22 @@ const MIN = 6.5;
 const HEIGHT = 261;
 const HALF = HEIGHT / 2;
 
+const getValueFromMouse = (
+  clientY: number,
+  timelineTop: number
+) => {
+  const norm = (clientY - timelineTop - MIN) / HEIGHT;
+
+  let value = norm * 2 - 1;
+
+  if (value < -1)
+    value = -1;
+  else if (value > 1)
+    value = 1;
+
+  return -value;
+};
+
 type StepProps = {
   from: number;
   to: number;
@@ -33,7 +49,6 @@ export const Step: FC<StepProps> = ({
   onChange
 }) => {
   const isDraggingRef = useRef(false);
-  const dragStartRef = useRef(0);
 
   const handleMouseDown = useCallback((e) => {
     if (isReadOnly) return;
@@ -42,7 +57,9 @@ export const Step: FC<StepProps> = ({
     e.stopPropagation();
 
     const { clientY } = e;
-    dragStartRef.current = clientY;
+    const value = getValueFromMouse(clientY, timelineTop);
+
+    onChange(value, value);
     isDraggingRef.current = true;
 
     onSelect();
@@ -54,16 +71,8 @@ export const Step: FC<StepProps> = ({
 
     if (isDraggingRef.current) {
       const { clientY } = e;
-      const norm = (clientY - timelineTop) / HEIGHT;
-
-      let value = norm * 2 - 1;
-      
-      if (value < -1)
-        value = -1;
-      else if (value > 1)
-        value = 1;
-
-      onChange(-value, -value);
+      const value = getValueFromMouse(clientY, timelineTop);
+      onChange(value, value);
     }
   }, [onChange]);
 
