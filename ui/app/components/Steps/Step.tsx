@@ -1,8 +1,7 @@
-import { FC, useCallback, useEffect, useState, useRef } from "react";
+import { FC, useCallback, useRef } from "react";
 import styles from "./Timeline.module.css";
 
 const MIN = 6.5;
-const TOP = 235;
 const HEIGHT = 261;
 const HALF = HEIGHT / 2;
 
@@ -15,6 +14,7 @@ type StepProps = {
   isFirstStep: boolean;
   isLastStep: boolean;
   isReadOnly: boolean;
+  timelineTop: number;
   onSelect: () => void;
   onChange: (from: number, to: number) => void;
 };
@@ -28,19 +28,25 @@ export const Step: FC<StepProps> = ({
   isFirstStep,
   isLastStep,
   isReadOnly,
+  timelineTop,
   onSelect,
   onChange
 }) => {
   const isDraggingRef = useRef(false);
+  const dragStartRef = useRef(0);
 
   const handleMouseDown = useCallback((e) => {
+    if (isReadOnly) return;
+
     e.preventDefault();
     e.stopPropagation();
 
+    const { clientY } = e;
+    dragStartRef.current = clientY;
     isDraggingRef.current = true;
 
     onSelect();
-  }, [onSelect]);
+  }, [onSelect, isReadOnly]);
 
   const handleMouseMove = useCallback((e) => {
     e.preventDefault();
@@ -48,7 +54,7 @@ export const Step: FC<StepProps> = ({
 
     if (isDraggingRef.current) {
       const { clientY } = e;
-      const norm = (clientY - TOP + MIN) / HEIGHT;
+      const norm = (clientY - timelineTop) / HEIGHT;
 
       let value = norm * 2 - 1;
       

@@ -29,7 +29,8 @@ const Controls: FC<ControlsProps> = ({
     <PrimaryInput
       type="number"
       value={step}
-      onChange={(e) => onStepChange(e.target.value)}
+      onChange={(e) => onStepChange(Number(e.target.value))}
+      min={0}
       autoSize
     />
 
@@ -135,6 +136,7 @@ export const Steps = () => {
       <Timeline
         time={0}
         start={0}
+        grid={grid}
         steps={steps}
         currentStep={step}
         isPlaying={isPlaying}

@@ -1,4 +1,6 @@
-import { FC } from "react";
+"use client";
+
+import { FC, useRef } from "react";
 import { VAxis } from "./VAxis";
 import { Step } from "./Step";
 import { Playhead } from "./Playhead";
@@ -15,24 +17,35 @@ type TimelineProps = {
   isPlaying: boolean;
   start: number;
   time: number;
+  grid: number;
   onSelect: (step: number) => void;
   onStepChange: (step: number, from: number, to: number) => void;
 };
+
+const getPosition = (
+  start: number,
+  time: number,
+  grid: number
+) => (
+  Math.round((time - start) / grid)
+);
 
 export const Timeline: FC<TimelineProps> = ({
   steps,
   start,
   time,
+  grid,
   currentStep,
   isPlaying,
   onStepChange,
   onSelect
 }) => {
+  const timelineRef = useRef<HTMLDivElement>(null);
   return (
     <section className={styles.timeline}>
       <VAxis />
       <div className={styles.scroll}>
-        <div className={styles.view}>
+        <div ref={timelineRef} className={styles.view}>
           {steps.map(({ from, to }, index) => (
             <Step
               key={index}
@@ -40,6 +53,7 @@ export const Timeline: FC<TimelineProps> = ({
               to={to}
               prev={index > 0 ? steps[index - 1].to : 0}
               next={index < steps.length - 1 ? steps[index + 1].to : 0}
+              timelineTop={timelineRef.current?.getBoundingClientRect()?.top ?? 0}
               isCurrentStep={index === currentStep}
               isFirstStep={index === 0}
               isLastStep={index === steps.length - 1}
@@ -49,7 +63,7 @@ export const Timeline: FC<TimelineProps> = ({
             />
           ))}
           <Playhead
-            position={0}
+            position={getPosition(start, time, grid)}
           />
         </div>
       </div>
