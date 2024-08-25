@@ -1,5 +1,7 @@
-import { FC } from "react";
+import { FC, useCallback, useRef } from "react";
 import styles from "./Timeline.module.css";
+
+const MIN = 6.5;
 
 type StepProps = {
   from: number;
@@ -18,18 +20,59 @@ export const Step: FC<StepProps> = ({
   onSelect,
   onChange
 }) => {
+  const stepRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
+
+  const handleMouseDown = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    isDraggingRef.current = true;
+
+    onSelect();
+  }, [onSelect]);
+
+  const handleMouseMove = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isDraggingRef.current && stepRef.current) {
+      const { clientY } = e;
+      const { top, height } = stepRef.current.getBoundingClientRect();
+      const norm = (clientY - top + MIN) / height;
+
+      let value = norm * 2 - 1;
+      
+      if (value < -1)
+        value = -1;
+      else if (value > 1)
+        value = 1;
+
+      onChange(value, value);
+    }
+  }, [onChange]);
+
+  const handleMouseUp = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isDraggingRef.current = false;
+  }, []);
+
   return (
     <div
+      ref={stepRef}
       className={[
         styles.step,
         isCurrentStep && styles.current
       ].filter(Boolean).join(' ')}
-      onClick={onSelect}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <div className={styles.stepLabel}>
         {(to !== undefined && from !== to)
-          ? `${from} -> ${to}`
-          : from}
+          ? `${from.toFixed(1)} -> ${to.toFixed(1)}`
+          : from.toFixed(1)}
       </div>
 
       <svg
@@ -45,6 +88,9 @@ export const Step: FC<StepProps> = ({
 
         <line
           className={styles.stepCenter}
+          style={{
+            visibility: from === 0 && to === 0 ? "hidden" : "visible"
+          }}
           fill="none"
           strokeMiterlimit="10"
           strokeDasharray="4,6"
@@ -80,9 +126,8 @@ export const Step: FC<StepProps> = ({
 
         <line
           id="valueLine"
-          display="none"
+          className={styles.value}
           fill="none"
-          stroke="#707070"
           strokeMiterlimit="10"
           x1="6.6"
           y1="128.9"

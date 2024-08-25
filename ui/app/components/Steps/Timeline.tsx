@@ -44,7 +44,9 @@ export const Timeline: FC<TimelineProps> = ({
               onChange={(from, to) => onStepChange(index, from, to)}
             />
           ))}
-          <Playhead position={currentStep} />
+          <Playhead
+            position={currentStep}
+          />
         </div>
       </div>
     </section>

@@ -98,3 +98,11 @@
   position: absolute;
   margin-left: -8.5px;
 }
+
+.value {
+  stroke: black;
+}
+
+.step.current .value {
+  stroke: white;
+}
