@@ -1,4 +1,4 @@
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import styles from "./Timeline.module.css";
 
 const MIN = 6.5;
@@ -81,6 +81,13 @@ export const Step: FC<StepProps> = ({
     e.stopPropagation();
     isDraggingRef.current = false;
   }, []);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp, true);
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp, true);
+    }
+  }, [handleMouseUp]);
 
   return (
     <div
