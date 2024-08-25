@@ -114,12 +114,14 @@ export const Steps = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(t => t + 0.1 > 6 ? 0 : t + 0.1);
-    }, 100);
+    if (isPlaying) {
+      const timer = setInterval(() => {
+        setTime(t => t + 0.1 > 6 ? 0 : t + 0.1);
+      }, 100);
 
-    return () => clearInterval(timer);
-  }, []);
+      return () => clearInterval(timer);
+    }
+  }, [isPlaying]);
 
   return (
     <Module
