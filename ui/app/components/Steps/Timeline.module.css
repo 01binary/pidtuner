@@ -24,12 +24,7 @@
   cursor: pointer;
   margin-top: 8.5px;
   position: relative;
-  border-right: 1px solid #d3d3d3;
   height: 261px;
-}
-
-.step:last-of-type {
-  border-right: 1px solid white;
 }
 
 .stepBorder {
@@ -51,10 +46,6 @@
   text-align: right;
   padding: 8px;
   font-size: 24px;
-}
-
-.step:hover {
-  border-right: 1px solid white;
 }
 
 .step:hover .stepBorder {
@@ -96,7 +87,6 @@
 
 .playhead {
   position: absolute;
-  margin-left: -8.5px;
 }
 
 .value {

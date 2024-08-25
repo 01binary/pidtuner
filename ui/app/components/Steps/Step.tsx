@@ -6,6 +6,8 @@ const MIN = 6.5;
 type StepProps = {
   from: number;
   to: number;
+  prev: number;
+  next: number;
   isCurrentStep: boolean;
   isReadOnly: boolean;
   onSelect: () => void;
@@ -15,6 +17,8 @@ type StepProps = {
 export const Step: FC<StepProps> = ({
   from,
   to,
+  prev,
+  next,
   isCurrentStep,
   isReadOnly,
   onSelect,
@@ -105,6 +109,15 @@ export const Step: FC<StepProps> = ({
           y2={half}
         />
 
+        <line
+          stroke="#DDD"
+          fill="none"
+          x1="145"
+          y1={0}
+          x2="145"
+          y2={height}
+        />
+
         <g
           id="handleLeft"
           className={styles.controlPoint}
@@ -125,7 +138,7 @@ export const Step: FC<StepProps> = ({
           style={{ visibility: isCurrentStep ? 'visible' : 'hidden' }}
         >
           <rect
-            x="132"
+            x="132.5"
             y={to * half + half - 6.5}
             width="13"
             height="13"
@@ -134,14 +147,31 @@ export const Step: FC<StepProps> = ({
         </g>
 
         <line
-          id="valueLine"
           className={styles.value}
           fill="none"
           strokeMiterlimit="10"
-          x1="6.6"
+          x1="0"
           y1={from * half + half}
-          x2="138.8"
+          x2="145.4"
           y2={to * half + half}
+        />
+
+        <line
+          className={styles.value}
+          fill="none"
+          x1="0"
+          x2="0"
+          y1={from * half + half}
+          y2={prev * half + half}
+        />
+
+        <line
+          className={styles.value}
+          fill="none"
+          x1="145.4"
+          x2="145.4"
+          y1={from * half + half}
+          y2={next * half + half}
         />
       </svg>
     </div>

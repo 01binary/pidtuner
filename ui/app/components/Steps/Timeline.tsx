@@ -38,6 +38,8 @@ export const Timeline: FC<TimelineProps> = ({
               key={index}
               from={from}
               to={to}
+              prev={index > 0 ? steps[index - 1].to : 0}
+              next={index < steps.length - 1 ? steps[index + 1].to : 0}
               isCurrentStep={index === currentStep}
               isReadOnly={isPlaying}
               onSelect={() => onSelect(index)}
@@ -45,7 +47,7 @@ export const Timeline: FC<TimelineProps> = ({
             />
           ))}
           <Playhead
-            position={currentStep}
+            position={0}
           />
         </div>
       </div>
