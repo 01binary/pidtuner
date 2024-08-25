@@ -3,10 +3,12 @@ import styles from "./Timeline.module.css";
 
 type VAxisProps = {
   invert?: boolean;
+  onSetValue: (value: number) => void;
 };
 
 export const VAxis: FC<VAxisProps> = ({
-  invert
+  invert,
+  onSetValue
 }) => (
   <svg
     width="135px"
@@ -39,6 +41,7 @@ export const VAxis: FC<VAxisProps> = ({
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
         className={styles.label}
+        onClick={() => onSetValue(0)}
       >
         0
       </text>
@@ -46,6 +49,7 @@ export const VAxis: FC<VAxisProps> = ({
         transform="matrix(1 0 0 1 66.3153 16.1102)"
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
+        onClick={() => onSetValue(1)}
       >
         100
       </text>
@@ -54,6 +58,7 @@ export const VAxis: FC<VAxisProps> = ({
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
         className={styles.label}
+        onClick={() => onSetValue(0.5)}
       >
         50
       </text>
@@ -62,6 +67,7 @@ export const VAxis: FC<VAxisProps> = ({
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
         className={styles.label}
+        onClick={() => onSetValue(0.75)}
       >
         75
       </text>
@@ -70,6 +76,7 @@ export const VAxis: FC<VAxisProps> = ({
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
         className={styles.label}
+        onClick={() => onSetValue(0.25)}
       >
         25
       </text>
@@ -78,6 +85,7 @@ export const VAxis: FC<VAxisProps> = ({
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
         className={styles.label}
+        onClick={() => onSetValue(-0.25)}
       >
         -25
       </text>
@@ -86,6 +94,7 @@ export const VAxis: FC<VAxisProps> = ({
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
         className={styles.label}
+        onClick={() => onSetValue(-0.5)}
       >
         -50
       </text>
@@ -93,6 +102,7 @@ export const VAxis: FC<VAxisProps> = ({
         transform="matrix(1 0 0 1 70.6386 242.775)"
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
+        onClick={() => onSetValue(-0.75)}
       >
         -75
       </text>
@@ -101,6 +111,7 @@ export const VAxis: FC<VAxisProps> = ({
         fontFamily="'Roboto-Medium'"
         fontSize="18px"
         className={styles.label}
+        onClick={() => onSetValue(-1)}
       >
         -100
       </text>

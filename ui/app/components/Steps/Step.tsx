@@ -94,8 +94,8 @@ export const Step: FC<StepProps> = ({
     >
       <div className={styles.stepLabel}>
         {(from !== to)
-          ? `${from.toFixed(1)} -> ${to.toFixed(1)}`
-          : from.toFixed(1)}
+          ? `${from.toFixed(2)} -> ${to.toFixed(2)}`
+          : from.toFixed(2)}
       </div>
 
       <svg

@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useRef } from "react";
+import { FC, useCallback, useRef } from "react";
 import { VAxis } from "./VAxis";
 import { Step } from "./Step";
 import { Playhead } from "./Playhead";
@@ -41,11 +41,23 @@ export const Timeline: FC<TimelineProps> = ({
   onSelect
 }) => {
   const timelineRef = useRef<HTMLDivElement>(null);
+  const timelineTop = timelineRef.current?.getBoundingClientRect()?.top ?? 0;
+
+  const handleValuePreset = useCallback((value: number) => {
+    if (isPlaying) return;
+    onStepChange(currentStep, value, value);
+  }, [onStepChange, currentStep, isPlaying]);
+
   return (
     <section className={styles.timeline}>
-      <VAxis />
+      <VAxis
+        onSetValue={handleValuePreset}
+      />
       <div className={styles.scroll}>
-        <div ref={timelineRef} className={styles.view}>
+        <div
+          ref={timelineRef}
+          className={styles.view}
+        >
           {steps.map(({ from, to }, index) => (
             <Step
               key={index}
@@ -53,7 +65,7 @@ export const Timeline: FC<TimelineProps> = ({
               to={to}
               prev={index > 0 ? steps[index - 1].to : 0}
               next={index < steps.length - 1 ? steps[index + 1].to : 0}
-              timelineTop={timelineRef.current?.getBoundingClientRect()?.top ?? 0}
+              timelineTop={timelineTop}
               isCurrentStep={index === currentStep}
               isFirstStep={index === 0}
               isLastStep={index === steps.length - 1}
