@@ -18,17 +18,15 @@ export const Playhead: FC<PlayheadProps> = ({
     <polygon
       fill="#FFFFFF"
       stroke="#000000"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-miterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       points="0.5,12.1 9,25.1 17.5,12.1 17.5,0.5 0.5,0.5"
     />
   
     <line
       fill="none"
       stroke="#898989"
-      stroke-linejoin="round"
-      stroke-miterlimit="10"
+      strokeLinejoin="round"
       x1="9"
       y1="25"
       x2="9"

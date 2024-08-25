@@ -41,6 +41,8 @@ export const Timeline: FC<TimelineProps> = ({
               prev={index > 0 ? steps[index - 1].to : 0}
               next={index < steps.length - 1 ? steps[index + 1].to : 0}
               isCurrentStep={index === currentStep}
+              isFirstStep={index === 0}
+              isLastStep={index === steps.length - 1}
               isReadOnly={isPlaying}
               onSelect={() => onSelect(index)}
               onChange={(from, to) => onStepChange(index, from, to)}

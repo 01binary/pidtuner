@@ -70,10 +70,10 @@ const Controls: FC<ControlsProps> = ({
 
 const defaultSteps = [
   { from: 0, to: 0 },
-  { from: -20, to: -20 },
+  { from: -0.2, to: -0.2 },
   { from: 0, to: 0 },
-  { from: 20, to: 20 },
-  { from: 5, to: 5 },
+  { from: 0.2, to: 0.2 },
+  { from: 0.5, to: 0.5 },
   { from: 0, to: 0 },
   { from: 0, to: 0 },
   { from: 0, to: 0 },

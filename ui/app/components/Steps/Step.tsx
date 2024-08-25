@@ -1,7 +1,10 @@
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useEffect, useState, useRef } from "react";
 import styles from "./Timeline.module.css";
 
 const MIN = 6.5;
+const TOP = 235;
+const HEIGHT = 261;
+const HALF = HEIGHT / 2;
 
 type StepProps = {
   from: number;
@@ -9,6 +12,8 @@ type StepProps = {
   prev: number;
   next: number;
   isCurrentStep: boolean;
+  isFirstStep: boolean;
+  isLastStep: boolean;
   isReadOnly: boolean;
   onSelect: () => void;
   onChange: (from: number, to: number) => void;
@@ -20,17 +25,13 @@ export const Step: FC<StepProps> = ({
   prev,
   next,
   isCurrentStep,
+  isFirstStep,
+  isLastStep,
   isReadOnly,
   onSelect,
   onChange
 }) => {
-  const stepRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
-
-  const height = stepRef.current
-    ?.getBoundingClientRect()?.height ?? 0;
-
-  const half = height / 2;
 
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
@@ -45,10 +46,9 @@ export const Step: FC<StepProps> = ({
     e.preventDefault();
     e.stopPropagation();
 
-    if (isDraggingRef.current && stepRef.current) {
+    if (isDraggingRef.current) {
       const { clientY } = e;
-      const { top, height } = stepRef.current.getBoundingClientRect();
-      const norm = (clientY - top + MIN) / height;
+      const norm = (clientY - TOP + MIN) / HEIGHT;
 
       let value = norm * 2 - 1;
       
@@ -57,7 +57,7 @@ export const Step: FC<StepProps> = ({
       else if (value > 1)
         value = 1;
 
-      onChange(value, value);
+      onChange(-value, -value);
     }
   }, [onChange]);
 
@@ -69,7 +69,6 @@ export const Step: FC<StepProps> = ({
 
   return (
     <div
-      ref={stepRef}
       className={[
         styles.step,
         isCurrentStep && styles.current
@@ -85,9 +84,9 @@ export const Step: FC<StepProps> = ({
       </div>
 
       <svg
-        width="145.4px"
-        height="260.9px"
-        viewBox="0 0 145.4 260.9"
+        width="145.5px"
+        height="261px"
+        viewBox="0 0 145.5 261"
       >
         <path
           className={styles.stepBorder}
@@ -104,9 +103,9 @@ export const Step: FC<StepProps> = ({
           strokeMiterlimit="10"
           strokeDasharray="4,6"
           x1="0"
-          y1={half}
+          y1={HALF}
           x2="145.4"
-          y2={half}
+          y2={HALF}
         />
 
         <line
@@ -115,7 +114,7 @@ export const Step: FC<StepProps> = ({
           x1="145"
           y1={0}
           x2="145"
-          y2={height}
+          y2={HEIGHT}
         />
 
         <g
@@ -125,7 +124,7 @@ export const Step: FC<StepProps> = ({
         >
           <rect
             x="0"
-            y={from * half + half - 6.5}
+            y={-from * HALF + HALF - 6.5}
             width="13"
             height="13"
             fill="white"
@@ -139,7 +138,7 @@ export const Step: FC<StepProps> = ({
         >
           <rect
             x="132.5"
-            y={to * half + half - 6.5}
+            y={-to * HALF + HALF - 6.5}
             width="13"
             height="13"
             fill="white"
@@ -147,32 +146,34 @@ export const Step: FC<StepProps> = ({
         </g>
 
         <line
+          id="stepValue"
           className={styles.value}
           fill="none"
-          strokeMiterlimit="10"
           x1="0"
-          y1={from * half + half}
-          x2="145.4"
-          y2={to * half + half}
+          y1={from * -HALF + HALF}
+          x2="145.5"
+          y2={to * -HALF + HALF}
         />
 
-        <line
+        {!isFirstStep && <line
+          id="stepUp"
           className={styles.value}
           fill="none"
           x1="0"
           x2="0"
-          y1={from * half + half}
-          y2={prev * half + half}
-        />
+          y1={from * -HALF + HALF}
+          y2={prev * -HALF + HALF}
+        />}
 
-        <line
+        {!isLastStep && <line
+          id="stepDown"
           className={styles.value}
           fill="none"
           x1="145.4"
           x2="145.4"
-          y1={from * half + half}
-          y2={next * half + half}
-        />
+          y1={from * -HALF + HALF}
+          y2={next * -HALF + HALF}
+        />}
       </svg>
     </div>
   );
