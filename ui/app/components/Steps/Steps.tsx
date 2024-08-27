@@ -75,10 +75,6 @@ const defaultSteps = [
   { value: 0 },
   { value: 0.2 },
   { value: 0.5 },
-  { value: 0 },
-  { value: 0 },
-  { value: 0 },
-  { value: 0 },
   { value: 0 }
 ];
 

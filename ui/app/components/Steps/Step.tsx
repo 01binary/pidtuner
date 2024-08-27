@@ -106,6 +106,25 @@ export const Step: FC<StepProps> = ({
         height="261px"
         viewBox="0 0 145.5 261"
       >
+        {isLastStep
+        ? (
+          <path
+            fill="none"
+            stroke="#D3D3D3"
+            d="M140.3,260.5H5.2c-2.6,0-4.7-2.1-4.7-4.7V5.2c0-2.6,2.1-4.7,4.7-4.7
+              h135.2c2.6,0,4.7,2.1,4.7,4.7v250.7C145,258.4,142.9,260.5,140.3,260.5z"
+          />
+        )
+        : (
+          <path
+            fill="none"
+            stroke="#D3D3D3"
+            stroke-miterlimit="10"
+            d="M141,260.5H5.2c-2.6,0-4.7-2.1-4.7-4.7V5.2c0-2.6,2.1-4.7,4.7-4.7H141
+              c2.6,0,4.7,2.1,4.7,4.7v250.7C145.6,258.4,143.5,260.5,141,260.5z"
+          />
+          )}
+
         <path
           className={styles.stepBorder}
           d="M140.7,260.9H4.7c-2.6,0-4.7-2.1-4.7-4.7V4.7C0,2.1,2.1,0,4.7,0h136.1c2.6,0,4.7,2.1,4.7,4.7v251.6
@@ -126,14 +145,14 @@ export const Step: FC<StepProps> = ({
           y2={HALF}
         />
 
-        <line
+        {/*<line
           stroke="#DDD"
           fill="none"
           x1="145"
           y1={0}
           x2="145"
           y2={HEIGHT}
-        />
+        />*/}
 
         <line
           id="stepValue"
