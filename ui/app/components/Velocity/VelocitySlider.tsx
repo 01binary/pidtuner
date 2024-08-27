@@ -1,4 +1,4 @@
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useRef, useEffect } from "react";
 import styles from "./VelocitySlider.module.css";
 
 const MIN = 1;
@@ -74,6 +74,13 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
 
     isDraggingRef.current = false;
   }, []);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp, true);
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp, true);
+    }
+  }, [handleMouseUp]);
 
   return (
     <svg

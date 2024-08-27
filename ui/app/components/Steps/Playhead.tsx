@@ -53,6 +53,9 @@ export const Playhead: FC<PlayheadProps> = ({
         y1="25"
         x2="9"
         y2="295"
+        style={{
+          visibility: isHalf ? 'hidden' : 'visible'
+        }}
       />
     </svg>
   );

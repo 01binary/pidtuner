@@ -2,6 +2,7 @@
 
 import { FC, useCallback, useState, useEffect, useRef } from "react";
 import { VAxis } from "./VAxis";
+import { HAxis } from "./HAxis";
 import { Step } from "./Step";
 import { Playhead } from "./Playhead";
 import styles from "./Timeline.module.css";
@@ -81,6 +82,10 @@ export const Timeline: FC<TimelineProps> = ({
           ))}
           <Playhead
             position={getPosition(start, time, grid)}
+          />
+          <HAxis
+            length={steps.length}
+            grid={grid}
           />
         </div>
       </div>

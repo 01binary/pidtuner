@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, FC } from "react";
+import { useCallback, useEffect, FC } from "react";
 import { RAD_TO_DEG, useKnob } from "../knobUtils";
 import styles from "./VelocityKnob.module.css";
 
@@ -49,6 +49,13 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
     const nextVelocity = velocity + increment;
     handleChange(Math.max(Math.min(nextVelocity, 1), -1));
   }, [velocity, handleChange]);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp, true);
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp, true);
+    }
+  }, [handleMouseUp]);
 
   return (
     <svg
