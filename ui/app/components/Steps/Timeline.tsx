@@ -7,8 +7,7 @@ import { Playhead } from "./Playhead";
 import styles from "./Timeline.module.css";
 
 type PerformanceStep = {
-  from: number;
-  to: number;
+  value: number;
 };
 
 type TimelineProps = {
@@ -19,7 +18,7 @@ type TimelineProps = {
   time: number;
   grid: number;
   onSelect: (step: number) => void;
-  onStepChange: (step: number, from: number, to: number) => void;
+  onStepChange: (step: number, value: number) => void;
 };
 
 const getPosition = (
@@ -51,7 +50,7 @@ export const Timeline: FC<TimelineProps> = ({
 
   const handleValuePreset = useCallback((value: number) => {
     if (isPlaying) return;
-    onStepChange(currentStep, value, value);
+    onStepChange(currentStep, value);
   }, [onStepChange, currentStep, isPlaying]);
 
   return (
@@ -65,20 +64,19 @@ export const Timeline: FC<TimelineProps> = ({
           ref={timelineRef}
           className={styles.view}
         >
-          {steps.map(({ from, to }, index) => (
+          {steps.map(({ value }, index) => (
             <Step
               key={index}
-              from={from}
-              to={to}
-              prev={index > 0 ? steps[index - 1].to : 0}
-              next={index < steps.length - 1 ? steps[index + 1].to : 0}
+              value={value}
+              prev={index > 0 ? steps[index - 1].value : 0}
+              next={index < steps.length - 1 ? steps[index + 1].value : 0}
               timelineTop={timelineTop}
               isCurrentStep={index === currentStep}
               isFirstStep={index === 0}
               isLastStep={index === steps.length - 1}
               isReadOnly={isPlaying}
               onSelect={() => onSelect(index)}
-              onChange={(from, to) => onStepChange(index, from, to)}
+              onChange={(value) => onStepChange(index, value)}
             />
           ))}
           <Playhead

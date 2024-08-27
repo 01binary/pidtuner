@@ -70,16 +70,16 @@ const Controls: FC<ControlsProps> = ({
 );
 
 const defaultSteps = [
-  { from: 0, to: 0 },
-  { from: -0.2, to: -0.2 },
-  { from: 0, to: 0 },
-  { from: 0.2, to: 0.2 },
-  { from: 0.5, to: 0.5 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 },
-  { from: 0, to: 0 }
+  { value: 0 },
+  { value: -0.2 },
+  { value: 0 },
+  { value: 0.2 },
+  { value: 0.5 },
+  { value: 0 },
+  { value: 0 },
+  { value: 0 },
+  { value: 0 },
+  { value: 0 }
 ];
 
 export const Steps = () => {
@@ -103,12 +103,11 @@ export const Steps = () => {
 
   const handleStepChange = useCallback((
     stepIndex: number,
-    from: number,
-    to: number
+    value: number
   ) => {
     setSteps(steps => steps.map(
       (step, index) => index === stepIndex
-        ? { from, to }
+        ? { value }
         : step
       ));
   }, []);

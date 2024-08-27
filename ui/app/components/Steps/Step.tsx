@@ -22,8 +22,7 @@ const getValueFromMouse = (
 };
 
 type StepProps = {
-  from: number;
-  to: number;
+  value: number;
   prev: number;
   next: number;
   isCurrentStep: boolean;
@@ -32,12 +31,11 @@ type StepProps = {
   isReadOnly: boolean;
   timelineTop: number;
   onSelect: () => void;
-  onChange: (from: number, to: number) => void;
+  onChange: (value: number) => void;
 };
 
 export const Step: FC<StepProps> = ({
-  from,
-  to,
+  value,
   prev,
   next,
   isCurrentStep,
@@ -59,11 +57,11 @@ export const Step: FC<StepProps> = ({
     const { clientY } = e;
     const value = getValueFromMouse(clientY, timelineTop);
 
-    onChange(value, value);
+    onChange(value);
     isDraggingRef.current = true;
 
     onSelect();
-  }, [onSelect, isReadOnly]);
+  }, [onSelect, isReadOnly, timelineTop]);
 
   const handleMouseMove = useCallback((e) => {
     e.preventDefault();
@@ -72,7 +70,7 @@ export const Step: FC<StepProps> = ({
     if (isDraggingRef.current) {
       const { clientY } = e;
       const value = getValueFromMouse(clientY, timelineTop);
-      onChange(value, value);
+      onChange(value);
     }
   }, [onChange]);
 
@@ -100,9 +98,7 @@ export const Step: FC<StepProps> = ({
       onMouseUp={handleMouseUp}
     >
       <div className={styles.stepLabel}>
-        {(from !== to)
-          ? `${from.toFixed(2)} -> ${to.toFixed(2)}`
-          : from.toFixed(2)}
+        {value.toFixed(2)}
       </div>
 
       <svg
@@ -119,7 +115,7 @@ export const Step: FC<StepProps> = ({
         <line
           className={styles.stepCenter}
           style={{
-            visibility: from === 0 && to === 0 ? "hidden" : "visible"
+            visibility: value === 0 ? "hidden" : "visible"
           }}
           fill="none"
           strokeMiterlimit="10"
@@ -139,42 +135,14 @@ export const Step: FC<StepProps> = ({
           y2={HEIGHT}
         />
 
-        <g
-          id="handleLeft"
-          className={styles.controlPoint}
-          style={{ visibility: isCurrentStep ? 'visible' : 'hidden' }}
-        >
-          <rect
-            x="0"
-            y={-from * HALF + HALF - 6.5}
-            width="13"
-            height="13"
-            fill="white"
-          />
-        </g>
-
-        <g
-          id="handleRight"
-          className={styles.controlPoint}
-          style={{ visibility: isCurrentStep ? 'visible' : 'hidden' }}
-        >
-          <rect
-            x="132.5"
-            y={-to * HALF + HALF - 6.5}
-            width="13"
-            height="13"
-            fill="white"
-          />
-        </g>
-
         <line
           id="stepValue"
           className={styles.value}
           fill="none"
           x1="0"
-          y1={from * -HALF + HALF}
+          y1={value * -HALF + HALF}
           x2="145.5"
-          y2={to * -HALF + HALF}
+          y2={value * -HALF + HALF}
         />
 
         {!isFirstStep && <line
@@ -183,7 +151,7 @@ export const Step: FC<StepProps> = ({
           fill="none"
           x1="0"
           x2="0"
-          y1={from * -HALF + HALF}
+          y1={value * -HALF + HALF}
           y2={prev * -HALF + HALF}
         />}
 
@@ -193,7 +161,7 @@ export const Step: FC<StepProps> = ({
           fill="none"
           x1="145.4"
           x2="145.4"
-          y1={from * -HALF + HALF}
+          y1={value * -HALF + HALF}
           y2={next * -HALF + HALF}
         />}
       </svg>
