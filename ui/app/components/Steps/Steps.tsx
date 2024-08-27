@@ -74,8 +74,7 @@ const defaultSteps = [
   { value: -0.2 },
   { value: 0 },
   { value: 0.2 },
-  { value: 0.5 },
-  { value: 0 }
+  { value: 0.5 }
 ];
 
 export const Steps = () => {
@@ -106,6 +105,14 @@ export const Steps = () => {
         ? { value }
         : step
       ));
+  }, []);
+
+  const handleAddStep = useCallback(() => {
+    setSteps(steps => [...steps, { value: 0 }])
+  }, []);
+
+  const handleRemoveStep = useCallback(() => {
+    setSteps(steps => steps.slice(0, steps.length - 2));
   }, []);
 
   useEffect(() => {
@@ -148,6 +155,8 @@ export const Steps = () => {
         isPlaying={isPlaying}
         onSelect={handleStepSelect}
         onStepChange={handleStepChange}
+        onAddStep={handleAddStep}
+        onRemoveStep={handleRemoveStep}
       />
     </Module>
   );

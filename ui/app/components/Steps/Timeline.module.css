@@ -35,10 +35,6 @@
   width: 145.5px;
 }
 
-.haxisTick:last-of-type {
-  width: 1.5px;
-}
-
 .haxisTick:first-of-type:before {
   content: initial;
 }
@@ -146,4 +142,12 @@
 
 .step.current .value {
   stroke: white;
+}
+
+.manageButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  justify-content: center;
 }
