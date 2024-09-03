@@ -119,7 +119,6 @@ export const Step: FC<StepProps> = ({
           <path
             fill="none"
             stroke="#D3D3D3"
-            stroke-miterlimit="10"
             d="M141,260.5H5.2c-2.6,0-4.7-2.1-4.7-4.7V5.2c0-2.6,2.1-4.7,4.7-4.7H141
               c2.6,0,4.7,2.1,4.7,4.7v250.7C145.6,258.4,143.5,260.5,141,260.5z"
           />

@@ -145,8 +145,8 @@ export const Timeline: FC<TimelineProps> = ({
                 <polyline
                   fill="none"
                   stroke="#000000"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   points="31.9,12.5 20,12.5 20,24.4 6.8,24.4"
                 />
                 <path
@@ -157,7 +157,7 @@ export const Timeline: FC<TimelineProps> = ({
                 />
                 <line
                   stroke="#EC008C"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   x1="29.1"
                   y1="18.3"
                   x2="41.3"
@@ -165,7 +165,7 @@ export const Timeline: FC<TimelineProps> = ({
                 />
                 <line
                   stroke="#EC008C"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   x1="29.1"
                   y1="30.5"
                   x2="41.3"
