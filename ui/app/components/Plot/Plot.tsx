@@ -1,100 +1,51 @@
 "use client";
 
 import * as d3 from "d3";
-import { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
+import { PlotType } from "./PlotType";
 import styles from "./Plot.module.css";
-import data from "./sample.json";
+import initialData from "./sample.json";
+import { exportSamples } from "./exportSamples";
+import { formatSamples } from "./formatSamples";
+import { Series } from "./Series";
+import { Legend } from "./Legend";
+import {
+  SAMPLE_WIDTH,
+  MARGIN_LEFT,
+  MARGIN_RIGHT,
+  TICK_SIZE,
+  HEIGHT,
+  MARGIN_TOP,
+  MARGIN_BOTTOM,
+  AXIS_LEFT_WIDTH,
+  AXIS_LEFT_OFFSET,
+  SPACING_HALF,
+  SPACING
+} from "./constants";
 
-const HEIGHT = 300;
-const MARGIN_LEFT = 56;
-const MARGIN_TOP = 8;
-const MARGIN_RIGHT = 8;
-const MARGIN_BOTTOM = 32;
-const AXIS_LEFT_WIDTH = 64;
-const AXIS_LEFT_OFFSET = 48;
-const TICK_SIZE = 8;
-const SPACING = 8;
-const SPACING_HALF = 4;
-const SAMPLE_WIDTH = 3;
-
-type SeriesProps = {
-  samples: number[],
-  width: number | undefined,
-  height: number,
-  strokeWidth?: number,
-  color: string
-};
-
-const Series: FC<SeriesProps> = ({
-  samples,
-  width,
-  height,
-  strokeWidth = 1,
-  color
-}) => {
-  if (!width) return null;
-
-  const x = d3.scaleLinear(
-    [0, samples.length - 1],
-    [SPACING_HALF, width - MARGIN_RIGHT]);
-
-  const y = d3.scaleLinear(
-    d3.extent(samples),
-    [height - MARGIN_BOTTOM, MARGIN_TOP]
-  );
-
-  const line = d3.line((point: unknown, index: number) => x(index), y);
-
-  return (
-    <path
-      fill="none"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      d={line(samples)}
-    />
-  )
-};
-
-type LegendItem = {
-  color: string,
-  label: string,
-  samples: number[],
-};
-
-type LegendProps = {
-  legend: LegendItem[]
-};
-
-const Legend: FC<LegendProps> = ({ legend }) => (
-  <section className={styles.legend}>
-    {legend.map(({ color, label }) => (
-      <div key={label} className={styles.legendItem}>
-        <div
-          className={styles.legendColor}
-          style={{ backgroundColor: color }}
-        />
-        <div className={styles.legendText}>
-          {label}
-        </div>
-      </div>
-    ))}
-  </section>
-);
-
-export const Plot = () => {
+export const Plot: FC = () => {
   const axisLeftRef = useRef<SVGGElement>(null);
   const axisBottomRef = useRef<SVGGElement>(null);
+  const [data, setData] = useState<PlotType[]>(initialData);
+  const allDataRef = useRef<PlotType[]>(initialData);
 
   const width = (data.length * SAMPLE_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT;
 
-  const x = d3.scaleLinear(
+  const x = useMemo(() => d3.scaleLinear(
     [0, data[data.length - 1].time],
-    [SPACING_HALF, width - SPACING_HALF]);
+    [SPACING_HALF, width - SPACING_HALF]), [data, width]);
 
-  const y = d3.scaleLinear(
+  const y = useMemo(() => d3.scaleLinear(
     [-1, 1],
     [HEIGHT - MARGIN_BOTTOM, MARGIN_TOP]
-  );
+  ), []);
 
   useEffect(() => {
     d3
@@ -111,32 +62,18 @@ export const Plot = () => {
   }, [y]);
 
   const handleExport = useCallback(() => {
-    const text = data
-      .reduce((lines, { time, command, absolute }) => ([
-        ...lines,
-        `${time},${command},${absolute}`
-      ]), ['time,command,absolute'])
-      .join('\r\n');
-
-      const element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-      element.setAttribute('download', 'output.csv');
-      element.style.display = 'none';
-      document.body.appendChild(element);
-
-      element.click();
-
-      document.body.removeChild(element);
-  }, []);
+    const contents = formatSamples(data);
+    exportSamples(contents);
+  }, [data]);
 
   const absolute = useMemo(() => data.map(({ absolute }) => absolute), []);
   const command = useMemo(() => data.map(({ command }) => command), []);
 
-  const legend = [
+  const legend = useMemo(() => ([
     { samples: absolute, color: '#ec008c', label: 'absolute' },
     { samples: command, color: '#376be8', label: 'command' }
     // #795da3
-  ]
+  ]), [absolute, command]);
 
   const layoutProps = {
     width,

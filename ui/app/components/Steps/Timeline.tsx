@@ -5,14 +5,11 @@ import { VAxis } from "./VAxis";
 import { HAxis } from "./HAxis";
 import { Step } from "./Step";
 import { Playhead } from "./Playhead";
+import { StepType } from "./StepType";
 import styles from "./Timeline.module.css";
 
-type PerformanceStep = {
-  value: number;
-};
-
 type TimelineProps = {
-  steps: PerformanceStep[];
+  steps: StepType[];
   currentStep: number;
   isPlaying: boolean;
   start: number;

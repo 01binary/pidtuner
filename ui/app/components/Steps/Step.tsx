@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useRef } from "react";
+import { StepType } from "./StepType";
 import styles from "./Timeline.module.css";
 
 const MIN = 6.5;
@@ -21,8 +22,7 @@ const getValueFromMouse = (
   return -value;
 };
 
-type StepProps = {
-  value: number;
+type StepProps = StepType & {
   prev: number;
   next: number;
   isCurrentStep: boolean;
