@@ -30,6 +30,7 @@ button {
   -moz-appearance: none;
   color: black;
   min-width: 6rem;
+  min-height: 48px;
   opacity: 0.8;
   transition: opacity 0.3s ease-out;
 }

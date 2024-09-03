@@ -31,16 +31,58 @@ import {
 } from "./constants";
 
 export const Plot: FC = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const axisLeftRef = useRef<SVGGElement>(null);
   const axisBottomRef = useRef<SVGGElement>(null);
   const [data, setData] = useState<PlotType[]>(initialData);
+  const captureRef = useRef<boolean>(true);
   const allDataRef = useRef<PlotType[]>(initialData);
+  const currentTimeRef = useRef<number>(initialData[initialData.length - 1].time + 0.02);
 
-  const width = (data.length * SAMPLE_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT;
+  const width = useMemo(() => (
+    (data.length * SAMPLE_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT
+  ), [data]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (!captureRef.current) return;
+
+      const newSamples: PlotType[] = [
+        {
+          time: currentTimeRef.current + 0.02 * 0,
+          command: Math.random(),
+          absolute: Math.random()
+        },
+        {
+          time: currentTimeRef.current + 0.02 * 1,
+          command: Math.random(),
+          absolute: Math.random()
+        },
+        {
+          time: currentTimeRef.current + 0.02 * 2,
+          command: Math.random(),
+          absolute: Math.random()
+        },
+        {
+          time: currentTimeRef.current + 0.02 * 3,
+          command: Math.random(),
+          absolute: Math.random()
+        },
+      ];
+
+      currentTimeRef.current = currentTimeRef.current + 0.02 * 4;
+
+      allDataRef.current.push(...newSamples);
+      setData(d => d/*.slice(newSamples.length)*/.concat(newSamples))
+    }, 100);
+
+    () => window.clearInterval(timer);
+  }, []);
 
   const x = useMemo(() => d3.scaleLinear(
     [0, data[data.length - 1].time],
-    [SPACING_HALF, width - SPACING_HALF]), [data, width]);
+    [SPACING_HALF, width - SPACING_HALF]
+  ), [data, width]);
 
   const y = useMemo(() => d3.scaleLinear(
     [-1, 1],
@@ -61,13 +103,23 @@ export const Plot: FC = () => {
       .tickSize(TICK_SIZE));
   }, [y]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo(width, 0);
+    }
+  }, [width]);
+
   const handleExport = useCallback(() => {
     const contents = formatSamples(data);
     exportSamples(contents);
   }, [data]);
 
-  const absolute = useMemo(() => data.map(({ absolute }) => absolute), []);
-  const command = useMemo(() => data.map(({ command }) => command), []);
+  const handleToggleCapture = useCallback(() => {
+    captureRef.current = !captureRef.current;
+  }, []);
+
+  const absolute = useMemo(() => data.map(({ absolute }) => absolute), [data]);
+  const command = useMemo(() => data.map(({ command }) => command), [data]);
 
   const legend = useMemo(() => ([
     { samples: absolute, color: '#ec008c', label: 'absolute' },
@@ -89,11 +141,19 @@ export const Plot: FC = () => {
 
         <div className={styles.plotToolbar}>
           <button
+            title="Enable capture"
+            onClick={handleToggleCapture}
+          >
+            <img src="/record.svg" width="24" height="24" />
+          </button>
+
+          <button
             onClick={handleExport}
             title="Export measurements"
           >
             Export
           </button>
+
           <button
             className="warning estop"
             title="Emergency stop"
@@ -117,7 +177,10 @@ export const Plot: FC = () => {
         </svg>
 
         {/* Scrolling plot */}
-        <div className={styles.plotScroll}>
+        <div
+          ref={scrollRef}
+          className={styles.plotScroll}
+        >
           <svg
             width={width}
             height={HEIGHT}
