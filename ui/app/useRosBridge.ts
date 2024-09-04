@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 
-export const DEFAULT_ADDDRESS = "192.168.64.8:9090";
+export const DEFAULT_ADDDRESS = "0.0.0.0:8080";
 
 const VELOCITY_TOPIC = "/velocity_feedback";
 const VELOCITY_TYPE = "pidtuner/VelocityFeedback";

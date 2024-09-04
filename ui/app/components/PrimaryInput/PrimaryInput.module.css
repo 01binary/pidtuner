@@ -6,6 +6,7 @@
 
 .autoSize {
   width: initial;
+  max-width: 138px;
   field-sizing: content;
 }
 
