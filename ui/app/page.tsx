@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import {
   DEFAULT_ADDDRESS,
   VelocityFeedback,
-  useRosBridge
+  useRosBridge,
+  rosTimeToSec
 } from "./useRosBridge";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
@@ -27,12 +28,16 @@ const Page = () => {
   }, []);
 
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
+    if (!isCapturing) return;
+
     setData(d => d.concat({
-      time: velocity.time,
+      time: rosTimeToSec(velocity.time),
       command: velocity.command,
       absolute: velocity.absolute
     }))
-  }, []);
+  }, [isCapturing]);
+
+  console.log(data);
 
   useRosBridge({
     address,

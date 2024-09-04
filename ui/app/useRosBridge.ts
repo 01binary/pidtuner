@@ -8,14 +8,19 @@ const VELOCITY_TOPIC = "/velocity_feedback";
 const VELOCITY_TYPE = "pidtuner/VelocityFeedback";
 const DEFAULT_PARAMS = {};
 
+type RosTime = {
+  secs: number;
+  nsecs: number;
+};
+
 export type VelocityFeedback = {
   command: number;
   LPWM: number;
   RPWM: number;
   absolute: number;
   quadrature: number;
-  time: number;
-  start: number;
+  time: RosTime;
+  start: RosTime;
   elapsed: number;
   dt: number;
   step: number;
@@ -60,7 +65,13 @@ export const useRosBridge = ({
     });
 
     velocityFeedbackTopic.subscribe(onVelocity);
+
+    () => velocityFeedbackTopic.unsubscribe();
   }, [ros, onVelocity]);
 
   return ros;
 };
+
+export const rosTimeToSec = (rosTime: RosTime) => (
+  rosTime.secs + rosTime.nsecs * 1e9
+);
