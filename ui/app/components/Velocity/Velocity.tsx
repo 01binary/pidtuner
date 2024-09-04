@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PrimaryInput } from "../PrimaryInput";
 import { Separator } from "../Separator";
 import { Module } from "../Module";
@@ -13,6 +13,11 @@ import { Meter } from "./Meter";
 export const Velocity = () => {
   const [velocity, setVelocity] = useState(0);
   const [invert, setInvert] = useState(false);
+
+  useEffect(() => {
+    // publish velocity command
+    console.log('publish', velocity);
+  }, [velocity]);
 
   const handleChangeVelocity = useCallback((e) => {
     setVelocity(e.target.value / 100);
