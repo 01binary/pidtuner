@@ -19,17 +19,26 @@ const Page = () => {
   const [data, setData] = useState<PlotType[]>([]);
 
   const handleConnection = useCallback(() => {
+    console.log('connected!');
+  }, []);
 
+  const handleError = useCallback((e) => {
+    console.error(e);
   }, []);
 
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
-
+    setData(d => d.concat({
+      time: velocity.time,
+      command: velocity.command,
+      absolute: velocity.absolute
+    }))
   }, []);
 
   useRosBridge({
     address,
     onConnection: handleConnection,
-    onVelocity: handleVelocity
+    onVelocity: handleVelocity,
+    onError: handleError
   })
 
   return (
