@@ -1,17 +1,15 @@
 "use client";
 
 import * as d3 from "d3";
-import {
+import React, {
   FC,
   useCallback,
   useEffect,
   useMemo,
-  useRef,
-  useState
+  useRef
 } from "react";
 import { PlotType } from "./PlotType";
 import styles from "./Plot.module.css";
-import initialData from "./sample.json";
 import { exportSamples } from "./exportSamples";
 import { formatSamples } from "./formatSamples";
 import { Series } from "./Series";
@@ -30,58 +28,27 @@ import {
   SPACING
 } from "./constants";
 
-export const Plot: FC = () => {
+type PlotProps = {
+  data: PlotType[];
+  isCapturing: boolean;
+  setCapturing: React.SetStateAction<boolean>;
+};
+
+export const Plot: FC<PlotProps> = ({
+  data,
+  isCapturing,
+  setCapturing
+}) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const axisLeftRef = useRef<SVGGElement>(null);
   const axisBottomRef = useRef<SVGGElement>(null);
-  const [data, setData] = useState<PlotType[]>(initialData);
-  const [isCapturing, setCapturing] = useState(true);
-  const captureRef = useRef<boolean>(true);
-  const allDataRef = useRef<PlotType[]>(initialData);
-  const currentTimeRef = useRef<number>(initialData[initialData.length - 1].time + 0.02);
 
   const width = useMemo(() => (
     (data.length * SAMPLE_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT
   ), [data]);
 
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      if (!captureRef.current) return;
-
-      const newSamples: PlotType[] = [
-        {
-          time: currentTimeRef.current + 0.02 * 0,
-          command: Math.random(),
-          absolute: Math.random()
-        },
-        {
-          time: currentTimeRef.current + 0.02 * 1,
-          command: Math.random(),
-          absolute: Math.random()
-        },
-        {
-          time: currentTimeRef.current + 0.02 * 2,
-          command: Math.random(),
-          absolute: Math.random()
-        },
-        {
-          time: currentTimeRef.current + 0.02 * 3,
-          command: Math.random(),
-          absolute: Math.random()
-        },
-      ];
-
-      currentTimeRef.current = currentTimeRef.current + 0.02 * 4;
-
-      allDataRef.current.push(...newSamples);
-      setData(d => d/*.slice(newSamples.length)*/.concat(newSamples))
-    }, 100);
-
-    () => window.clearInterval(timer);
-  }, []);
-
   const x = useMemo(() => d3.scaleLinear(
-    [0, data[data.length - 1].time],
+    [0, data[data.length - 1]?.time ?? 0],
     [SPACING_HALF, width - SPACING_HALF]
   ), [data, width]);
 
@@ -116,7 +83,6 @@ export const Plot: FC = () => {
   }, [data]);
 
   const handleToggleCapture = useCallback(() => {
-    captureRef.current = !captureRef.current;
     setCapturing(value => !value);
   }, []);
 

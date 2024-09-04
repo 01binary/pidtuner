@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Plot } from "./components/Plot";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,13 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <header>
-          <Plot />
-        </header>
+        <script
+          type="text/javascript"
+          src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"
+          async
+        />
 
-        <main>
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );
