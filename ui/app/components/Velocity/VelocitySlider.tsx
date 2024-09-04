@@ -1,4 +1,5 @@
 import { FC, useCallback, useRef, useEffect } from "react";
+import { inter } from "../../inter";
 import styles from "./VelocitySlider.module.css";
 
 const MIN = 1;
@@ -170,7 +171,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         <text
           className={styles.label}
           transform="matrix(1 0 0 1 15.6066 24.0709)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="14px"
           onClick={() => handleChange(1)}
         >
@@ -179,7 +180,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         <text
           className={styles.label}
           transform="matrix(1 0 0 1 23.5636 51.2281)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="14px"
           onClick={() => handleChange(0.5)}
         >
@@ -188,7 +189,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         <text
           className={styles.label}
           transform="matrix(1 0 0 1 31.5206 78.8717)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="14px"
           onClick={() => handleChange(0)}
         >
@@ -197,7 +198,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         <text
           className={styles.label}
           transform="matrix(1 0 0 1 18.9699 106.9201)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="14px"
           onClick={() => handleChange(-0.5)}
         >
@@ -206,7 +207,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         <text
           className={styles.label}
           transform="matrix(1 0 0 1 11.0128 133.6735)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="14px"
           onClick={() => handleChange(-1)}
         >
@@ -313,7 +314,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         <text
           transform="matrix(1 0 0 1 109.4626 145.6881)"
           fill="#5B5B5B"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
         >
           {invert ? 'LPWM' : 'RPWM'}
@@ -321,7 +322,7 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
         <text
           transform="matrix(1 0 0 1 110.2097 12.8253)"
           fill="#5B5B5B"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
         >
           {invert ? 'RPWM' : 'LPWM'}

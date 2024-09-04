@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { inter } from "../../inter";
 import styles from "./Timeline.module.css";
 
 type VAxisProps = {
@@ -20,7 +21,7 @@ export const VAxis: FC<VAxisProps> = ({
       <text
         transform="matrix(1 0 0 1 0.8954 16.132)"
         fill="#5B5B5B"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
       >
         {invert ? 'RPWM' : 'LPWM'}
@@ -28,7 +29,7 @@ export const VAxis: FC<VAxisProps> = ({
       <text
         transform="matrix(1 0 0 1 -1.849316e-04 276.6776)"
         fill="#5B5B5B"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
       >
         {invert ? 'LPWM' : 'RPWM'}
@@ -38,7 +39,7 @@ export const VAxis: FC<VAxisProps> = ({
     <g id="clickableLabels">
       <text
         transform="matrix(1 0 0 1 86.7763 145.8334)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         className={styles.label}
         onClick={() => onSetValue(0)}
@@ -47,7 +48,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 66.3153 16.1102)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         onClick={() => onSetValue(1)}
       >
@@ -55,7 +56,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 76.5448 80.5704)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         className={styles.label}
         onClick={() => onSetValue(0.5)}
@@ -64,7 +65,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 76.5448 47.9391)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         className={styles.label}
         onClick={() => onSetValue(0.75)}
@@ -73,7 +74,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 76.5448 113.2018)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         className={styles.label}
         onClick={() => onSetValue(0.25)}
@@ -82,7 +83,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 70.6395 178.4055)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         className={styles.label}
         onClick={() => onSetValue(-0.25)}
@@ -91,7 +92,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 70.6386 211.308)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         className={styles.label}
         onClick={() => onSetValue(-0.5)}
@@ -100,7 +101,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 70.6386 242.775)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         onClick={() => onSetValue(-0.75)}
       >
@@ -108,7 +109,7 @@ export const VAxis: FC<VAxisProps> = ({
       </text>
       <text
         transform="matrix(1 0 0 1 60.4091 276.2621)"
-        fontFamily="'Roboto-Medium'"
+        fontFamily={inter.style.fontFamily}
         fontSize="18px"
         className={styles.label}
         onClick={() => onSetValue(-1)}

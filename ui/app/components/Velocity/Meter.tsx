@@ -1,4 +1,5 @@
-import { FC, useMemo, useRef } from "react";
+import { FC } from "react";
+import { inter } from "../../inter";
 import styles from "./Meter.module.css";
 
 type MeterProps = {
@@ -21,7 +22,7 @@ export const Meter: FC<MeterProps> = ({
     <text
       transform="matrix(1 0 0 1 15.3742 73.905)"
       fill={color}
-      fontFamily="'Roboto-Medium'"
+      fontFamily={inter.style.fontFamily}
       fontSize="24px"
     >
       {label}
@@ -73,11 +74,11 @@ export const Meter: FC<MeterProps> = ({
     </g>
 
     <g id="labels">
-      <text transform="matrix(1 0 0 1 15.0187 39.1716)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">0</text>
-      <text transform="matrix(1 0 0 1 40.3175 24.5037)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">5</text>
-      <text transform="matrix(1 0 0 1 65.5675 18.4348)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">10</text>
-      <text transform="matrix(1 0 0 1 96.2638 23.1145)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">15</text>
-      <text transform="matrix(1 0 0 1 120.7033 37.1716)" fontFamily="'Roboto-Medium'" fontSize="9.9443px">20</text>
+      <text transform="matrix(1 0 0 1 15.0187 39.1716)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">0</text>
+      <text transform="matrix(1 0 0 1 40.3175 24.5037)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">5</text>
+      <text transform="matrix(1 0 0 1 65.5675 18.4348)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">10</text>
+      <text transform="matrix(1 0 0 1 96.2638 23.1145)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">15</text>
+      <text transform="matrix(1 0 0 1 120.7033 37.1716)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">20</text>
     </g>
   </svg>
 );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, FC } from "react";
+import { inter } from "../../inter";
 import { RAD_TO_DEG, useKnob } from "../knobUtils";
 import styles from "./VelocityKnob.module.css";
 
@@ -324,7 +325,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           transform="matrix(1 0 0 1 7.0296 25.5429)"
           fill="#5B5B5B"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
         >
           {invert ? "LPWM" : "RPWM"}
@@ -332,7 +333,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           transform="matrix(1 0 0 1 266.74 25.5429)"
           fill="#5B5B5B"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
         >
           {invert ? "RPWM" : "LPWM"}
@@ -343,7 +344,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 71.4851 159.2597)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(-0.75)}
         >
@@ -352,7 +353,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 40.99 93.5742)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(-0.5)}
         >
@@ -361,7 +362,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 71.4851 25.5429)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(-0.25)}
         >
@@ -370,7 +371,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 227.5262 159.2597)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(0.75)}
         >
@@ -379,7 +380,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 258.0232 93.5742)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(0.5)}
         >
@@ -388,7 +389,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 227.5262 25.5429)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(0.25)}
         >
@@ -397,7 +398,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 156.0974 13.9208)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(0)}
         >
@@ -406,7 +407,7 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
         <text
           className={styles.interactiveLabel}
           transform="matrix(1 0 0 1 145.867 179.0742)"
-          fontFamily="'Roboto-Medium'"
+          fontFamily={inter.style.fontFamily}
           fontSize="18px"
           onClick={() => handleChange(1)}
         >

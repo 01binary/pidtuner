@@ -108,6 +108,17 @@ export const Plot: FC<PlotProps> = ({
         <h1>Motor Control</h1>
 
         <div className={styles.plotToolbar}>
+          <div className={styles.toolbarGroup}>
+            <input
+              type="text"
+              placeholder="ROS server"
+            />
+          </div>
+
+          <div className={styles.toolbarGroup}>
+            <Legend legend={legend} />
+          </div>
+
           <button
             title="Enable capture"
             onClick={handleToggleCapture}
@@ -210,8 +221,6 @@ export const Plot: FC<PlotProps> = ({
           </svg>
         </div>
       </section>
-
-      <Legend legend={legend} />
     </>
   );
 };
