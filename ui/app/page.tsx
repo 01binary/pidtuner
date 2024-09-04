@@ -4,9 +4,9 @@ import { useCallback, useState, useRef } from "react";
 import {
   DEFAULT_ADDDRESS,
   VelocityFeedback,
-  useRosBridge,
+  useMotorControl,
   rosTimeToSec
-} from "./useRosBridge";
+} from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
 import { Velocity } from "./components/Velocity";
@@ -39,7 +39,7 @@ const Page = () => {
 
   console.log(data);
 
-  useRosBridge({
+  useMotorControl({
     address,
     onConnection: handleConnection,
     onVelocity: handleVelocity,
