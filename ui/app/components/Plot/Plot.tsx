@@ -35,6 +35,7 @@ export const Plot: FC = () => {
   const axisLeftRef = useRef<SVGGElement>(null);
   const axisBottomRef = useRef<SVGGElement>(null);
   const [data, setData] = useState<PlotType[]>(initialData);
+  const [isCapturing, setCapturing] = useState(true);
   const captureRef = useRef<boolean>(true);
   const allDataRef = useRef<PlotType[]>(initialData);
   const currentTimeRef = useRef<number>(initialData[initialData.length - 1].time + 0.02);
@@ -116,6 +117,7 @@ export const Plot: FC = () => {
 
   const handleToggleCapture = useCallback(() => {
     captureRef.current = !captureRef.current;
+    setCapturing(value => !value);
   }, []);
 
   const absolute = useMemo(() => data.map(({ absolute }) => absolute), [data]);
@@ -144,7 +146,10 @@ export const Plot: FC = () => {
             title="Enable capture"
             onClick={handleToggleCapture}
           >
-            <img src="/record.svg" width="24" height="24" />
+            {isCapturing
+              ? <img src="/record.svg" width="24" height="24" />
+              : <img src="/pause.svg" width="24" height="24" />
+            }
           </button>
 
           <button

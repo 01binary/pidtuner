@@ -112,7 +112,7 @@ export const Steps = () => {
   }, []);
 
   const handleRemoveStep = useCallback(() => {
-    setSteps(steps => steps.slice(0, steps.length - 2));
+    setSteps(steps => steps.slice(0, steps.length - 1));
   }, []);
 
   useEffect(() => {
