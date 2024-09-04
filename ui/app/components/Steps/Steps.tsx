@@ -1,73 +1,10 @@
 "use client";
 
-import { FC, useCallback, useEffect, useState } from "react";
-import { Group } from "../Group";
+import { useCallback, useState } from "react";
 import { Module } from "../Module";
-import { PrimaryInput } from "../PrimaryInput";
-import { Separator } from "../Separator";
+import { Controls } from "./Controls";
 import { Timeline } from "./Timeline";
-
-type ControlsProps = {
-  step: number;
-  grid: number;
-  isPlaying: boolean;
-  onStepChange: (step: number) => void;
-  onGridChange: (grid: number) => void;
-  onPlay: () => void;
-  onStop: () => void;
-};
-
-const Controls: FC<ControlsProps> = ({
-  step,
-  grid,
-  onStepChange,
-  onGridChange,
-  onPlay,
-  onStop
-}) => (
-  <Group center>
-    <PrimaryInput
-      type="number"
-      value={step}
-      onChange={(e) => onStepChange(Number(e.target.value))}
-      min={0}
-      autoSize
-    />
-
-    <Separator />
-
-    <Group vertical>
-      <button title="Play" onClick={onPlay}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-        >
-          <polygon
-            fill="#376be8"
-            points="22.4,12 1.6,0 1.6,23.9 "
-          />
-        </svg>
-      </button>
-
-      <button title="Stop" onClick={onStop}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-        >
-          <rect
-            x="1.2"
-            y="1.2"
-            fill="#EC008C"
-            width="21.6"
-            height="21.6"
-          />
-        </svg>
-      </button>
-    </Group>
-  </Group>
-);
+import { formatSteps } from "./formatSteps";
 
 const defaultSteps = [
   { value: 0 },
@@ -86,7 +23,9 @@ export const Steps = () => {
 
   const handlePlay = useCallback(() => {
     setPlaying(true);
-  }, []);
+    const message = formatSteps(steps, grid);
+    console.log(message);
+  }, [steps, grid]);
 
   const handleStop = useCallback(() => {
     setPlaying(false);
@@ -114,16 +53,6 @@ export const Steps = () => {
   const handleRemoveStep = useCallback(() => {
     setSteps(steps => steps.slice(0, steps.length - 1));
   }, []);
-
-  useEffect(() => {
-    if (isPlaying) {
-      const timer = setInterval(() => {
-        setTime(t => t + 0.1 > 6 ? 0 : t + 0.1);
-      }, 100);
-
-      return () => clearInterval(timer);
-    }
-  }, [isPlaying]);
 
   return (
     <Module

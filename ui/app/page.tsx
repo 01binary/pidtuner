@@ -8,7 +8,7 @@ const Main = () => (
     <Velocity />
     {/*<Position />*/}
     <Steps />
-    <Settings />
+    {/*<Settings />*/}
   </>
 );
 
