@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 export const DEFAULT_ADDDRESS = "0.0.0.0:8080";
 
-const VELOCITY_TOPIC = "/velocity_feedback";
-const VELOCITY_TYPE = "pidtuner/VelocityFeedback";
+const VELOCITY_FEEDBACK_TOPIC = "/velocity_feedback";
+const VELOCITY_FEEDBACK_TYPE = "pidtuner/VelocityFeedback";
+const VELOCITY_COMMAND_TOPIC = "/velocity";
+const VELOCITY_COMMAND_TYPE = "pidtuner/VelocityCommand";
+const STEP_COMMAND_TOPIC = "/step";
+const STEP_COMMAND_TYPE = "pidtuner/Steps";
+const ESTOP_COMMAND_TOPIC = "/estop";
+const ESTOP_COMMAND_TYPE = "pidtuner/EmergencyStop";
+
 const DEFAULT_PARAMS = {};
 
 type RosTime = {
@@ -26,20 +33,6 @@ export type VelocityFeedback = {
   step: number;
 };
 
-export type VelocityCommand = {
-  command: number;
-};
-
-export type Step = {
-  command: number;
-  duration: number;
-};
-
-export type Steps = {
-  steps: Step[];
-  loop: boolean;
-};
-
 export type PositionFeedback = {
   position: number;   // Absolute encoder position
   goal: number;       // Absolute encoder goal position
@@ -50,9 +43,23 @@ export type PositionFeedback = {
   p: number;          // Proportional command
   i: number;          // Integral command
   d: number;          // Derivative command
-}
+};
 
-export type EmergencyStop = {
+export type VelocityCommand = {
+  command: number;
+};
+
+export type Step = {
+  command: number;
+  duration: number;
+};
+
+export type StepCommand = {
+  steps: Step[];
+  loop: boolean;
+};
+
+export type EmergencyStopCommand = {
   stop: boolean;
 };
 
@@ -114,12 +121,12 @@ export const useMotorControl = ({
   }, [onConnection, onError, address]);
 
   useEffect(() => {
-    if (!onVelocity) return;
+    if (!onVelocity || !ros) return;
 
     const velocityFeedbackTopic = new ROSLIB.Topic({
       ros,
-      name: VELOCITY_TOPIC,
-      messageType: VELOCITY_TYPE
+      name: VELOCITY_FEEDBACK_TOPIC,
+      messageType: VELOCITY_FEEDBACK_TYPE
     });
 
     velocityFeedbackTopic.subscribe(onVelocity);
@@ -127,7 +134,71 @@ export const useMotorControl = ({
     () => velocityFeedbackTopic.unsubscribe();
   }, [ros, onVelocity]);
 
-  return ros;
+  const velocityPublisher = useMemo(() => {
+    if (!ros) return;
+
+    const velocityTopic = new ROSLIB.Topic({
+      ros,
+      name: VELOCITY_COMMAND_TOPIC,
+      messageType: VELOCITY_COMMAND_TYPE
+    });
+
+    return velocityTopic;
+  }, [ros]);
+
+  const stepPublisher = useMemo(() => {
+    if (!ros) return;
+
+    const stepTopic = new ROSLIB.Topic({
+      ros,
+      name: STEP_COMMAND_TOPIC,
+      messageType: STEP_COMMAND_TYPE
+    });
+
+    return stepTopic;
+  }, [ros]);
+
+  const estopPublisher = useMemo(() => {
+    if (!ros) return;
+
+    const estopTopic = new ROSLIB.Topic({
+      ros,
+      name: ESTOP_COMMAND_TOPIC,
+      messageType: ESTOP_COMMAND_TYPE
+    });
+
+    return estopTopic;
+  }, [ros]);
+
+  const publishVelocity = useCallback((velocity: VelocityCommand) => {
+    if (!ros) return;
+
+    const message = new ROSLIB.Message(velocity);
+    velocityPublisher.publish(message);
+
+  }, [velocityPublisher]);
+
+  const publishSteps = useCallback((steps: StepCommand) => {
+    if (!ros) return;
+
+    const message = new ROSLIB.Message(steps);
+    stepPublisher.publish(message);
+
+  }, [stepPublisher]);
+
+  const publishEstop = useCallback((estop: EmergencyStopCommand) => {
+    if (!ros) return;
+
+    const message = new ROSLIB.Message(estop);
+    estopPublisher.publish(message);
+
+  }, [estopPublisher]);
+
+  return {
+    publishVelocity,
+    publishEstop,
+    publishSteps
+  };
 };
 
 export const rosTimeToSec = (rosTime: RosTime) => (
