@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { PrimaryInput } from "../PrimaryInput";
 import { Separator } from "../Separator";
 import { Module } from "../Module";
@@ -9,14 +9,20 @@ import { VelocitySlider } from "./VelocitySlider";
 import { VelocityKnob } from "./VelocityKnob";
 import { Invert } from "./Invert";
 import { Meter } from "./Meter";
+import { VelocityCommand } from "@/app/useMotorControl";
 
-export const Velocity = () => {
+type VelocityProps = {
+  publishVelocity: (command: VelocityCommand) => void;
+};
+
+export const Velocity: FC<VelocityProps> = ({
+  publishVelocity
+}) => {
   const [velocity, setVelocity] = useState(0);
   const [invert, setInvert] = useState(false);
 
   useEffect(() => {
-    // publish velocity command
-    console.log('publish', velocity);
+    publishVelocity({ command: velocity });
   }, [velocity]);
 
   const handleChangeVelocity = useCallback((e) => {

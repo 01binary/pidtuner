@@ -5,7 +5,8 @@ import {
   DEFAULT_ADDDRESS,
   VelocityFeedback,
   useMotorControl,
-  rosTimeToSec
+  rosTimeToSec,
+  VelocityCommand
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
@@ -37,14 +38,12 @@ const Page = () => {
     }))
   }, [isCapturing]);
 
-  console.log(data);
-
-  useMotorControl({
+  const { publishVelocity } = useMotorControl({
     address,
     onConnection: handleConnection,
     onVelocity: handleVelocity,
     onError: handleError
-  })
+  });
 
   return (
     <>
@@ -55,7 +54,7 @@ const Page = () => {
       </header>
 
       <main>
-        <Velocity />
+        <Velocity publishVelocity={publishVelocity} />
         {/*<Position />*/}
         <Steps />
         {/*<Settings />*/}
