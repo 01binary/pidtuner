@@ -8,9 +8,9 @@ const HALF = HEIGHT / 2;
 
 const getValueFromMouse = (
   clientY: number,
-  timelineTop: number
+  offset: number
 ) => {
-  const norm = (clientY - timelineTop - MIN) / HEIGHT;
+  const norm = (clientY - offset - MIN) / HEIGHT;
 
   let value = norm * 2 - 1;
 
@@ -29,7 +29,6 @@ type StepProps = StepType & {
   isFirstStep: boolean;
   isLastStep: boolean;
   isReadOnly: boolean;
-  timelineTop: number;
   onSelect: () => void;
   onChange: (value: number) => void;
 };
@@ -42,7 +41,6 @@ export const Step: FC<StepProps> = ({
   isFirstStep,
   isLastStep,
   isReadOnly,
-  timelineTop,
   onSelect,
   onChange
 }) => {
@@ -54,22 +52,24 @@ export const Step: FC<StepProps> = ({
     e.preventDefault();
     e.stopPropagation();
 
-    const { clientY } = e;
-    const value = getValueFromMouse(clientY, timelineTop);
+    const { clientY, target } = e;
+    const targetTop = target.getBoundingClientRect().top;
+    const value = getValueFromMouse(clientY, targetTop - MIN);
 
     onChange(value);
     isDraggingRef.current = true;
 
     onSelect();
-  }, [onSelect, isReadOnly, timelineTop]);
+  }, [onSelect, onChange, isReadOnly]);
 
   const handleMouseMove = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (isDraggingRef.current) {
-      const { clientY } = e;
-      const value = getValueFromMouse(clientY, timelineTop);
+      const { clientY, target } = e;
+      const targetTop = target.getBoundingClientRect().top;
+      const value = getValueFromMouse(clientY, targetTop - MIN);
       onChange(value);
     }
   }, [onChange]);
@@ -109,6 +109,7 @@ export const Step: FC<StepProps> = ({
         {isLastStep
         ? (
           <path
+            className={styles.stepDecorator}
             fill="none"
             stroke="#D3D3D3"
             d="M140.3,260.5H5.2c-2.6,0-4.7-2.1-4.7-4.7V5.2c0-2.6,2.1-4.7,4.7-4.7
@@ -117,6 +118,7 @@ export const Step: FC<StepProps> = ({
         )
         : (
           <path
+            className={styles.stepDecorator}
             fill="none"
             stroke="#D3D3D3"
             d="M141,260.5H5.2c-2.6,0-4.7-2.1-4.7-4.7V5.2c0-2.6,2.1-4.7,4.7-4.7H141

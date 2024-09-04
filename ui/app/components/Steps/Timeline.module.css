@@ -74,10 +74,16 @@
 .stepBorder {
   fill: none;
   transition: fill 0.2s ease-out;
+  pointer-events: none;
 }
 
 .stepCenter {
   stroke: #A0A0A0;
+  pointer-events: none;
+}
+
+.stepDecorator {
+  pointer-events: none;
 }
 
 .stepLabel {
@@ -90,6 +96,11 @@
   text-align: right;
   padding: 8px;
   font-size: 24px;
+  pointer-events: none;
+}
+
+.stepBorder {
+  pointer-events: none;
 }
 
 .step:hover .stepBorder {
@@ -138,6 +149,7 @@
 
 .value {
   stroke: black;
+  pointer-events: none;
 }
 
 .step.current .value {

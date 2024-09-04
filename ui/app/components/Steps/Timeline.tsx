@@ -42,13 +42,6 @@ export const Timeline: FC<TimelineProps> = ({
   onRemoveStep
 }) => {
   const timelineRef = useRef<HTMLDivElement>(null);
-  const [timelineTop, setTimelineTop] = useState(0);
-
-  useEffect(() => {
-    if (timelineRef.current) {
-      setTimelineTop(timelineRef.current?.getBoundingClientRect()?.top ?? 0);
-    }
-  }, []);
 
   const handleValuePreset = useCallback((value: number) => {
     if (isPlaying) return;
@@ -56,23 +49,20 @@ export const Timeline: FC<TimelineProps> = ({
   }, [onStepChange, currentStep, isPlaying]);
 
   return (
-    <section className={styles.timeline}>
-      <VAxis
-        onSetValue={handleValuePreset}
-      />
+    <section
+      className={styles.timeline}
+      ref={timelineRef}
+    >
+      <VAxis onSetValue={handleValuePreset} />
 
       <div className={styles.scroll}>
-        <div
-          ref={timelineRef}
-          className={styles.view}
-        >
+        <div className={styles.view}>
           {steps.map(({ value }, index) => (
             <Step
               key={index}
               value={value}
               prev={index > 0 ? steps[index - 1].value : 0}
               next={index < steps.length - 1 ? steps[index + 1].value : 0}
-              timelineTop={timelineTop}
               isCurrentStep={index === currentStep}
               isFirstStep={index === 0}
               isLastStep={index === steps.length - 1}
