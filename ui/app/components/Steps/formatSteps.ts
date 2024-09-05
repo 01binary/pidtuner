@@ -1,8 +1,13 @@
 import { StepType } from "./StepType";
 
-export const formatSteps = (steps: StepType[], grid: number) => {
-  return steps.map(({ value }) => ({
+export const formatSteps = (
+  steps: StepType[],
+  grid: number,
+  loop: boolean
+) => ({
+  loop,
+  steps: steps.map(({ value }) => ({
     command: value,
     duration: grid
   }))
-};
+});

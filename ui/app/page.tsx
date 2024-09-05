@@ -41,7 +41,8 @@ const Page = () => {
 
   const {
     publishVelocity,
-    publishEstop
+    publishEstop,
+    publishSteps
   } = useMotorControl({
     address,
     onConnection: handleConnection,
@@ -73,7 +74,10 @@ const Page = () => {
       <main>
         <Velocity publishVelocity={publishVelocity} />
         {/*<Position />*/}
-        <Steps />
+        <Steps
+          publishSteps={publishSteps}
+          onStop={handleEStop}
+        />
         {/*<Settings />*/}
       </main>
     </>

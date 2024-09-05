@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { Module } from "../Module";
 import { Controls } from "./Controls";
 import { Timeline } from "./Timeline";
 import { formatSteps } from "./formatSteps";
+import { StepCommand } from "@/app/useMotorControl";
 
 const defaultSteps = [
   { value: 0 },
@@ -14,22 +15,32 @@ const defaultSteps = [
   { value: 0.5 }
 ];
 
-export const Steps = () => {
+type StepsProps = {
+  publishSteps: (command: StepCommand) => void;
+  onStop: () => void;
+};
+
+export const Steps: FC<StepsProps> = ({
+  publishSteps,
+  onStop
+}) => {
   const [steps, setSteps] = useState(defaultSteps);
   const [step, setStep] = useState(0);
   const [grid, setGrid] = useState(1);
+  const [isLooping, setLooping] = useState(false);
   const [isPlaying, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
 
   const handlePlay = useCallback(() => {
     setPlaying(true);
-    const message = formatSteps(steps, grid);
-    console.log(message);
-  }, [steps, grid]);
+    const message = formatSteps(steps, grid, isLooping);
+    publishSteps(message);
+  }, [steps, grid, isLooping, publishSteps]);
 
   const handleStop = useCallback(() => {
     setPlaying(false);
-  }, []);
+    onStop();
+  }, [onStop]);
 
   const handleStepSelect = useCallback((selectStep: number) => {
     setStep(selectStep);
