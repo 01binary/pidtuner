@@ -29,12 +29,10 @@ export const Controls: FC<ControlsProps> = ({
 
     <PrimaryInput
       type="number"
-      label="Grid"
+      label="Grid (s)"
       value={grid}
-      units="s"
       onChange={(e) => onGridChange(Number(e.target.value))}
       min={0}
-      autoSize
     />
 
     <button

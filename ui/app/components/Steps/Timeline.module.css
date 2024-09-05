@@ -158,9 +158,9 @@
 }
 
 .manageButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   padding: 16px;
-  justify-content: center;
+}
+
+.manageButtons button {
+  margin-bottom: 8px;
 }
