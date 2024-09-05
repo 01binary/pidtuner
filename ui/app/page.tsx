@@ -20,20 +20,28 @@ const Page = () => {
   const [isCapturing, setCapturing] = useState<boolean>(true);
   const [isEmergencyStop, setEmergencyStop] = useState<boolean>(false);
   const [data, setData] = useState<PlotType[]>([]);
+  const [sequenceTime, setSequenceTime] = useState(0);
+  const [step, setStep] = useState(0);
 
   const handleConnection = useCallback(() => {
     setConnected(true);
   }, []);
 
-  const handleError = useCallback((e) => {
+  const handleError = useCallback(() => {
     setConnected(false);
   }, []);
 
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
     if (!isCapturing) return;
 
+    const time = rosTimeToSec(velocity.time);
+    const start = rosTimeToSec(velocity.start);
+
+    setStep(velocity.step);
+    setSequenceTime(time - start);
+
     setData(d => d.concat({
-      time: rosTimeToSec(velocity.time),
+      time,
       command: velocity.command,
       absolute: velocity.absolute
     }))
@@ -75,6 +83,9 @@ const Page = () => {
         <Velocity publishVelocity={publishVelocity} />
         {/*<Position />*/}
         <Steps
+          time={sequenceTime}
+          step={step}
+          setStep={setStep}
           publishSteps={publishSteps}
           onStop={handleEStop}
         />

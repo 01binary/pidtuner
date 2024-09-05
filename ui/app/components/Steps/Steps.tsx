@@ -16,20 +16,24 @@ const defaultSteps = [
 ];
 
 type StepsProps = {
+  time: number;
+  step: number;
+  setStep: React.Dispatch<React.SetStateAction<number>>;
   publishSteps: (command: StepCommand) => void;
   onStop: () => void;
 };
 
 export const Steps: FC<StepsProps> = ({
+  time,
+  step,
+  setStep,
   publishSteps,
   onStop
 }) => {
   const [steps, setSteps] = useState(defaultSteps);
-  const [step, setStep] = useState(0);
   const [grid, setGrid] = useState(1);
   const [isLooping, setLooping] = useState(false);
   const [isPlaying, setPlaying] = useState(false);
-  const [time, setTime] = useState(0);
 
   const handlePlay = useCallback(() => {
     setPlaying(true);
