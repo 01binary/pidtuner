@@ -40,6 +40,7 @@ type PlotProps = {
   mode: ControlMode;
   isConnected: boolean;
   isCapturing: boolean;
+  isEmergencyStop: boolean;
   setCapturing: React.Dispatch<React.SetStateAction<boolean>>;
   onEStop: () => void;
 };
@@ -50,6 +51,7 @@ export const Plot: FC<PlotProps> = ({
   isConnected,
   isCapturing,
   setCapturing,
+  isEmergencyStop,
   mode,
   data,
   onEStop
@@ -167,7 +169,10 @@ export const Plot: FC<PlotProps> = ({
             title="Emergency stop"
             onClick={onEStop}
           >
-            <img src="/estop.svg" width="24" height="24" />
+            {isEmergencyStop
+              ? <img src="/estop-on.svg" width="24" height="24" />
+              : <img src="/estop.svg" width="24" height="24" />
+            }
           </button>
         </div>
       </section>

@@ -97,6 +97,7 @@ const Page = () => {
             server: address,
             onServerChange: () => setAddress,
             onEStop: handleEStop,
+            isEmergencyStop,
             isConnected
           }}
         />
