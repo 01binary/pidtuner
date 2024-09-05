@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import {
   DEFAULT_ADDDRESS,
   VelocityFeedback,
@@ -22,7 +22,12 @@ const Page = () => {
   const [data, setData] = useState<PlotType[]>([]);
   const [sequenceTime, setSequenceTime] = useState(0);
   const [step, setStep] = useState(0);
+  const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
+
+  useEffect(() => {
+    isCapturingRef.current = isCapturing;
+  }, [isCapturing]);
 
   const handleConnection = useCallback(() => {
     setConnected(true);
@@ -33,7 +38,7 @@ const Page = () => {
   }, []);
 
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
-    if (!isCapturing) return;
+    if (!isCapturingRef.current) return;
 
     const time = rosTimeToSec(velocity.time);
     const start = rosTimeToSec(velocity.start);
@@ -47,10 +52,8 @@ const Page = () => {
       time: time - firstTimeRef.current,
       command: velocity.command,
       absolute: velocity.absolute
-    }))
-
-    console.log(velocity.absolute);
-  }, [isCapturing]);
+    }));
+  }, []);
 
   const {
     publishVelocity,
