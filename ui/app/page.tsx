@@ -5,7 +5,8 @@ import {
   DEFAULT_ADDDRESS,
   VelocityFeedback,
   useMotorControl,
-  rosTimeToSec
+  rosTimeToSec,
+  StepCommand
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
@@ -71,6 +72,11 @@ const Page = () => {
     setEmergencyStop(!isEmergencyStop);
   }, [publishEstop, isEmergencyStop]);
 
+  const handlePublishSteps = useCallback((command: StepCommand) => {
+    setEmergencyStop(false);
+    publishSteps(command);
+  }, [publishSteps]);
+
   return (
     <>
       <header>
@@ -93,8 +99,9 @@ const Page = () => {
         <Steps
           time={sequenceTime}
           step={step}
+          isPlaying={step > 0 || !isEmergencyStop}
           setStep={setStep}
-          publishSteps={publishSteps}
+          publishSteps={handlePublishSteps}
           onStop={handleEStop}
         />
         {/*<Settings />*/}

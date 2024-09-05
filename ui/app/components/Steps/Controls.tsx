@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { Group } from "../Group";
 import { PrimaryInput } from "../PrimaryInput";
-import { Separator } from "../Separator";
 
 type ControlsProps = {
   step: number;
@@ -10,7 +9,6 @@ type ControlsProps = {
   onStepChange: (step: number) => void;
   onGridChange: (grid: number) => void;
   onPlay: () => void;
-  onStop: () => void;
 };
 
 export const Controls: FC<ControlsProps> = ({
@@ -18,10 +16,9 @@ export const Controls: FC<ControlsProps> = ({
   grid,
   onStepChange,
   onGridChange,
-  onPlay,
-  onStop
+  onPlay
 }) => (
-  <Group center>
+  <Group vertical>
     <PrimaryInput
       type="number"
       value={step}
@@ -30,37 +27,30 @@ export const Controls: FC<ControlsProps> = ({
       autoSize
     />
 
-    <Separator />
+    <PrimaryInput
+      type="number"
+      label="Grid"
+      value={grid}
+      onChange={(e) => onGridChange(Number(e.target.value))}
+      min={0}
+      autoSize
+    />
 
-    <Group vertical>
-      <button title="Play" onClick={onPlay}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-        >
-          <polygon
-            fill="#376be8"
-            points="22.4,12 1.6,0 1.6,23.9 "
-          />
-        </svg>
-      </button>
-
-      <button title="Stop" onClick={onStop}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-        >
-          <rect
-            x="1.2"
-            y="1.2"
-            fill="#EC008C"
-            width="21.6"
-            height="21.6"
-          />
-        </svg>
-      </button>
-    </Group>
+    <button
+      title="Play"
+      onClick={onPlay}
+      style={{ maxWidth: '48px'}}
+    >
+      <svg
+        width="24px"
+        height="24px"
+        viewBox="0 0 24 24"
+      >
+        <polygon
+          fill="#376be8"
+          points="22.4,12 1.6,0 1.6,23.9 "
+        />
+      </svg>
+    </button>
   </Group>
 );

@@ -18,6 +18,7 @@ const defaultSteps = [
 type StepsProps = {
   time: number;
   step: number;
+  isPlaying: boolean;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   publishSteps: (command: StepCommand) => void;
   onStop: () => void;
@@ -26,6 +27,7 @@ type StepsProps = {
 export const Steps: FC<StepsProps> = ({
   time,
   step,
+  isPlaying,
   setStep,
   publishSteps,
   onStop
@@ -33,18 +35,11 @@ export const Steps: FC<StepsProps> = ({
   const [steps, setSteps] = useState(defaultSteps);
   const [grid, setGrid] = useState(1);
   const [isLooping, setLooping] = useState(false);
-  const [isPlaying, setPlaying] = useState(false);
 
   const handlePlay = useCallback(() => {
-    setPlaying(true);
     const message = formatSteps(steps, grid, isLooping);
     publishSteps(message);
   }, [steps, grid, isLooping, publishSteps]);
-
-  const handleStop = useCallback(() => {
-    setPlaying(false);
-    onStop();
-  }, [onStop]);
 
   const handleStepSelect = useCallback((selectStep: number) => {
     setStep(selectStep);
@@ -87,7 +82,6 @@ export const Steps: FC<StepsProps> = ({
         onStepChange={setStep}
         onGridChange={setGrid}
         onPlay={handlePlay}
-        onStop={handleStop}
       />
 
       <Timeline
