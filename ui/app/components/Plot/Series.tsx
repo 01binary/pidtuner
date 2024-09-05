@@ -9,6 +9,8 @@ import {
 
 type SeriesProps = {
   samples: number[],
+  min?: number;
+  max?: number;
   width: number | undefined,
   height: number,
   strokeWidth?: number,
@@ -17,6 +19,8 @@ type SeriesProps = {
 
 export const Series: FC<SeriesProps> = ({
   samples,
+  min,
+  max,
   width,
   height,
   strokeWidth = 1,
@@ -29,7 +33,9 @@ export const Series: FC<SeriesProps> = ({
     [SPACING_HALF, width - MARGIN_RIGHT]);
 
   const y = d3.scaleLinear(
-    d3.extent(samples),
+    min !== undefined && max !== undefined
+      ? [min, max]
+      : d3.extent(samples),
     [height - MARGIN_BOTTOM, MARGIN_TOP]
   );
 

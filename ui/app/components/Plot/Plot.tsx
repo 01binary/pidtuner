@@ -100,8 +100,8 @@ export const Plot: FC<PlotProps> = ({
   const command = useMemo(() => data.map(({ command }) => command), [data]);
 
   const legend = useMemo(() => ([
-    { samples: absolute, color: '#ec008c', label: 'absolute' },
-    { samples: command, color: '#376be8', label: 'command' }
+    { samples: absolute, color: '#ec008c', label: 'absolute', min: 0, max: 1 },
+    { samples: command, color: '#376be8', label: 'command', min: -1, max: 1 }
     // #795da3
   ]), [absolute, command]);
 
@@ -227,11 +227,19 @@ export const Plot: FC<PlotProps> = ({
               strokeWidth="1"
             />
 
-            {legend.map(({ samples, color, label }) => (
+            {legend.map(({
+              samples,
+              color,
+              label,
+              min,
+              max
+            }) => (
               <Series
                 key={label}
                 samples={samples}
                 color={color}
+                min={min}
+                max={max}
                 {...layoutProps}
               />
             ))}

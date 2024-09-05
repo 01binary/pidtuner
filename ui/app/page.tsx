@@ -22,6 +22,7 @@ const Page = () => {
   const [data, setData] = useState<PlotType[]>([]);
   const [sequenceTime, setSequenceTime] = useState(0);
   const [step, setStep] = useState(0);
+  const firstTimeRef = useRef(0);
 
   const handleConnection = useCallback(() => {
     setConnected(true);
@@ -37,16 +38,18 @@ const Page = () => {
     const time = rosTimeToSec(velocity.time);
     const start = rosTimeToSec(velocity.start);
 
+    if (!firstTimeRef.current) firstTimeRef.current = time;
+
     setStep(velocity.step);
     setSequenceTime(time - start);
 
-    console.log('!time', time);
-
     setData(d => d.concat({
-      time,
+      time: time - firstTimeRef.current,
       command: velocity.command,
       absolute: velocity.absolute
     }))
+
+    console.log(velocity.absolute);
   }, [isCapturing]);
 
   const {
