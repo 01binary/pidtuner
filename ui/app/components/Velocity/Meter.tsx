@@ -2,10 +2,16 @@ import { FC } from "react";
 import { inter } from "../../inter";
 import styles from "./Meter.module.css";
 
+const METER_HALF_DEG = 40;
+
 type MeterProps = {
   value: number;
   label: string;
   color: string;
+};
+
+const valueToDeg = (value: number) => {
+  return (value * METER_HALF_DEG * 2) - METER_HALF_DEG;
 };
 
 export const Meter: FC<MeterProps> = ({
@@ -33,7 +39,7 @@ export const Meter: FC<MeterProps> = ({
       className={styles.indicator}
       style={{
         transformOrigin: `72px 99.8px`,
-        transform: `rotate(${value * 40}deg)`,
+        transform: `rotate(${valueToDeg(value)}deg)`,
       }}
     >
       <circle id="center" fill="none" cx="72" cy="99.8" r="5.9"/>

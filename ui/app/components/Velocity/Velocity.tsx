@@ -13,10 +13,14 @@ import { VelocityCommand } from "@/app/useMotorControl";
 
 type VelocityProps = {
   publishVelocity: (command: VelocityCommand) => void;
+  volts: number;
+  amps: number;
 };
 
 export const Velocity: FC<VelocityProps> = ({
-  publishVelocity
+  publishVelocity,
+  volts,
+  amps
 }) => {
   const [velocity, setVelocity] = useState(0);
   const [invert, setInvert] = useState(false);
@@ -71,12 +75,12 @@ export const Velocity: FC<VelocityProps> = ({
 
       <Group>
         <Meter
-          value={velocity}
+          value={volts}
           label="V"
           color="#376BE8"
         />
         <Meter
-          value={velocity}
+          value={amps}
           label="A"
           color="#EC008C"
         />

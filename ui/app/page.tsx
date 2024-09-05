@@ -25,6 +25,8 @@ const Page = () => {
   const [data, setData] = useState<PlotType[]>([]);
   const [sequenceTime, setSequenceTime] = useState(0);
   const [step, setStep] = useState(0);
+  const [volts, setVolts] = useState(0);
+  const [amps, setAmps] = useState(0);
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
 
@@ -52,6 +54,8 @@ const Page = () => {
     setSequenceTime(time - start);
     setEmergencyStop(velocity.estop);
     setMode(velocity.mode);
+    setVolts(velocity.volts);
+    setAmps(velocity.amps);
 
     setData(d => d.concat({
       time: time - firstTimeRef.current,
@@ -101,6 +105,8 @@ const Page = () => {
       <main>
         <Velocity
           publishVelocity={publishVelocity}
+          volts={volts}
+          amps={amps}
         />
         {/*<Position />*/}
         <Steps
