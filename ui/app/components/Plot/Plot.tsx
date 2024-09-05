@@ -6,8 +6,10 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef
+  useRef,
+  ChangeEventHandler
 } from "react";
+import { Input } from "../Input";
 import { PlotType } from "./PlotType";
 import styles from "./Plot.module.css";
 import { exportSamples } from "./exportSamples";
@@ -29,15 +31,21 @@ import {
 } from "./constants";
 
 type PlotProps = {
+  server: string;
+  onServerChange: ChangeEventHandler<HTMLInputElement>;
   data: PlotType[];
+  isConnected: boolean;
   isCapturing: boolean;
-  setCapturing: React.SetStateAction<boolean>;
+  setCapturing: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const Plot: FC<PlotProps> = ({
   data,
+  isConnected,
   isCapturing,
-  setCapturing
+  setCapturing,
+  server,
+  onServerChange
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const axisLeftRef = useRef<SVGGElement>(null);
@@ -108,12 +116,18 @@ export const Plot: FC<PlotProps> = ({
         <h1>Motor Control</h1>
 
         <div className={styles.plotToolbar}>
-          <div className={styles.toolbarGroup}>
-            <input
-              type="text"
-              placeholder="ROS server"
-            />
-          </div>
+          <Input
+            id="server"
+            label="server"
+            type="text"
+            value={server}
+            onChange={onServerChange}
+          />
+
+          {isConnected
+            ? <img width="32" height="32" src="/bridge-on.svg" />
+            : <img width="32" height="32" src="/bridge-off.svg" />
+          }
 
           <div className={styles.toolbarGroup}>
             <Legend legend={legend} />
@@ -133,7 +147,7 @@ export const Plot: FC<PlotProps> = ({
             onClick={handleExport}
             title="Export measurements"
           >
-            Export
+            <img src="/export.svg" width="24" height="24" />
           </button>
 
           <button

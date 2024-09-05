@@ -5,8 +5,7 @@ import {
   DEFAULT_ADDDRESS,
   VelocityFeedback,
   useMotorControl,
-  rosTimeToSec,
-  VelocityCommand
+  rosTimeToSec
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
@@ -17,15 +16,16 @@ import { Settings } from "./components/Settings";
 
 const Page = () => {
   const [address, setAddress] = useState(DEFAULT_ADDDRESS);
+  const [isConnected, setConnected] = useState(false);
   const [isCapturing, setCapturing] = useState<boolean>(true);
   const [data, setData] = useState<PlotType[]>([]);
 
   const handleConnection = useCallback(() => {
-    console.log('connected!');
+    setConnected(true);
   }, []);
 
   const handleError = useCallback((e) => {
-    console.error(e);
+    setConnected(false);
   }, []);
 
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
@@ -49,7 +49,14 @@ const Page = () => {
     <>
       <header>
         <Plot
-          {...{ data, isCapturing, setCapturing }}
+          {...{
+            data,
+            isCapturing,
+            setCapturing,
+            server: address,
+            onServerChange: () => setAddress,
+            isConnected
+          }}
         />
       </header>
 

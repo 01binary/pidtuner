@@ -1,0 +1,14 @@
+.input {
+  font-size: 16px;
+  padding: 8px;
+  border: 1px solid var(--lightGray);
+  border-radius: 6px;
+}
+
+.label {
+  display: block;
+  color: var(--lightGray);
+  font-size: 16px;
+  font-weight: 500;
+  margin: 12px 12px;
+}
