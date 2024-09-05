@@ -5,6 +5,10 @@
   align-items: center;
 }
 
+.mode {
+  color: var(--darkGray);
+}
+
 .plotToolbar {
   flex: 1;
   display: flex;

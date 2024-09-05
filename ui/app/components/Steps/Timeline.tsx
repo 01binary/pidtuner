@@ -73,7 +73,10 @@ export const Timeline: FC<TimelineProps> = ({
           ))}
 
           <Playhead
-            position={getPosition(start, time, grid)}
+            position={isPlaying
+              ? getPosition(start, time, grid)
+              : 0
+            }
           />
 
           <HAxis

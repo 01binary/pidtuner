@@ -6,7 +6,8 @@ import {
   VelocityFeedback,
   useMotorControl,
   rosTimeToSec,
-  StepCommand
+  StepCommand,
+  ControlMode
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
@@ -19,6 +20,7 @@ const Page = () => {
   const [address, setAddress] = useState(DEFAULT_ADDDRESS);
   const [isConnected, setConnected] = useState(false);
   const [isCapturing, setCapturing] = useState<boolean>(true);
+  const [mode, setMode] = useState<ControlMode>(0);
   const [isEmergencyStop, setEmergencyStop] = useState<boolean>(false);
   const [data, setData] = useState<PlotType[]>([]);
   const [sequenceTime, setSequenceTime] = useState(0);
@@ -48,6 +50,8 @@ const Page = () => {
 
     setStep(velocity.step);
     setSequenceTime(time - start);
+    setEmergencyStop(velocity.estop);
+    setMode(velocity.mode);
 
     setData(d => d.concat({
       time: time - firstTimeRef.current,
@@ -83,6 +87,7 @@ const Page = () => {
         <Plot
           {...{
             data,
+            mode,
             isCapturing,
             setCapturing,
             server: address,
@@ -94,15 +99,16 @@ const Page = () => {
       </header>
 
       <main>
-        <Velocity publishVelocity={publishVelocity} />
+        <Velocity
+          publishVelocity={publishVelocity}
+        />
         {/*<Position />*/}
         <Steps
           time={sequenceTime}
           step={step}
-          isPlaying={step > 0 || !isEmergencyStop}
+          isPlaying={mode === ControlMode.STEP}
           setStep={setStep}
           publishSteps={handlePublishSteps}
-          onStop={handleEStop}
         />
         {/*<Settings />*/}
       </main>

@@ -9,10 +9,10 @@ import { StepCommand } from "@/app/useMotorControl";
 
 const defaultSteps = [
   { value: 0 },
-  { value: -0.2 },
+  { value: -0.5 },
   { value: 0 },
-  { value: 0.2 },
-  { value: 0.5 }
+  { value: 0.5 },
+  { value: 0 }
 ];
 
 type StepsProps = {
@@ -21,7 +21,6 @@ type StepsProps = {
   isPlaying: boolean;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   publishSteps: (command: StepCommand) => void;
-  onStop: () => void;
 };
 
 export const Steps: FC<StepsProps> = ({
@@ -29,12 +28,13 @@ export const Steps: FC<StepsProps> = ({
   step,
   isPlaying,
   setStep,
-  publishSteps,
-  onStop
+  publishSteps
 }) => {
   const [steps, setSteps] = useState(defaultSteps);
   const [grid, setGrid] = useState(1);
   const [isLooping, setLooping] = useState(false);
+
+  console.log('playing!', isPlaying)
 
   const handlePlay = useCallback(() => {
     const message = formatSteps(steps, grid, isLooping);

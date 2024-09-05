@@ -10,6 +10,7 @@ import React, {
   ChangeEventHandler
 } from "react";
 import { Input } from "../Input";
+import { ControlMode } from "@/app/useMotorControl";
 import { PlotType } from "./PlotType";
 import styles from "./Plot.module.css";
 import { exportSamples } from "./exportSamples";
@@ -30,10 +31,13 @@ import {
   SPACING
 } from "./constants";
 
+const MODE = ['velocity', 'position', 'step'];
+
 type PlotProps = {
   server: string;
   onServerChange: ChangeEventHandler<HTMLInputElement>;
   data: PlotType[];
+  mode: ControlMode;
   isConnected: boolean;
   isCapturing: boolean;
   setCapturing: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,12 +45,13 @@ type PlotProps = {
 };
 
 export const Plot: FC<PlotProps> = ({
-  data,
+  server,
+  onServerChange,
   isConnected,
   isCapturing,
   setCapturing,
-  server,
-  onServerChange,
+  mode,
+  data,
   onEStop
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -115,7 +120,12 @@ export const Plot: FC<PlotProps> = ({
       <section className={styles.plotHeader}>
         <img src="icon.svg" width="48" height="48" />
 
-        <h1>Motor Control</h1>
+        <h1>
+          Motor Control
+          <span className={styles.mode}>
+            {' '} / {MODE[mode]}
+          </span>
+        </h1>
 
         <div className={styles.plotToolbar}>
           <Input

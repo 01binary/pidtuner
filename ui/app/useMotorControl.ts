@@ -20,10 +20,14 @@ type RosTime = {
   nsecs: number;
 };
 
+export enum ControlMode {
+  VELOCITY = 0,
+  POSITION = 1,
+  STEP = 2
+}
+
 export type VelocityFeedback = {
   command: number;
-  LPWM: number;
-  RPWM: number;
   absolute: number;
   quadrature: number;
   time: RosTime;
@@ -31,6 +35,10 @@ export type VelocityFeedback = {
   elapsed: number;
   dt: number;
   step: number;
+  estop: boolean;
+  mode: ControlMode;
+  amps: number;
+  volts: number;
 };
 
 export type PositionFeedback = {

@@ -356,8 +356,6 @@ void velocityFeedback()
   pidtuner::VelocityFeedback msg;
 
   msg.command = command;
-  msg.LPWM = lpwm;
-  msg.RPWM = rpwm;
   msg.absolute = absolute;
   msg.quadrature = quadrature;
   msg.time = time;
@@ -365,6 +363,10 @@ void velocityFeedback()
   msg.dt = dt;
   msg.elapsed = elapsed;
   msg.step = steps.step;
+  msg.estop = estop;
+  msg.mode = mode;
+  msg.volts = 0.0;
+  msg.amps = 0.0;
 
   velocityPub.publish(&msg);
 }
