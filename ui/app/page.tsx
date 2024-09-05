@@ -18,6 +18,7 @@ const Page = () => {
   const [address, setAddress] = useState(DEFAULT_ADDDRESS);
   const [isConnected, setConnected] = useState(false);
   const [isCapturing, setCapturing] = useState<boolean>(true);
+  const [isEmergencyStop, setEmergencyStop] = useState<boolean>(false);
   const [data, setData] = useState<PlotType[]>([]);
 
   const handleConnection = useCallback(() => {
@@ -38,12 +39,20 @@ const Page = () => {
     }))
   }, [isCapturing]);
 
-  const { publishVelocity } = useMotorControl({
+  const {
+    publishVelocity,
+    publishEstop
+  } = useMotorControl({
     address,
     onConnection: handleConnection,
     onVelocity: handleVelocity,
     onError: handleError
   });
+
+  const handleEStop = useCallback(() => {
+    publishEstop({ stop: !isEmergencyStop})
+    setEmergencyStop(!isEmergencyStop);
+  }, [publishEstop, isEmergencyStop]);
 
   return (
     <>
@@ -55,6 +64,7 @@ const Page = () => {
             setCapturing,
             server: address,
             onServerChange: () => setAddress,
+            onEStop: handleEStop,
             isConnected
           }}
         />

@@ -37,6 +37,7 @@ type PlotProps = {
   isConnected: boolean;
   isCapturing: boolean;
   setCapturing: React.Dispatch<React.SetStateAction<boolean>>;
+  onEStop: () => void;
 };
 
 export const Plot: FC<PlotProps> = ({
@@ -45,7 +46,8 @@ export const Plot: FC<PlotProps> = ({
   isCapturing,
   setCapturing,
   server,
-  onServerChange
+  onServerChange,
+  onEStop
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const axisLeftRef = useRef<SVGGElement>(null);
@@ -153,6 +155,7 @@ export const Plot: FC<PlotProps> = ({
           <button
             className="warning estop"
             title="Emergency stop"
+            onClick={onEStop}
           >
             <img src="/estop.svg" width="24" height="24" />
           </button>
