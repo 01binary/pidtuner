@@ -31,6 +31,7 @@ export const Controls: FC<ControlsProps> = ({
       type="number"
       label="Grid"
       value={grid}
+      units="s"
       onChange={(e) => onGridChange(Number(e.target.value))}
       min={0}
       autoSize
