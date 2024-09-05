@@ -40,6 +40,8 @@ const Page = () => {
     setStep(velocity.step);
     setSequenceTime(time - start);
 
+    console.log('!time', time);
+
     setData(d => d.concat({
       time,
       command: velocity.command,

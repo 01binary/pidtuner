@@ -202,5 +202,5 @@ export const useMotorControl = ({
 };
 
 export const rosTimeToSec = (rosTime: RosTime) => (
-  rosTime.secs + rosTime.nsecs * 1e9
+  rosTime.secs + rosTime.nsecs / 1e9
 );
