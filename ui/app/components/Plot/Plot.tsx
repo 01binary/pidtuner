@@ -140,8 +140,8 @@ export const Plot: FC<PlotProps> = ({
             onClick={handleToggleCapture}
           >
             {isCapturing
-              ? <img src="/record.svg" width="24" height="24" />
-              : <img src="/pause.svg" width="24" height="24" />
+              ? <img src="/pause.svg" width="24" height="24" />
+              : <img src="/record.svg" width="24" height="24" />
             }
           </button>
 
