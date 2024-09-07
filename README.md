@@ -1,6 +1,10 @@
-# pidtuner
+# PID Tuner
 
 This application can help you characterize a DC motor and tune a PID controller for it.
+
+![fixture](./fixture.png)
+
+![ui](./ui.png)
 
 ## Install Packages
 
@@ -34,10 +38,17 @@ Build [serial.ino](./src/serial.ino) ROS Serial node and upload to Arduino.
 
 ## Run
 
-This will start the Arduino Serial node:
+Launch the Arduino Serial node:
 
 ```
 roslaunch pidtuner pidtuner.launch
+```
+
+Launch the React application:
+
+```
+cd ui
+npm run dev
 ```
 
 ## Configuration
