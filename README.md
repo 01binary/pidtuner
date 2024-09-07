@@ -48,6 +48,7 @@ Launch the React application:
 
 ```
 cd ui
+npm i
 npm run dev
 ```
 
