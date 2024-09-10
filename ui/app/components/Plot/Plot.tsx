@@ -258,15 +258,17 @@ export const Plot: FC<PlotProps> = ({
             />
 
             {LEGEND.map(({ key, color, min, max }) => (
-              <Series
-                key={key}
-                property={key}
-                samples={data}
-                color={color}
-                min={min}
-                max={max}
-                {...layoutProps}
-              />
+              enabled[key]
+              ? <Series
+                  key={key}
+                  property={key}
+                  samples={data}
+                  color={color}
+                  min={min}
+                  max={max}
+                  {...layoutProps}
+                />
+              : null
             ))}
           </svg>
         </div>
