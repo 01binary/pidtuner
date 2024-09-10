@@ -110,7 +110,7 @@ float absoluteMax = 1.0;
 bool absoluteInvert;
 
 // Whether to invert quadrature encoder readings
-bool quadratureInvert;
+bool quadratureInvert = true;
 
 //
 // State

@@ -104,7 +104,7 @@ rostopic echo /position
 
 ```
 rostopic pub /configuration pidtuner/Configuration \
-"{
+"{ \
     LPWMpin: 3, \
     RPWMpin: 11, \
     ADCpin: 0, \
@@ -115,6 +115,13 @@ rostopic pub /configuration pidtuner/Configuration \
     Ki: 10, \
     Kd: 10, \
     iMin: 0, \
-    iMax: 100 \
+    iMax: 100, \
+    pwmMin: 0, \
+    pwmMax: 1, \
+    pwmInvert: false, \
+    absoluteMin: 0, \
+    absoluteMax: 1, \
+    absoluteInvert: false, \
+    quadratureInvert: true \
 }" -1
 ```
