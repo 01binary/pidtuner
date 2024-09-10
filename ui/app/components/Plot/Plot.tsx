@@ -34,9 +34,9 @@ import {
 const MODE = ['velocity', 'position', 'step'];
 
 const LEGEND = [
+  { key: 'command', color: '#376be8', label: 'command', min: -1, max: 1 },
   { key: 'absolute', color: '#ec008c', label: 'absolute', min: 0, max: 1 },
-  { key: 'command', color: '#376be8', label: 'command', min: -1, max: 1 }
-  // #795da3
+  { key: 'quadrature', color: '#795da3', label: 'quadrature' }
 ];
 
 type PlotProps = {

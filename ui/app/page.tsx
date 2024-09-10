@@ -43,25 +43,31 @@ const Page = () => {
   }, []);
 
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
-    if (!isCapturingRef.current) return;
-
     const time = rosTimeToSec(velocity.time);
     const start = rosTimeToSec(velocity.start);
 
     if (!firstTimeRef.current) firstTimeRef.current = time;
 
-    setStep(velocity.step);
-    setSequenceTime(time - start);
     setEmergencyStop(velocity.estop);
     setMode(velocity.mode);
     setVolts(velocity.volts);
     setAmps(velocity.amps);
 
-    setData(d => d.concat({
-      time: time - firstTimeRef.current,
-      command: velocity.command,
-      absolute: velocity.absolute
-    }));
+    if (velocity.mode === ControlMode.STEP) {
+      setStep(velocity.step);
+      setSequenceTime(time - start);
+    } else {
+      setSequenceTime(0);
+    }
+
+    if (isCapturingRef.current) {
+      setData(d => d.concat({
+        time: time - firstTimeRef.current,
+        command: velocity.command,
+        absolute: velocity.absolute,
+        quadrature: velocity.quadrature
+      }));
+    }
   }, []);
 
   const {
