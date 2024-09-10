@@ -96,6 +96,13 @@
   gap: 0.5rem;
   align-items: center;
   color: var(--darkGray);
+  opacity: 0.5;
+  transition: opacity .3s ease-out;
+  cursor: pointer;
+}
+
+.legendItem.enabled {
+  opacity: 1;
 }
 
 .legendColor {

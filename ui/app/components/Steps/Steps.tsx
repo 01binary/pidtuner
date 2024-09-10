@@ -35,8 +35,6 @@ export const Steps: FC<StepsProps> = ({
   const [grid, setGrid] = useState(1);
   const [isLooping, setLooping] = useState(false);
 
-  console.log('playing!', isPlaying)
-
   const handlePlay = useCallback(() => {
     const message = formatSteps(steps, grid, isLooping);
     publishSteps(message);

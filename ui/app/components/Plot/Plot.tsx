@@ -3,6 +3,7 @@
 import * as d3 from "d3";
 import React, {
   FC,
+  useState,
   useCallback,
   useEffect,
   useMemo,
@@ -31,12 +32,12 @@ import {
   SPACING
 } from "./constants";
 
-const MODE = ['velocity', 'position', 'step'];
+const MODE = ["velocity", "position", "step"];
 
 const LEGEND = [
-  { key: 'command', color: '#376be8', label: 'command', min: -1, max: 1 },
-  { key: 'absolute', color: '#ec008c', label: 'absolute', min: 0, max: 1 },
-  { key: 'quadrature', color: '#795da3', label: 'quadrature' }
+  { key: "command", color: "#376be8", label: "command", min: -1, max: 1 },
+  { key: "absolute", color: "#ec008c", label: "absolute", min: 0, max: 1 },
+  { key: "quadrature", color: "#795da3", label: "quadrature" }
 ];
 
 type PlotProps = {
@@ -65,6 +66,11 @@ export const Plot: FC<PlotProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const axisLeftRef = useRef<SVGGElement>(null);
   const axisBottomRef = useRef<SVGGElement>(null);
+  const [enabled, setEnabled] = useState<{ [key: string]: boolean | undefined }>({
+    command: true,
+    absolute: true,
+    quadrature: true
+  });
 
   const width = useMemo(() => (
     (data.length * SAMPLE_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT
@@ -109,6 +115,14 @@ export const Plot: FC<PlotProps> = ({
     setCapturing(value => !value);
   }, []);
 
+  const handleToggleLegendSeries = useCallback((key: string, enabled: boolean) => {
+    console.log(key, '->', enabled);
+    setEnabled(current => ({
+      ...current,
+      [key]: enabled
+    }))
+  }, []);
+
   const layoutProps = {
     width,
     height: HEIGHT
@@ -141,7 +155,11 @@ export const Plot: FC<PlotProps> = ({
           }
 
           <div className={styles.toolbarGroup}>
-            <Legend legend={LEGEND} />
+            <Legend
+              legend={LEGEND}
+              enabled={enabled}
+              onEnable={handleToggleLegendSeries}
+            />
           </div>
 
           <button
