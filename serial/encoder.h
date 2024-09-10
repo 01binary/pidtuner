@@ -1,7 +1,25 @@
+/*
+    encoder.h
+    Gets absolute encoder readings.
+    Supports SSI/SPI and analog/PWM interfaces.
+*/
+
+/*----------------------------------------------------------*\
+| Includes
+\*----------------------------------------------------------*/
+
 #include <SPI.h>
+
+/*----------------------------------------------------------*\
+| Constants
+\*----------------------------------------------------------*/
 
 const float ADC_MAX = float(0b1111111111);
 const float AS5045_MAX = float(0b111111111111);
+
+/*----------------------------------------------------------*\
+| Classes
+\*----------------------------------------------------------*/
 
 class Encoder
 {
@@ -12,6 +30,7 @@ public:
 class ADCEncoder: public Encoder
 {
 public:
+  // Analog pin the potentiometer or encoder is connected to
   int adcPin;
 
 public:

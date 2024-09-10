@@ -27,28 +27,44 @@
 | Constants
 \*----------------------------------------------------------*/
 
+// Velocity command topic (see VelocityCommand.msg)
 const char VELOCITY_COMMAND[] = "velocity";
+
+// Velocity feedback topic (see VelocityFeedback.msg)
 const char VELOCITY_FEEDBACK[] = "velocity_feedback";
+
+// Position command topic (see PositionCommand.msg)
 const char POSITION_COMMAND[] = "position";
+
+// Position feedback topic (see PositionFeedback.msg)
 const char POSITION_FEEDBACK[] = "position_feedback";
+
+// Step command topic (see StepCommand.msg)
 const char STEP_COMMAND[] = "step";
+
+// Configuration topic (see Configuration.msg)
 const char CONFIGURATION_COMMAND[] = "configuration";
 const char ESTOP_COMMAND[] = "estop";
 
-const int RATE = 50;
+// Update rate
+const int RATE = 100;
 const float TIMESTEP = 1.0 / float(RATE);
+
+// Startup delay (prevents published too soon errors)
 const int STARTUP_DELAY = 3000;
 
+// Map 0-based ADC pin index to hardware-specific pin Id
 const int ADC_PINS[] =
 {
   A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15
 };
 
+// Control mode
 enum Mode
 {
-  VELOCITY,
-  POSITION,
-  STEP
+  VELOCITY, // Default, accepting velocity commands
+  POSITION, // Running a PID algorithm to reach a position with tolerance
+  STEP      // Playing back a sequence of steps
 };
 
 /*----------------------------------------------------------*\
@@ -142,7 +158,7 @@ Mode mode = VELOCITY;
 // PID goal
 float goal;
 
-// PID tolerance
+// PID goal position tolerance
 float tolerance;
 
 // Steps
@@ -270,6 +286,7 @@ void loop()
 
 void live()
 {
+  // Track time
   ros::Time now = getTime();
   dt = (now - time).toSec();
   elapsed = (now - start).toSec();
@@ -279,6 +296,7 @@ void live()
 
 void love()
 {
+  // Read encoder
   if (dt < TIMESTEP) return;
 
   read();
@@ -290,6 +308,7 @@ void love()
 
 void laugh()
 {
+  // Write motor
   if (dt < TIMESTEP) return;
 
   write();
