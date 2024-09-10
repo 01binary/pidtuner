@@ -7,10 +7,10 @@ uint8 Apin              # A pin for quadrature encoder
 uint8 Bpin              # B pin for quadrature encoder
 
 # Limits
-float32 pwmMin            # Min PWM value
-float32 pwmMax            # Max PWM value
-float32 absoluteMin       # Min absolute encoder value
-float32 absoluteMax       # Max absolute encoder value
+float32 pwmMin          # Min PWM value
+float32 pwmMax          # Max PWM value
+float32 absoluteMin     # Min absolute encoder value
+float32 absoluteMax     # Max absolute encoder value
 
 # Inversions
 bool pwmInvert          # Whether to invert PWM commands

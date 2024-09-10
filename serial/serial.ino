@@ -1,6 +1,6 @@
 /*
     serial.ino
-    Arduino Serial Node
+    Arduino ROS Serial Node
     Recommended Arduino Mega or Giga
 */
 
@@ -18,6 +18,7 @@
 #include <pidtuner/Configuration.h>
 #include <pidtuner/EmergencyStop.h>
 #include <QuadratureEncoder.h>
+#include <Adafruit_INA260.h>
 #include "performer.h"
 #include "encoder.h"
 #include "pwm.h"
@@ -44,6 +45,8 @@ const char STEP_COMMAND[] = "step";
 
 // Configuration topic (see Configuration.msg)
 const char CONFIGURATION_COMMAND[] = "configuration";
+
+// Emergency stop command topic (see EmergencyStop.msg)
 const char ESTOP_COMMAND[] = "estop";
 
 // Update rate
@@ -107,6 +110,11 @@ int csPin = 53;
 int aPin = 18;
 int bPin = 19;
 
+// I2C pins
+// Used to read voltage and current w/Adafruit INA260
+// 20 SDA
+// 21 SCL
+
 // Min normalized PWM command
 float pwmMin = 0.0;
 
@@ -143,6 +151,12 @@ int32_t quadrature;
 
 // Quadrature encoder
 Encoders* quadratureEncoder;
+
+// Voltage/current measurement
+Adafruit_INA260 ina260 = Adafruit_INA260();
+bool enableVoltageCurrent;
+float volts = 0.0;
+float amps = 0.0;
 
 // PID controller
 PID pid;
@@ -248,11 +262,17 @@ void initPwm()
   pinMode(rpwmPin, OUTPUT);
 }
 
+void initVoltageCurrentMeasurement()
+{
+  enableVoltageCurrent = ina260.begin();
+}
+
 void setup()
 {
   initAbsolute();
   initQuadrature();
   initPwm();
+  initVoltageCurrentMeasurement();
 
   node.initNode();
 
@@ -337,6 +357,12 @@ void read()
       quadrature = -quadrature;
     }
   }
+
+  if (enableVoltageCurrent)
+  {
+    amps = ina260.readCurrent();
+    volts = ina260.readBusVoltage();
+  }
 }
 
 void write()
@@ -384,8 +410,8 @@ void velocityFeedback()
   msg.step = steps.step;
   msg.estop = estop;
   msg.mode = mode;
-  msg.volts = 0.0;
-  msg.amps = 0.0;
+  msg.volts = volts;
+  msg.amps = amps;
 
   velocityPub.publish(&msg);
 }
