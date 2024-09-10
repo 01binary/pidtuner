@@ -7,8 +7,13 @@ import {
   MARGIN_TOP
 } from "./constants";
 
+type Sample = {
+  [property: string]: number;
+};
+
 type SeriesProps = {
-  samples: number[],
+  property: string;
+  samples: Sample[];
   min?: number;
   max?: number;
   width: number | undefined,
@@ -19,6 +24,7 @@ type SeriesProps = {
 
 export const Series: FC<SeriesProps> = ({
   samples,
+  property,
   min,
   max,
   width,
@@ -28,6 +34,8 @@ export const Series: FC<SeriesProps> = ({
 }) => {
   if (!width) return null;
 
+  const series = samples.map(s => s[property]);
+
   const x = d3.scaleLinear(
     [0, samples.length - 1],
     [SPACING_HALF, width - MARGIN_RIGHT]);
@@ -35,7 +43,7 @@ export const Series: FC<SeriesProps> = ({
   const y = d3.scaleLinear(
     min !== undefined && max !== undefined
       ? [min, max]
-      : d3.extent(samples),
+      : d3.extent(series),
     [height - MARGIN_BOTTOM, MARGIN_TOP]
   );
 
@@ -46,7 +54,7 @@ export const Series: FC<SeriesProps> = ({
       fill="none"
       stroke={color}
       strokeWidth={strokeWidth}
-      d={line(samples)}
+      d={line(series)}
     />
   )
 };

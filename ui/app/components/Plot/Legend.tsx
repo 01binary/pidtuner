@@ -2,19 +2,21 @@ import { FC } from "react";
 import styles from "./Plot.module.css";
 
 type LegendItem = {
-  color: string,
-  label: string,
-  samples: number[],
+  key: string;
+  color: string;
+  label: string;
 };
 
 type LegendProps = {
-  legend: LegendItem[]
+  legend: LegendItem[];
 };
 
-export const Legend: FC<LegendProps> = ({ legend }) => (
+export const Legend: FC<LegendProps> = ({
+  legend
+}) => (
   <section className={styles.legend}>
-    {legend.map(({ color, label }) => (
-      <div key={label} className={styles.legendItem}>
+    {legend.map(({ key, color, label }) => (
+      <div key={key} className={styles.legendItem}>
         <div
           className={styles.legendColor}
           style={{ backgroundColor: color }}

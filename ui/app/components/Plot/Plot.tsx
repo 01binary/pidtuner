@@ -33,6 +33,12 @@ import {
 
 const MODE = ['velocity', 'position', 'step'];
 
+const LEGEND = [
+  { key: 'absolute', color: '#ec008c', label: 'absolute', min: 0, max: 1 },
+  { key: 'command', color: '#376be8', label: 'command', min: -1, max: 1 }
+  // #795da3
+];
+
 type PlotProps = {
   server: string;
   onServerChange: ChangeEventHandler<HTMLInputElement>;
@@ -103,15 +109,6 @@ export const Plot: FC<PlotProps> = ({
     setCapturing(value => !value);
   }, []);
 
-  const absolute = useMemo(() => data.map(({ absolute }) => absolute), [data]);
-  const command = useMemo(() => data.map(({ command }) => command), [data]);
-
-  const legend = useMemo(() => ([
-    { samples: absolute, color: '#ec008c', label: 'absolute', min: 0, max: 1 },
-    { samples: command, color: '#376be8', label: 'command', min: -1, max: 1 }
-    // #795da3
-  ]), [absolute, command]);
-
   const layoutProps = {
     width,
     height: HEIGHT
@@ -144,7 +141,7 @@ export const Plot: FC<PlotProps> = ({
           }
 
           <div className={styles.toolbarGroup}>
-            <Legend legend={legend} />
+            <Legend legend={LEGEND} />
           </div>
 
           <button
@@ -242,16 +239,11 @@ export const Plot: FC<PlotProps> = ({
               strokeWidth="1"
             />
 
-            {legend.map(({
-              samples,
-              color,
-              label,
-              min,
-              max
-            }) => (
+            {LEGEND.map(({ key, color, min, max }) => (
               <Series
-                key={label}
-                samples={samples}
+                key={key}
+                property={key}
+                samples={data}
                 color={color}
                 min={min}
                 max={max}
