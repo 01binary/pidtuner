@@ -34,7 +34,7 @@ rosrun rosserial_arduino make_libraries.py ~/Arduino/libraries
 
 > The Arduino libraries are usually in `~/Arduino/libraries`. If you installed Arduino IDE as a *snap*, you could also try looking in `~/snap/arduino`.
 
-Build [serial.ino](./src/serial.ino) ROS Serial node and upload to Arduino.
+Build [serial.ino](./serial/serial.ino) ROS Serial node and upload to Arduino.
 
 ## Run
 
