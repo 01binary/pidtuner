@@ -52,7 +52,55 @@ npm i
 npm run dev
 ```
 
-## Configuration
+## Command line interface
+
+
+### Velocity Command
+
+```
+rostopic pub /velocity pidtuner/VelocityCommand "{ command: 0.5 }" -1
+```
+
+### Position Command
+
+```
+rostopic pub /position pidtuner/PositionCommand "{ goal: 0.0, tolerance: 0.0 }" -1
+```
+
+### Step Playback
+
+```
+rostopic pub /step pidtuner/StepCommand "{
+    loop: false, \
+    steps: [ \
+        { command: 1.5, duration: 2.0 }, \
+        { command: 0.0, duration: 1.0 }, \
+        { command: 0.3, duration: 1.0 }, \
+        { command: 1.0, duration: 2.0 }, \
+        { command: 0.0, duration: 1.0 },
+    ] \
+}" -1
+```
+
+### Emergency Stop
+
+```
+rostopic pub /estop pidtuner/EmergencyStop "{ stop: true }" -1
+```
+
+### Velocity Feedback
+
+```
+rostopic echo /velocity
+```
+
+### Position Feedback
+
+```
+rostopic echo /position
+```
+
+### Configuration
 
 ```
 rostopic pub /configuration pidtuner/Configuration \
@@ -69,37 +117,4 @@ rostopic pub /configuration pidtuner/Configuration \
     iMin: 0, \
     iMax: 100 \
 }" -1
-```
-
-## Velocity
-
-```
-rostopic pub /velocity pidtuner/VelocityCommand "{ command: 0.5 }" -1
-```
-
-## Position
-
-```
-rostopic pub /position pidtuner/PositionCommand "{ goal: 0.0, tolerance: 0.0 }" -1
-```
-
-## Step
-
-```
-rostopic pub /step pidtuner/StepCommand "{
-    loop: false, \
-    steps: [ \
-        { command: 1.5, duration: 2.0 }, \
-        { command: 0.0, duration: 1.0 }, \
-        { command: 0.3, duration: 1.0 }, \
-        { command: 1.0, duration: 2.0 }, \
-        { command: 0.0, duration: 1.0 },
-    ] \
-}" -1
-```
-
-## Emergency Stop
-
-```
-rostopic pub /estop pidtuner/EmergencyStop "{ stop: true }" -1
 ```
