@@ -30,8 +30,6 @@ const Page = () => {
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
 
-  console.log('volts', volts, 'amps', amps)
-
   useEffect(() => {
     isCapturingRef.current = isCapturing;
   }, [isCapturing]);
