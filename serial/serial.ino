@@ -56,6 +56,12 @@ const float TIMESTEP = 1.0 / float(RATE);
 // Startup delay (prevents published too soon errors)
 const int STARTUP_DELAY = 3000;
 
+// Multiplier to convert mA to A
+const float MA_TO_A = 0.001;
+
+// Multiplier to convert mV to V
+const float MV_TO_V = 0.001;
+
 // Map 0-based ADC pin index to hardware-specific pin Id
 const int ADC_PINS[] =
 {
@@ -316,7 +322,7 @@ void live()
 
 void love()
 {
-  // Read encoder
+  // Read sensors
   if (dt < TIMESTEP) return;
 
   read();
@@ -360,8 +366,8 @@ void read()
 
   if (enableVoltageCurrent)
   {
-    amps = ina260.readCurrent();
-    volts = ina260.readBusVoltage();
+    amps = ina260.readCurrent() * MA_TO_A;
+    volts = ina260.readBusVoltage() * MV_TO_V;
   }
 }
 

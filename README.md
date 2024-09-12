@@ -38,7 +38,7 @@ Build [serial.ino](./serial/serial.ino) ROS Serial node and upload to Arduino.
 
 ## Run
 
-Launch the Arduino Serial node:
+Launch the Arduino Serial node with ROS Bridge:
 
 ```
 roslaunch pidtuner pidtuner.launch

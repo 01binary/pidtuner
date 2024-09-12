@@ -76,13 +76,17 @@ export const Velocity: FC<VelocityProps> = ({
       <Group>
         <Meter
           value={volts}
+          max={20}
           label="V"
           color="#376BE8"
+          divisions={[0, 5, 10, 15, 20]}
         />
         <Meter
           value={amps}
+          max={4}
           label="A"
           color="#EC008C"
+          divisions={[0, 1, 2, 3, 4]}
         />
       </Group>
     </Module>

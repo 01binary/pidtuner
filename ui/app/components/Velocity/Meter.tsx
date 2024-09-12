@@ -2,22 +2,29 @@ import { FC } from "react";
 import { inter } from "../../inter";
 import styles from "./Meter.module.css";
 
-const METER_HALF_DEG = 40;
+const MIN_OUTPUT = -40;
+const MAX_OUTPUT = 40;
+const DIVISIONS = [0, 5, 10, 15, 20];
 
 type MeterProps = {
   value: number;
+  max: number;
   label: string;
   color: string;
+  divisions: number[];
 };
 
-const valueToDeg = (value: number) => {
-  return (value * METER_HALF_DEG * 2) - METER_HALF_DEG;
+const valueToDeg = (value: number, max: number) => {
+  const norm = value < 0 ? 0 : value / max;
+  return norm * (MAX_OUTPUT - MIN_OUTPUT) + MIN_OUTPUT;
 };
 
 export const Meter: FC<MeterProps> = ({
   value,
+  max,
   label,
-  color
+  color,
+  divisions = DIVISIONS
 }) => (
   <svg
     width="144px"
@@ -39,7 +46,8 @@ export const Meter: FC<MeterProps> = ({
       className={styles.indicator}
       style={{
         transformOrigin: `72px 99.8px`,
-        transform: `rotate(${valueToDeg(value)}deg)`,
+        transform: `rotate(${valueToDeg(value, max)}deg)`,
+        transition: 'transform 1s ease-out'
       }}
     >
       <circle id="center" fill="none" cx="72" cy="99.8" r="5.9"/>
@@ -80,11 +88,41 @@ export const Meter: FC<MeterProps> = ({
     </g>
 
     <g id="labels">
-      <text transform="matrix(1 0 0 1 15.0187 39.1716)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">0</text>
-      <text transform="matrix(1 0 0 1 40.3175 24.5037)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">5</text>
-      <text transform="matrix(1 0 0 1 65.5675 18.4348)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">10</text>
-      <text transform="matrix(1 0 0 1 96.2638 23.1145)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">15</text>
-      <text transform="matrix(1 0 0 1 120.7033 37.1716)" fontFamily={inter.style.fontFamily} fontSize="9.9443px">20</text>
+      <text
+        transform="matrix(1 0 0 1 15.0187 39.1716)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="9.9443px"
+      >
+        {divisions[0]}
+      </text>
+      <text
+        transform="matrix(1 0 0 1 40.3175 24.5037)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="9.9443px"
+      >
+        {divisions[1]}
+      </text>
+      <text
+        transform="matrix(1 0 0 1 65.5675 18.4348)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="9.9443px"
+      >
+        {divisions[2]}
+      </text>
+      <text
+        transform="matrix(1 0 0 1 96.2638 23.1145)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="9.9443px"
+      >
+        {divisions[3]}
+      </text>
+      <text
+        transform="matrix(1 0 0 1 120.7033 37.1716)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="9.9443px"
+      >
+        {divisions[4]}
+      </text>
     </g>
   </svg>
 );
