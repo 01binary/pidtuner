@@ -15,9 +15,13 @@ type MeterProps = {
 };
 
 const valueToDeg = (value: number, max: number) => {
-  const norm = value < 0 ? 0 : value / max;
+  const norm = Math.abs(value / max);
   return norm * (MAX_OUTPUT - MIN_OUTPUT) + MIN_OUTPUT;
 };
+
+const translation = (x: number, y: number) => (
+  `matrix(1 0 0 1 ${x} ${y})`
+);
 
 const useMovingAverageFilter = (value: number, size: number) => {
   const bufferRef = useRef([...new Array(size)]);
@@ -47,6 +51,7 @@ export const Meter: FC<MeterProps> = ({
   divisions = DIVISIONS
 }) => {
   const value = useMovingAverageFilter(rawValue, 128);
+  const [div1, div2, div3, div4, div5] = divisions;
 
   return (
     <svg
@@ -112,39 +117,48 @@ export const Meter: FC<MeterProps> = ({
 
       <g id="labels">
         <text
-          transform="matrix(1 0 0 1 15.0187 39.1716)"
+          transform={translation(15, 39)}
           fontFamily={inter.style.fontFamily}
-          fontSize="9.9443px"
+          fontSize="10px"
         >
-          {divisions[0]}
+          {div1}
         </text>
         <text
-          transform="matrix(1 0 0 1 40.3175 24.5037)"
+          transform={translation(40.3, 24.5)}
           fontFamily={inter.style.fontFamily}
-          fontSize="9.9443px"
+          fontSize="10px"
         >
-          {divisions[1]}
+          {div2}
         </text>
         <text
-          transform="matrix(1 0 0 1 65.5675 18.4348)"
+          transform={translation(
+            div3.toString().length < 2 ? 68.5 : 65.5,
+            18.5
+          )}
           fontFamily={inter.style.fontFamily}
-          fontSize="9.9443px"
+          fontSize="10px"
         >
-          {divisions[2]}
+          {div3}
         </text>
         <text
-          transform="matrix(1 0 0 1 96.2638 23.1145)"
+          transform={translation(
+            div4.toString().length < 2 ? 98 : 96,
+            23
+          )}
           fontFamily={inter.style.fontFamily}
-          fontSize="9.9443px"
+          fontSize="10px"
         >
-          {divisions[3]}
+          {div4}
         </text>
         <text
-          transform="matrix(1 0 0 1 120.7033 37.1716)"
+          transform={translation(
+            div5.toString().length < 2 ? 122 : 120.7,
+            37
+          )}
           fontFamily={inter.style.fontFamily}
-          fontSize="9.9443px"
+          fontSize="10px"
         >
-          {divisions[4]}
+          {div5}
         </text>
       </g>
     </svg>

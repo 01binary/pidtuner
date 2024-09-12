@@ -29,7 +29,8 @@ import {
   AXIS_LEFT_WIDTH,
   AXIS_LEFT_OFFSET,
   SPACING_HALF,
-  SPACING
+  SPACING,
+  MIN_WIDTH
 } from "./constants";
 
 const MODE = ["velocity", "position", "step"];
@@ -73,7 +74,7 @@ export const Plot: FC<PlotProps> = ({
   });
 
   const width = useMemo(() => (
-    (data.length * SAMPLE_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT
+    Math.max(data.length * SAMPLE_WIDTH, MIN_WIDTH) - MARGIN_LEFT - MARGIN_RIGHT
   ), [data]);
 
   const x = useMemo(() => d3.scaleLinear(
