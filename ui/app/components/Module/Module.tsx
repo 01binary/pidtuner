@@ -20,15 +20,14 @@ export const Module: FC<ModuleProps> = ({
 
   return (
     <section className={styles.module}>
-      <section
-        className={styles["module__header"]}
-        onClick={handleToggleHeader}
-      >
+      <section className={styles.header}>
         {image}
-        <h2>{title}</h2>
+        <h2 onClick={handleToggleHeader}>
+          {title}
+        </h2>
       </section>
 
-      {expanded && <section className={styles["module__controls"]}>
+      {expanded && <section className={styles.controls}>
         {children}
       </section>}
     </section>
