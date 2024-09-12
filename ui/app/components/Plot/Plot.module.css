@@ -5,22 +5,21 @@
   align-items: center;
 }
 
+.plotHeader h1 {
+  flex: 1;
+}
+
 .mode {
   color: var(--darkGray);
 }
 
 .plotToolbar {
-  flex: 1;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
   flex-wrap: wrap;
-}
-
-.toolbarGroup {
-  margin: 0 16px;
 }
 
 @media (max-width: 600px) {
@@ -82,11 +81,12 @@
 .legend {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 16px;
   align-items: center;
-  margin-top: 1rem;
-  margin-left: 3rem;
-  margin-bottom: 1rem;
+  margin-top: 8px;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 8px;
   justify-content: flex-end;
   user-select: none;
 }

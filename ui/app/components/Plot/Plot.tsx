@@ -155,13 +155,11 @@ export const Plot: FC<PlotProps> = ({
             : <img width="32" height="32" src="/bridge-off.svg" />
           }
 
-          <div className={styles.toolbarGroup}>
-            <Legend
-              legend={LEGEND}
-              enabled={enabled}
-              onEnable={handleToggleLegendSeries}
-            />
-          </div>
+          <Legend
+            legend={LEGEND}
+            enabled={enabled}
+            onEnable={handleToggleLegendSeries}
+          />
 
           <button
             title="Enable capture"
