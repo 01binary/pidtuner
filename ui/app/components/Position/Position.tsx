@@ -57,7 +57,7 @@ export const Position: FC<PositionProps> = ({
         type="number"
         value={Math.round(goal * 100)}
         onChange={handleChangeGoal}
-        min={0}
+        min={-100}
         max={100}
         step={1}
       />

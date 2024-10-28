@@ -29,7 +29,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     angle
   } = useKnob({
     value: position,
-    range: 'full',
+    range: 'half',
     wrap: true,
     centerX,
     centerY,
