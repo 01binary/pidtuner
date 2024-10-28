@@ -64,7 +64,7 @@ export const Position: FC<PositionProps> = ({
 
       <PositionKnob
         position={goal}
-        handleChange={handleChangeGoal}
+        handleChange={setGoal}
       />
     </Module>
   );

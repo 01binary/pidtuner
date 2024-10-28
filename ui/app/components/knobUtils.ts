@@ -13,7 +13,13 @@ export const getAngleFromValue = (norm: number) => {
   return norm * MAX_ANGLE;
 };
 
-export const getAngleFromPoint = (x: number, y: number, cx: number, cy: number, ox: number, oy: number) => {
+export const getAngleFromPoint = (
+  x: number,
+  y: number,
+  cx: number,
+  cy: number,
+  ox: number,
+  oy: number) => {
   const sin = y - (cy - oy);
   const cos = x - (cx - ox);
   return Math.atan2(sin, cos) + BIAS_ANGLE;
@@ -24,18 +30,22 @@ type KnobProps = {
   wrap?: boolean;
   range?: 'full' | 'half';
   handleChange: (value: number) => void;
+  centerX?: number;
+  centerY?: number;
 }
 
 export const useKnob = ({
   value,
   wrap = true,
   range,
-  handleChange
+  handleChange,
+  centerX,
+  centerY
 }: KnobProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const knobRef = useRef<SVGPathElement>(null);
-  const [knobCenterX, setKnobCenterX] = useState(0);
-  const [knobCenterY, setKnobCenterY] = useState(0);
+  const [knobCenterX, setKnobCenterX] = useState(centerX ?? 0);
+  const [knobCenterY, setKnobCenterY] = useState(centerY ?? 0);
   const [originX, setOriginX] = useState(0);
   const [originY, setOriginY] = useState(0);
   const [angle, setAngle] = useState(0);
@@ -47,14 +57,21 @@ export const useKnob = ({
 
     const { x, y, width, height } = knobRef.current
       .getBoundingClientRect();
+
     const { x: ox, y: oy } = svgRef.current
       .getBoundingClientRect();
 
-    setKnobCenterX(x + width / 2);
-    setKnobCenterY(y + height / 2);
+    if (centerX === undefined || centerY === undefined) {
+      setKnobCenterX(x + width / 2);
+      setKnobCenterY(y + height / 2);
+    } else {
+      setKnobCenterX(centerX);
+      setKnobCenterY(centerY);
+    }
+
     setOriginX(ox);
     setOriginY(oy);
-  }, []);
+  }, [centerX, centerY]);
 
   useEffect(() => {
     const nextAngle = getAngleFromValue(value);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, FC } from "react";
+import { useEffect, FC, useRef, useState, useLayoutEffect } from "react";
 import { inter } from "../../inter";
 import { RAD_TO_DEG, useKnob } from "../knobUtils";
 import styles from "./PositionKnob.module.css";
@@ -14,14 +14,16 @@ export const PositionKnob: FC<PositionKnobProps> = ({
   position,
   handleChange
 }) => {
+  const centerRef = useRef<SVGElement>(null);
+  const [centerX, setCenterX] = useState(0);
+  const [centerY, setCenterY] = useState(0);
+
   const {
     svgRef,
     knobRef,
     handleMouseDown,
     handleMouseUp,
     handleMouseMove,
-    knobCenterX,
-    knobCenterY,
     originX,
     originY,
     angle
@@ -29,8 +31,26 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     value: position,
     range: 'full',
     wrap: true,
+    centerX,
+    centerY,
     handleChange
   })
+
+  useLayoutEffect(() => {
+    if (!centerRef.current) {
+      return
+    }
+
+    const {
+      left,
+      top,
+      width,
+      height
+    } = centerRef.current.getBoundingClientRect()
+
+    setCenterX(left + width / 2);
+    setCenterY(top + height / 2);
+  }, [])
 
   useEffect(() => {
     document.addEventListener('mouseup', handleMouseUp, true);
@@ -186,20 +206,39 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         onMouseMove={handleMouseMove}
         style={{
           cursor: "pointer",
-          transformOrigin: `${knobCenterX - originX}px ${
-            knobCenterY - originY
+          transformOrigin: `${centerX - originX}px ${
+            centerY - originY
           }px`,
           transform: `rotate(${angle * RAD_TO_DEG}deg)`,
         }}
       >
-        <circle id="knob-shadow" cx="101.9" cy="95.2" r="43.6"/>
-        <circle id="knob-highlight" fill="#424242" cx="101.9" cy="95.2" r="31.2"/>
+        <circle
+          id="knob-shadow"
+          ref={centerRef}
+          cx="101.9"
+          cy="95.2"
+          r="43.6"
+        />
+        <circle
+          id="knob-highlight"
+          fill="#424242"
+          cx="101.9"
+          cy="95.2"
+          r="31.2"
+        />
         <g id="knob-head">
-          <path id="knob-body" d="M121.7,136.5v-21.1c0-0.9-0.3-1.8-0.9-2.6c-1-1.3-2.2-3.4-2.3-4.4l-4.4-45.7c-0.2-2.3-0.7-4.5-1.4-6.6
+          <path
+            id="knob-body"
+            d="M121.7,136.5v-21.1c0-0.9-0.3-1.8-0.9-2.6c-1-1.3-2.2-3.4-2.3-4.4l-4.4-45.7c-0.2-2.3-0.7-4.5-1.4-6.6
             L106,35.4h-4.1h-4.1L91,56c-0.7,2.2-1.2,4.4-1.4,6.6l-4.4,45.7c-0.1,1-1.3,3-2.3,4.4c-0.6,0.8-0.9,1.7-0.9,2.6v21.1
-            C82,145.6,121.7,145,121.7,136.5z"/>
-          <path id="knob-mark" fill="#FFFFFF" d="M101.9,65.4c-0.7,0-1.2-0.5-1.2-1.2V35.4c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v28.8
-            C103.1,64.9,102.5,65.4,101.9,65.4z"/>
+            C82,145.6,121.7,145,121.7,136.5z"
+          />
+          <path
+            id="knob-mark"
+            fill="#FFFFFF"
+            d="M101.9,65.4c-0.7,0-1.2-0.5-1.2-1.2V35.4c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v28.8
+            C103.1,64.9,102.5,65.4,101.9,65.4z"
+          />
         </g>
       </g>
     </svg>
