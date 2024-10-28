@@ -7,7 +7,8 @@ import {
   useMotorControl,
   rosTimeToSec,
   StepCommand,
-  ControlMode
+  ControlMode,
+  PositionFeedback
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
@@ -27,6 +28,17 @@ const Page = () => {
   const [step, setStep] = useState(0);
   const [volts, setVolts] = useState(0);
   const [amps, setAmps] = useState(0);
+  const [position, setPosition] = useState(0);
+  const [goal, setGoal] = useState(0);
+  const [tolerance, setTolerance] = useState(0);
+  const [Kp, setKp] = useState(0);
+  const [Ki, setKi] = useState(0);
+  const [Kd, setKd] = useState(0);
+  const [pe, setPe] = useState(0);
+  const [ie, setIe] = useState(0);
+  const [de, setDe] = useState(0);
+  const [iMin, setIMin] = useState(0);
+  const [iMax, setIMax] = useState(0);
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
 
@@ -70,7 +82,49 @@ const Page = () => {
     }
   }, []);
 
+  const handlePosition = useCallback(({
+    position,
+    goal,
+    tolerance,
+    pe,
+    ie,
+    de,
+    p,
+    i,
+    d
+  }: PositionFeedback) => {
+    // Update normalized position
+    setPosition(position);
+
+    // Update normalized goal position
+    setGoal(goal);
+
+    // Update tolerance
+    setTolerance(tolerance);
+
+    // Update current proportional gain
+    setKp(p);
+
+    // Update current integral gain
+    setKi(i);
+
+    // Update current derivative gain
+    setKd(d);
+
+    // Update current proportional error
+    setPe(pe);
+
+    // Update current integral error
+    setIe(ie);
+
+    // Update current derivative error
+    setDe(de);
+
+    // TODO: iMin/iMax from settings or from message?
+  }, []);
+
   const {
+    publishPosition,
     publishVelocity,
     publishEstop,
     publishSteps
@@ -78,6 +132,7 @@ const Page = () => {
     address,
     onConnection: handleConnection,
     onVelocity: handleVelocity,
+    onPosition: handlePosition,
     onError: handleError
   });
 
@@ -115,7 +170,20 @@ const Page = () => {
           volts={volts}
           amps={amps}
         />
-        {/*<Position />*/}
+        <Position
+          position={position}
+          goal={goal}
+          tolerance={tolerance}
+          publishPosition={publishPosition}
+          Kp={Kp}
+          Ki={Ki}
+          Kd={Kd}
+          iMin={iMin}
+          iMax={iMax}
+          pe={pe}
+          ie={ie}
+          de={de}
+        />
         <Steps
           time={sequenceTime}
           step={step}

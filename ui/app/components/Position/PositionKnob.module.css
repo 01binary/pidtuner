@@ -1,0 +1,15 @@
+.positionKnob {
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin-right: -1rem;
+}
+
+@media (max-width: 600px) {
+  .positionKnob {
+    margin-right: initial;
+  }
+}
+
+.positionKnob text {
+  user-select: none;
+}

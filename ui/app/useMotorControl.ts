@@ -8,8 +8,15 @@ const VELOCITY_FEEDBACK_TOPIC = "/velocity_feedback";
 const VELOCITY_FEEDBACK_TYPE = "pidtuner/VelocityFeedback";
 const VELOCITY_COMMAND_TOPIC = "/velocity";
 const VELOCITY_COMMAND_TYPE = "pidtuner/VelocityCommand";
+
+const POSITION_FEEDBACK_TOPIC = "/position_feedback";
+const POSITION_FEEDBACK_TYPE = "pidtuner/PositionFeedback";
+const POSITION_COMMAND_TOPIC = "/position";
+const POSITION_COMMAND_TYPE = "pidtuner/PositionCommand";
+
 const STEP_COMMAND_TOPIC = "/step";
 const STEP_COMMAND_TYPE = "pidtuner/Steps";
+
 const ESTOP_COMMAND_TOPIC = "/estop";
 const ESTOP_COMMAND_TYPE = "pidtuner/EmergencyStop";
 
@@ -21,30 +28,30 @@ type RosTime = {
 };
 
 export enum ControlMode {
-  VELOCITY = 0,
-  POSITION = 1,
-  STEP = 2
+  VELOCITY = 0,       // Velocity control mode
+  POSITION = 1,       // Goal position and tolerance mode
+  STEP = 2            // Step performance playback mode
 }
 
 export type VelocityFeedback = {
-  command: number;
-  absolute: number;
-  quadrature: number;
-  time: RosTime;
-  start: RosTime;
-  elapsed: number;
-  dt: number;
-  step: number;
-  estop: boolean;
-  mode: ControlMode;
-  amps: number;
-  volts: number;
+  command: number;    // Last PWM command
+  absolute: number;   // Absolute encoder position
+  quadrature: number; // Quadrature encoder position
+  time: RosTime;      // Current time
+  start: RosTime;     // Last command time
+  elapsed: number;    // Time elapsed since last command
+  dt: number;         // Time step
+  step: number;       // Performance step index
+  estop: boolean;     // Emergency stop active
+  mode: ControlMode;  // Current state
+  amps: number;       // Current reading
+  volts: number;      // Voltage reading
 };
 
 export type PositionFeedback = {
-  position: number;   // Absolute encoder position
-  goal: number;       // Absolute encoder goal position
-  tolerance: number;  // Position tolerance (reached goal)
+  position: number;   // Absolute encoder position (normalized)
+  goal: number;       // Goal (PID controller setpoint) position
+  tolerance: number;  // Tolerance for stopping when goal is reached
   pe: number;         // Proportional error
   ie: number;         // Integral error
   de: number;         // Derivative error
@@ -54,7 +61,12 @@ export type PositionFeedback = {
 };
 
 export type VelocityCommand = {
-  command: number;
+  command: number;    // PWM command to send
+};
+
+export type PositionCommand = {
+  goal: number;       // Goal position to send
+  tolerance: number;  // Position tolerance to send
 };
 
 export type Step = {
@@ -104,13 +116,15 @@ type Params = {
   onConnection?: () => void;
   onError?: (error: any) => void;
   onVelocity?: (feedback: VelocityFeedback) => void;
+  onPosition?: (feedback: PositionFeedback) => void;
 };
 
 export const useMotorControl = ({
   address = DEFAULT_ADDDRESS,
   onConnection,
   onError,
-  onVelocity
+  onVelocity,
+  onPosition
 }: Params = DEFAULT_PARAMS) => {
   const ros = useMemo(() => {
     if (!global.ROSLIB) return;
@@ -129,18 +143,36 @@ export const useMotorControl = ({
   }, [onConnection, onError, address]);
 
   useEffect(() => {
-    if (!onVelocity || !ros) return;
+    if (!ros) return;
 
-    const velocityFeedbackTopic = new ROSLIB.Topic({
-      ros,
-      name: VELOCITY_FEEDBACK_TOPIC,
-      messageType: VELOCITY_FEEDBACK_TYPE
-    });
+    let velocityFeedbackTopic = null;
+    let positionFeedbackTopic = null;
 
-    velocityFeedbackTopic.subscribe(onVelocity);
+    if (onVelocity) {
+      velocityFeedbackTopic = new ROSLIB.Topic({
+        ros,
+        name: VELOCITY_FEEDBACK_TOPIC,
+        messageType: VELOCITY_FEEDBACK_TYPE
+      });
 
-    () => velocityFeedbackTopic.unsubscribe();
-  }, [ros, onVelocity]);
+      velocityFeedbackTopic.subscribe(onVelocity);
+    }
+
+    if (onPosition) {
+      positionFeedbackTopic = new ROSLIB.Topic({
+        ros,
+        name: POSITION_FEEDBACK_TOPIC,
+        messageType: POSITION_FEEDBACK_TYPE
+      });
+
+      positionFeedbackTopic.subscribe(onPosition);
+    }
+
+    () => {
+      velocityFeedbackTopic?.unsubscribe();
+      positionFeedbackTopic?.unsubscribe();
+    }
+  }, [ros, onPosition, onVelocity]);
 
   const velocityPublisher = useMemo(() => {
     if (!ros) return;
@@ -152,6 +184,18 @@ export const useMotorControl = ({
     });
 
     return velocityTopic;
+  }, [ros]);
+
+  const positionPublisher = useMemo(() => {
+    if (!ros) return;
+
+    const positionTopic = new ROSLIB.Topic({
+      ros,
+      name: POSITION_COMMAND_TOPIC,
+      messageType: POSITION_COMMAND_TYPE
+    });
+
+    return positionTopic;
   }, [ros]);
 
   const stepPublisher = useMemo(() => {
@@ -184,7 +228,15 @@ export const useMotorControl = ({
     const message = new ROSLIB.Message(velocity);
     velocityPublisher.publish(message);
 
-  }, [velocityPublisher]);
+  }, [ros, velocityPublisher]);
+
+  const publishPosition = useCallback((position: PositionCommand) => {
+    if (!ros) return;
+
+    const message = new ROSLIB.Message(position);
+    positionPublisher.publish(message);
+
+  }, [ros, positionPublisher]);
 
   const publishSteps = useCallback((steps: StepCommand) => {
     if (!ros) return;
@@ -192,7 +244,7 @@ export const useMotorControl = ({
     const message = new ROSLIB.Message(steps);
     stepPublisher.publish(message);
 
-  }, [stepPublisher]);
+  }, [ros, stepPublisher]);
 
   const publishEstop = useCallback((estop: EmergencyStopCommand) => {
     if (!ros) return;
@@ -200,10 +252,11 @@ export const useMotorControl = ({
     const message = new ROSLIB.Message(estop);
     estopPublisher.publish(message);
 
-  }, [estopPublisher]);
+  }, [ros, estopPublisher]);
 
   return {
     publishVelocity,
+    publishPosition,
     publishEstop,
     publishSteps
   };
