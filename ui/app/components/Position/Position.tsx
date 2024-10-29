@@ -23,7 +23,7 @@ type PositionProps = {
 
 export const Position: FC<PositionProps> = ({
   publishPosition,
-  position,
+  position: initialPosition,
   goal: initialGoal,
   tolerance: initialTolerance,
   Kp,
@@ -36,6 +36,7 @@ export const Position: FC<PositionProps> = ({
   de
 }) => {
   const [goal, setGoal] = useState(initialGoal);
+  const [position, setPosition] = useState(0);
   const [tolerance, setTolerance] = useState(initialTolerance);
 
   useEffect(() => {
@@ -62,8 +63,18 @@ export const Position: FC<PositionProps> = ({
         step={1}
       />
 
+      <PrimaryInput
+        type="number"
+        value={Math.round(position * 100)}
+        onChange={e => setPosition(e.target.value / 100)}
+        min={-100}
+        max={100}
+        step={1}
+      />
+
       <PositionKnob
         position={goal}
+        error={error}
         handleChange={setGoal}
       />
     </Module>

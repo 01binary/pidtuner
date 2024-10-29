@@ -28,7 +28,6 @@ export const getAngleFromPoint = (
 type KnobProps = {
   value: number;
   wrap?: boolean;
-  range?: 'full' | 'half';
   handleChange: (value: number) => void;
   centerX?: number;
   centerY?: number;
@@ -37,7 +36,6 @@ type KnobProps = {
 export const useKnob = ({
   value,
   wrap = true,
-  range,
   handleChange,
   centerX,
   centerY
@@ -116,7 +114,7 @@ export const useKnob = ({
         delta += Math.PI * 2;
       }
 
-      if (range === 'half' && delta > Math.PI) {
+      if (delta > Math.PI) {
         // Map 0..360 to -180..180.
         delta -= Math.PI * 2;
       }
@@ -124,7 +122,7 @@ export const useKnob = ({
       let nextAngle = angle + delta;
 
       // Prevent crossing over from max positive to max negative
-      if (range === 'half' && (nextAngle > Math.PI || nextAngle < -Math.PI))
+      if (nextAngle > Math.PI || nextAngle < -Math.PI)
         return;
 
       handleChange(getValueFromAngle(nextAngle));
@@ -137,7 +135,6 @@ export const useKnob = ({
     knobCenterY,
     offsetAngle,
     handleChange,
-    range,
     wrap
   ]);
 

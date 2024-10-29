@@ -5,13 +5,30 @@ import { inter } from "../../inter";
 import { RAD_TO_DEG, useKnob } from "../knobUtils";
 import styles from "./PositionKnob.module.css";
 
+const ERROR_RADIUS = 46.3
+const OFFSET_RADIUS = 52.3
+
+const getCircumference = (radius: number) => (
+  2 * Math.PI * radius
+)
+
+const getDashArray = (circumference: number, norm: number) => {
+  const factor = Math.abs(norm) / 2;
+  return `${circumference * factor},${circumference * (1 - factor)}`
+}
+
+const ERROR_CIRCUMFERENCE = getCircumference(ERROR_RADIUS)
+const OFFSET_CIRCUMFERENCE = getCircumference(OFFSET_RADIUS)
+
 type PositionKnobProps = {
   position: number;
+  error: number;
   handleChange: (position: number) => void;
 };
 
 export const PositionKnob: FC<PositionKnobProps> = ({
   position,
+  error,
   handleChange
 }) => {
   const centerRef = useRef<SVGElement>(null);
@@ -29,7 +46,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     angle
   } = useKnob({
     value: position,
-    range: 'half',
     wrap: true,
     centerX,
     centerY,
@@ -68,18 +84,30 @@ export const PositionKnob: FC<PositionKnobProps> = ({
       onMouseUp={handleMouseUp}
       className={styles.positionKnob}
     >
-      <path
+      <circle
         id="error"
-        fill="#EC008C"
-        d="M102.3,95.5c0,0,42.8,28.8,42.8,28.8c8.6-9.9,9-28.8,9-28.8H102.3z"
+        fill="none"
+        stroke="#EC008C"
+        strokeWidth="6"
+        strokeDasharray={getDashArray(OFFSET_CIRCUMFERENCE, position)}
+        cx="101.9"
+        cy="95.5"
+        r="46.3"
       />
-      <path
+      <circle
         id="offset"
         fill="none"
         stroke="#424242"
         strokeWidth="6"
-        strokeLinejoin="round"
-        d="M101.9,147.8c18.2,0,34.3-9.3,43.6-23.4"
+        strokeDasharray={getDashArray(OFFSET_CIRCUMFERENCE, position)}
+        strokeDashoffset={OFFSET_CIRCUMFERENCE * 0.25}
+        style={{
+          transformOrigin: '101.9px 95.5px',
+          transform: `rotate(${position < 0 ? position * Math.PI : 0}rad)`,
+        }}
+        cx="101.9"
+        cy="95.5"
+        r="52.3"
       />
       <circle
         id="range"
@@ -115,7 +143,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         stroke-miterlimit="10"
         d="M166.9,33.5l-6.6,6.5c14.3,14.2,23.1,33.8,23.1,55.5c0,21.6-8.8,41.1-22.9,55.3l6.4,6.4"
       />
-      <g id="arrow-ccw">
+      {error > 0 && <g id="arrow-ccw">
         <path
           fill="none"
           stroke="#EC008C"
@@ -128,8 +156,8 @@ export const PositionKnob: FC<PositionKnobProps> = ({
           d="M190.3,52l6.3-0.6l0-0.2l-8.1-5c-2.4-2.1-4.7-4.1-7.1-6.2c1.3,2.9,2.6,5.7,3.9,8.6l2.4,9.2l0.2,0.1
           L190.3,52z"
         />
-      </g>
-      <g id="arrow-cw">
+      </g>}
+      {error < 0 && <g id="arrow-cw">
         <path
           fill="none"
           stroke="#376BE8"
@@ -142,14 +170,14 @@ export const PositionKnob: FC<PositionKnobProps> = ({
           d="M190.3,139l-2.4-5.9l-0.2,0.1l-2.4,9.2c-1.3,2.9-2.6,5.7-3.9,8.6c2.4-2.1,4.7-4.1,7.1-6.2l8.1-5l0-0.2
           L190.3,139z"
         />
-      </g>
+      </g>}
       <text
         id="label-min"
         transform="matrix(1 0 0 1 96.7357 13.4993)"
         fontFamily={inter.style.fontFamily}
         fontSize="18px"
       >
-        0
+        {position}
       </text>
       <text
         id="label-max"
@@ -157,7 +185,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         fontFamily={inter.style.fontFamily}
         fontSize="18px"
       >
-        100
+        {error}
       </text>
       <g id="ticks">
         <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>

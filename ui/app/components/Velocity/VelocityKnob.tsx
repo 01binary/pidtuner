@@ -33,7 +33,6 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
     angle
   } = useKnob({
     value: velocity,
-    range: 'half',
     wrap: true,
     handleChange
   })
