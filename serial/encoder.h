@@ -56,15 +56,6 @@ public:
 
 class AS5045Encoder: public Encoder
 {
-private:
-  struct AS5045Data
-  {
-    unsigned int position : 12;
-    AS5045Data(): position(0) {}
-  };
-
-  AS5045Data data;
-
 public:
   int csPin;
 
@@ -72,11 +63,6 @@ public:
   AS5045Encoder(int cs): csPin(cs)
   {
     SPI.begin();
-    SPI.beginTransaction(SPISettings(
-      1e6,
-      MSBFIRST,
-      SPI_MODE0
-    ));
 
     pinMode(csPin, OUTPUT);
     digitalWrite(csPin, HIGH);
@@ -84,7 +70,6 @@ public:
 
   ~AS5045Encoder()
   {
-    SPI.endTransaction();
     SPI.end();
   }
 
@@ -93,15 +78,24 @@ public:
   {
     // Select
     digitalWrite(csPin, LOW);
-    delayMicroseconds(8);
+    delayMicroseconds(1);
 
     // Read
-    *((uint16_t*)&data) = SPI.transfer16(0x0);
+    SPI.beginTransaction(SPISettings(
+      1e6,
+      MSBFIRST,
+      SPI_MODE0
+    ));
+
+    unsigned int raw = SPI.transfer16(0);
+
+    SPI.endTransaction();
 
     // Deselect
     digitalWrite(csPin, HIGH);
 
     // Convert
-    return float(data.position) / float(AS5045_MAX);
+    unsigned int reading = (raw >> 3) & 0x1FFF;
+    return float(reading) / float(AS5045_MAX);
   }
 };
