@@ -74,6 +74,7 @@ export const Position: FC<PositionProps> = ({
 
       <PositionKnob
         position={goal}
+        actualPosition={position}
         error={error}
         handleChange={setGoal}
       />

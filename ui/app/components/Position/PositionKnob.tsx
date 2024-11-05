@@ -22,12 +22,14 @@ const OFFSET_CIRCUMFERENCE = getCircumference(OFFSET_RADIUS)
 
 type PositionKnobProps = {
   position: number;
+  actualPosition: number;
   error: number;
   handleChange: (position: number) => void;
 };
 
 export const PositionKnob: FC<PositionKnobProps> = ({
   position,
+  actualPosition,
   error,
   handleChange
 }) => {
@@ -89,7 +91,12 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         fill="none"
         stroke="#EC008C"
         strokeWidth="6"
-        strokeDasharray={getDashArray(OFFSET_CIRCUMFERENCE, position)}
+        strokeDasharray={getDashArray(ERROR_CIRCUMFERENCE, error)}
+        strokeDashoffset={ERROR_CIRCUMFERENCE * 0.25}
+        style={{
+          transformOrigin: '101.9px 95.5px',
+          transform: `rotate(${error < 0 ? actualPosition * Math.PI : }rad)`,
+        }}
         cx="101.9"
         cy="95.5"
         r="46.3"
@@ -177,7 +184,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         fontFamily={inter.style.fontFamily}
         fontSize="18px"
       >
-        {position}
+        0
       </text>
       <text
         id="label-max"
@@ -185,7 +192,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         fontFamily={inter.style.fontFamily}
         fontSize="18px"
       >
-        {error}
+        100
       </text>
       <g id="ticks">
         <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>
