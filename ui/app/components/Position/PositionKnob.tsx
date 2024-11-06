@@ -12,8 +12,13 @@ const getCircumference = (radius: number) => (
   2 * Math.PI * radius
 )
 
-const getDashArray = (circumference: number, norm: number) => {
+const getGoalDasharray = (circumference: number, norm: number) => {
   const factor = Math.abs(norm) / 2;
+  return `${circumference * factor},${circumference * (1 - factor)}`
+}
+
+const getErrorDasharray = (circumference: number, norm: number) => {
+  const factor = Math.abs(norm);
   return `${circumference * factor},${circumference * (1 - factor)}`
 }
 
@@ -21,15 +26,15 @@ const ERROR_CIRCUMFERENCE = getCircumference(ERROR_RADIUS)
 const OFFSET_CIRCUMFERENCE = getCircumference(OFFSET_RADIUS)
 
 type PositionKnobProps = {
+  goal: number;
   position: number;
-  actualPosition: number;
   error: number;
-  handleChange: (position: number) => void;
+  handleChange: (goal: number) => void;
 };
 
 export const PositionKnob: FC<PositionKnobProps> = ({
+  goal,
   position,
-  actualPosition,
   error,
   handleChange
 }) => {
@@ -47,7 +52,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     originY,
     angle
   } = useKnob({
-    value: position,
+    value: goal,
     wrap: true,
     centerX,
     centerY,
@@ -77,6 +82,10 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     }
   }, [handleMouseUp]);
 
+  const errorRotation = error < 0
+    ? position * Math.PI - Math.PI / 2
+    : (position - error) * Math.PI - Math.PI / 2
+
   return (
     <svg
       ref={svgRef}
@@ -91,11 +100,11 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         fill="none"
         stroke="#EC008C"
         strokeWidth="6"
-        strokeDasharray={getDashArray(ERROR_CIRCUMFERENCE, error)}
-        strokeDashoffset={ERROR_CIRCUMFERENCE * 0.25}
+        strokeDasharray={getErrorDasharray(ERROR_CIRCUMFERENCE, Math.abs(error) / 2)}
+        strokeDashoffset={0}
         style={{
           transformOrigin: '101.9px 95.5px',
-          transform: `rotate(${error < 0 ? actualPosition * Math.PI : }rad)`,
+          transform: `rotate(${errorRotation}rad)`,
         }}
         cx="101.9"
         cy="95.5"
@@ -105,12 +114,12 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         id="offset"
         fill="none"
         stroke="#424242"
-        strokeWidth="6"
-        strokeDasharray={getDashArray(OFFSET_CIRCUMFERENCE, position)}
+        strokeWidth="4"
+        strokeDasharray={getGoalDasharray(OFFSET_CIRCUMFERENCE, goal)}
         strokeDashoffset={OFFSET_CIRCUMFERENCE * 0.25}
         style={{
           transformOrigin: '101.9px 95.5px',
-          transform: `rotate(${position < 0 ? position * Math.PI : 0}rad)`,
+          transform: `rotate(${goal < 0 ? goal * Math.PI : 0}rad)`,
         }}
         cx="101.9"
         cy="95.5"
@@ -147,7 +156,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         fill="none"
         stroke="#D3D3D3"
         strokeWidth="2"
-        stroke-miterlimit="10"
         d="M166.9,33.5l-6.6,6.5c14.3,14.2,23.1,33.8,23.1,55.5c0,21.6-8.8,41.1-22.9,55.3l6.4,6.4"
       />
       {error > 0 && <g id="arrow-ccw">
@@ -195,43 +203,43 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         100
       </text>
       <g id="ticks">
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="101.9" y1="33.5" x2="101.9" y2="22.2"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="91.1" y1="34.4" x2="90.1" y2="28.9"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="80.6" y1="37.2" x2="78.7" y2="31.9"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="70.8" y1="41.8" x2="68" y2="36.9"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="61.8" y1="47.8" x2="58.3" y2="43.6"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="54.1" y1="55.5" x2="50" y2="52"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="48.1" y1="64.5" x2="43.2" y2="61.7"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="43.6" y1="74.3" x2="38" y2="72.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="40.8" y1="84.7" x2="35.2" y2="83.8"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="39.8" y1="95.5" x2="28.5" y2="95.5"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="162.6" y1="95.6" x2="175.2" y2="95.5"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="162.9" y1="84.7" x2="168.5" y2="83.8"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="160.2" y1="74.3" x2="165.5" y2="72.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="155.6" y1="64.5" x2="160.5" y2="61.7"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="149.4" y1="55.6" x2="153.7" y2="52"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="141.9" y1="47.8" x2="145.4" y2="43.6"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="132.9" y1="41.8" x2="135.7" y2="36.9"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="123.1" y1="37.2" x2="125.1" y2="31.6"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="112.6" y1="34.4" x2="113.6" y2="28.9"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="101.9" y1="157.5" x2="101.9" y2="168.8"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="91.1" y1="156.6" x2="90.1" y2="162.2"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="80.6" y1="153.8" x2="78.7" y2="159.1"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="70.8" y1="149.2" x2="68" y2="154.1"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="61.8" y1="143.2" x2="58.3" y2="147.4"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="54.1" y1="135.5" x2="50" y2="139"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="48.1" y1="126.5" x2="43.2" y2="129.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="43.6" y1="116.7" x2="38" y2="118.8"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="40.8" y1="106.3" x2="35.2" y2="107.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="162.9" y1="106.3" x2="168.5" y2="107.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="160.2" y1="116.7" x2="165.5" y2="118.7"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="155.6" y1="126.5" x2="160.5" y2="129.3"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="149.4" y1="135.4" x2="153.7" y2="139"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="141.9" y1="143.2" x2="145.4" y2="147.4"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="132.9" y1="149.2" x2="135.7" y2="154.1"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="123.1" y1="153.8" x2="125.1" y2="159.4"/>
-        <line fill="none" stroke="#A5A5A5" stroke-miterlimit="10" x1="112.6" y1="156.6" x2="113.6" y2="162.2"/>
+        <line fill="none" stroke="#A5A5A5" x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>
+        <line fill="none" stroke="#A5A5A5" x1="101.9" y1="33.5" x2="101.9" y2="22.2"/>
+        <line fill="none" stroke="#A5A5A5" x1="91.1" y1="34.4" x2="90.1" y2="28.9"/>
+        <line fill="none" stroke="#A5A5A5" x1="80.6" y1="37.2" x2="78.7" y2="31.9"/>
+        <line fill="none" stroke="#A5A5A5" x1="70.8" y1="41.8" x2="68" y2="36.9"/>
+        <line fill="none" stroke="#A5A5A5" x1="61.8" y1="47.8" x2="58.3" y2="43.6"/>
+        <line fill="none" stroke="#A5A5A5" x1="54.1" y1="55.5" x2="50" y2="52"/>
+        <line fill="none" stroke="#A5A5A5" x1="48.1" y1="64.5" x2="43.2" y2="61.7"/>
+        <line fill="none" stroke="#A5A5A5" x1="43.6" y1="74.3" x2="38" y2="72.3"/>
+        <line fill="none" stroke="#A5A5A5" x1="40.8" y1="84.7" x2="35.2" y2="83.8"/>
+        <line fill="none" stroke="#A5A5A5" x1="39.8" y1="95.5" x2="28.5" y2="95.5"/>
+        <line fill="none" stroke="#A5A5A5" x1="162.6" y1="95.6" x2="175.2" y2="95.5"/>
+        <line fill="none" stroke="#A5A5A5" x1="162.9" y1="84.7" x2="168.5" y2="83.8"/>
+        <line fill="none" stroke="#A5A5A5" x1="160.2" y1="74.3" x2="165.5" y2="72.3"/>
+        <line fill="none" stroke="#A5A5A5" x1="155.6" y1="64.5" x2="160.5" y2="61.7"/>
+        <line fill="none" stroke="#A5A5A5" x1="149.4" y1="55.6" x2="153.7" y2="52"/>
+        <line fill="none" stroke="#A5A5A5" x1="141.9" y1="47.8" x2="145.4" y2="43.6"/>
+        <line fill="none" stroke="#A5A5A5" x1="132.9" y1="41.8" x2="135.7" y2="36.9"/>
+        <line fill="none" stroke="#A5A5A5" x1="123.1" y1="37.2" x2="125.1" y2="31.6"/>
+        <line fill="none" stroke="#A5A5A5" x1="112.6" y1="34.4" x2="113.6" y2="28.9"/>
+        <line fill="none" stroke="#A5A5A5" x1="101.9" y1="157.5" x2="101.9" y2="168.8"/>
+        <line fill="none" stroke="#A5A5A5" x1="91.1" y1="156.6" x2="90.1" y2="162.2"/>
+        <line fill="none" stroke="#A5A5A5" x1="80.6" y1="153.8" x2="78.7" y2="159.1"/>
+        <line fill="none" stroke="#A5A5A5" x1="70.8" y1="149.2" x2="68" y2="154.1"/>
+        <line fill="none" stroke="#A5A5A5" x1="61.8" y1="143.2" x2="58.3" y2="147.4"/>
+        <line fill="none" stroke="#A5A5A5" x1="54.1" y1="135.5" x2="50" y2="139"/>
+        <line fill="none" stroke="#A5A5A5" x1="48.1" y1="126.5" x2="43.2" y2="129.3"/>
+        <line fill="none" stroke="#A5A5A5" x1="43.6" y1="116.7" x2="38" y2="118.8"/>
+        <line fill="none" stroke="#A5A5A5" x1="40.8" y1="106.3" x2="35.2" y2="107.3"/>
+        <line fill="none" stroke="#A5A5A5" x1="162.9" y1="106.3" x2="168.5" y2="107.3"/>
+        <line fill="none" stroke="#A5A5A5" x1="160.2" y1="116.7" x2="165.5" y2="118.7"/>
+        <line fill="none" stroke="#A5A5A5" x1="155.6" y1="126.5" x2="160.5" y2="129.3"/>
+        <line fill="none" stroke="#A5A5A5" x1="149.4" y1="135.4" x2="153.7" y2="139"/>
+        <line fill="none" stroke="#A5A5A5" x1="141.9" y1="143.2" x2="145.4" y2="147.4"/>
+        <line fill="none" stroke="#A5A5A5" x1="132.9" y1="149.2" x2="135.7" y2="154.1"/>
+        <line fill="none" stroke="#A5A5A5" x1="123.1" y1="153.8" x2="125.1" y2="159.4"/>
+        <line fill="none" stroke="#A5A5A5" x1="112.6" y1="156.6" x2="113.6" y2="162.2"/>
       </g>
       <g
         id="knob"
