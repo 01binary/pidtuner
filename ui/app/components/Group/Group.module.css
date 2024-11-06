@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 28px;
 }
 
 .center {
@@ -13,4 +13,8 @@
 .vertical {
   flex-direction: column;
   justify-content: center;
+}
+
+.top {
+  align-self: flex-start;
 }

@@ -18,7 +18,7 @@ export const Controls: FC<ControlsProps> = ({
   onGridChange,
   onPlay
 }) => (
-  <Group vertical>
+  <Group vertical alignTop>
     <PrimaryInput
       type="number"
       value={step}

@@ -1,5 +1,5 @@
 .primaryInput {
-  font-size: 64px;
+  font-size: 48px;
   width: 138px;
   border: none;
 }
@@ -11,9 +11,10 @@
 }
 
 .label {
-  color: var(--darkGray);
+  color: black;
+  opacity: 0.65;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .group {

@@ -5,18 +5,21 @@ type GroupProps = {
   children: ReactElement | ReactElement[];
   vertical?: boolean;
   center?: boolean;
+  alignTop?: boolean;
 };
 
 export const Group: FC<GroupProps> = ({
   children,
   vertical,
-  center
+  center,
+  alignTop
 }) => (
   <section
     className={[
       styles.group,
       vertical && styles.vertical,
-      center && styles.center
+      center && styles.center,
+      alignTop && styles.top
     ].filter(Boolean).join(' ')}
   >
     {children}

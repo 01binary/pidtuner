@@ -5,6 +5,7 @@ import { Module } from "../Module";
 import { PositionCommand } from "@/app/useMotorControl";
 import { PrimaryInput } from "../PrimaryInput";
 import { PositionKnob } from "./PositionKnob";
+import { Group } from "../Group";
 
 type PositionProps = {
   publishPosition: (command: PositionCommand) => void;
@@ -53,24 +54,26 @@ export const Position: FC<PositionProps> = ({
       title="Position"
       image={<img src="/position.svg" width="32" height="32" />}
     >
-      <PrimaryInput
-        type="number"
-        value={Math.round(goal * 100)}
-        onChange={handleChangeGoal}
-        min={-100}
-        max={100}
-        step={1}
-      />
+      <Group vertical alignTop>
+        <PrimaryInput
+          type="number"
+          value={Math.round(goal * 100)}
+          onChange={handleChangeGoal}
+          min={-100}
+          max={100}
+          step={1}
+        />
 
-      <PrimaryInput
-        type="number"
-        label="Tolerance"
-        value={Math.round(position * 100)}
-        onChange={e => setPosition(e.target.value / 100)}
-        min={-100}
-        max={100}
-        step={1}
-      />
+        <PrimaryInput
+          type="number"
+          label="Tolerance"
+          value={tolerance}
+          onChange={e => setTolerance(e.target.value / 100)}
+          min={0}
+          max={100}
+          step={0.1}
+        />
+      </Group>
 
       <PositionKnob
         goal={goal}
