@@ -96,6 +96,14 @@ export const PositionKnob: FC<PositionKnobProps> = ({
       className={styles.positionKnob}
     >
       <circle
+        id="range"
+        fill="none"
+        stroke="#7A7A7A"
+        cx="101.9"
+        cy="95.5"
+        r="52.3"
+      />
+      <circle
         id="error"
         fill="none"
         stroke="#EC008C"
@@ -121,14 +129,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
           transformOrigin: '101.9px 95.5px',
           transform: `rotate(${goal < 0 ? goal * Math.PI : 0}rad)`,
         }}
-        cx="101.9"
-        cy="95.5"
-        r="52.3"
-      />
-      <circle
-        id="range"
-        fill="none"
-        stroke="#7A7A7A"
         cx="101.9"
         cy="95.5"
         r="52.3"
