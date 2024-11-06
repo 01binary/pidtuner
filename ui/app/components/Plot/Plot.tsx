@@ -134,7 +134,7 @@ export const Plot: FC<PlotProps> = ({
       <section className={styles.plotHeader}>
         <img src="icon.svg" width="48" height="48" />
 
-        <h1>
+        <h1 className={styles.plotTitle}>
           {MODE[mode]} <span className={styles.mode}>control</span>
         </h1>
 

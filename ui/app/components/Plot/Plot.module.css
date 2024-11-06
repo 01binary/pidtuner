@@ -5,8 +5,9 @@
   align-items: center;
 }
 
-.plotHeader h1 {
+.plotTitle {
   flex: 1;
+  margin: 20px 0;
 }
 
 .mode {
@@ -44,7 +45,7 @@
 .plotScroll {
   width: 100%;
   overflow-x: auto;
-  padding-bottom: 16px;
+  padding-bottom: 10px;
 }
 
 .plot text {
