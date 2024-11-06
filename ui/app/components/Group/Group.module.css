@@ -3,7 +3,6 @@
   flex-direction: row;
   flex-wrap: nowrap;
   gap: 8px;
-  margin-top: 28px;
 }
 
 .center {
@@ -17,4 +16,8 @@
 
 .top {
   align-self: flex-start;
+}
+
+.marginTop {
+  margin-top: 28px;
 }

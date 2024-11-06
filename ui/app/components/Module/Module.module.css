@@ -41,6 +41,7 @@
   align-items: center;
   padding-left: calc(32px + 8px);
   overflow-x: auto;
+  gap: 2px;
 }
 
 @media (max-width: 600px) {

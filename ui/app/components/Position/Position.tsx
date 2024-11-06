@@ -4,8 +4,8 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { Module } from "../Module";
 import { PositionCommand } from "@/app/useMotorControl";
 import { PrimaryInput } from "../PrimaryInput";
-import { PositionKnob } from "./PositionKnob";
 import { Group } from "../Group";
+import { PositionKnob } from "./PositionKnob";
 
 type PositionProps = {
   publishPosition: (command: PositionCommand) => void;
@@ -54,7 +54,7 @@ export const Position: FC<PositionProps> = ({
       title="Position"
       image={<img src="/position.svg" width="32" height="32" />}
     >
-      <Group vertical alignTop>
+      <Group vertical alignTop marginTop>
         <PrimaryInput
           type="number"
           value={Math.round(goal * 100)}
@@ -68,10 +68,7 @@ export const Position: FC<PositionProps> = ({
           type="number"
           label="Tolerance"
           value={tolerance}
-          onChange={e => setTolerance(e.target.value / 100)}
-          min={0}
-          max={100}
-          step={0.1}
+          onChange={e => setTolerance(e.target.value)}
         />
       </Group>
 
