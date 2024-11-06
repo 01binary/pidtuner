@@ -3,6 +3,7 @@
   flex-direction: row;
   flex-wrap: nowrap;
   gap: 16px;
+  margin-top: 16px;
 }
 
 .center {

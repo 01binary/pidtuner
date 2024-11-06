@@ -33,7 +33,7 @@ import {
   MIN_WIDTH
 } from "./constants";
 
-const MODE = ["velocity", "position", "step"];
+const MODE = ["Velocity", "Position", "Step"];
 
 const LEGEND = [
   { key: "command", color: "#376be8", label: "command", min: -1, max: 1 },
@@ -135,10 +135,7 @@ export const Plot: FC<PlotProps> = ({
         <img src="icon.svg" width="48" height="48" />
 
         <h1>
-          Motor Control
-          <span className={styles.mode}>
-            {' '} / {MODE[mode]}
-          </span>
+          {MODE[mode]} <span className={styles.mode}>control</span>
         </h1>
 
         <div className={styles.plotToolbar}>
