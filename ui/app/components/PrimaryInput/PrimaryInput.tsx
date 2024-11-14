@@ -5,6 +5,8 @@ type PrimaryInputProps = {
   id?: string;
   type?: string;
   label?: string;
+  largeLabel?: boolean;
+  labelWidth?: string;
   units?: string;
   value?: any;
   autoSize?: boolean;
@@ -17,6 +19,8 @@ type PrimaryInputProps = {
 export const PrimaryInput: FC<PrimaryInputProps> = ({
   id,
   label,
+  largeLabel,
+  labelWidth,
   units,
   autoSize,
   ...props
@@ -24,8 +28,9 @@ export const PrimaryInput: FC<PrimaryInputProps> = ({
   <>
     {label &&
       <label
-        className={styles.label}
+        className={largeLabel ? styles.largeLabel : styles.label}
         htmlFor={id}
+        style={labelWidth ? { width: labelWidth } : undefined}
       >
         {label}
       </label>

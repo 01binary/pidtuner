@@ -20,6 +20,9 @@ const STEP_COMMAND_TYPE = "pidtuner/Steps";
 const ESTOP_COMMAND_TOPIC = "/estop";
 const ESTOP_COMMAND_TYPE = "pidtuner/EmergencyStop";
 
+const CONFIG_COMMAND_TOPIC = "/configuration";
+const CONFIG_COMMAND_TYPE = "pidtuner/Configuration";
+
 const DEFAULT_PARAMS = {};
 
 type RosTime = {
@@ -110,6 +113,27 @@ export type ConfigurationCommand = {
   iMin: number                // Min integral
   iMax: number                // Max integral
 };
+
+export const DEFAULT_CONFIGURATION = {
+  LPWMpin: 11,
+  RPWMpin: 3,
+  ADCpin: 0,
+  csPin: 53,
+  Apin: 18,
+  Bpin: 19,
+  pwmMin: 0,
+  pwmMax: 1,
+  absoluteMin: 0,
+  absoluteMax: 1,
+  pwmInvert: false,
+  absoluteInvert: false,
+  quadratureInvert: true,
+  Kp: 10,
+  Ki: 1,
+  Kd: 1,
+  iMin: 0,
+  iMax: 1
+}
 
 type Params = {
   address?: string;
@@ -210,6 +234,18 @@ export const useMotorControl = ({
     return stepTopic;
   }, [ros]);
 
+  const configurationPublisher = useMemo(() => {
+    if (!ros) return;
+
+    const configurationTopic = new ROSLIB.Topic({
+      ros,
+      name: CONFIG_COMMAND_TOPIC,
+      messageType: CONFIG_COMMAND_TYPE
+    });
+
+    return configurationTopic;
+  }, [ros]);
+
   const estopPublisher = useMemo(() => {
     if (!ros) return;
 
@@ -254,9 +290,18 @@ export const useMotorControl = ({
 
   }, [ros, estopPublisher]);
 
+  const publishConfiguration = useCallback((config: ConfigurationCommand) => {
+    if (!ros) return;
+
+    const message = new ROSLIB.Message(config);
+    configurationPublisher.publish(message);
+
+  }, [ros, configurationPublisher]);
+
   return {
     publishVelocity,
     publishPosition,
+    publishConfiguration,
     publishEstop,
     publishSteps
   };

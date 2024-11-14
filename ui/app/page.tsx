@@ -31,14 +31,9 @@ const Page = () => {
   const [position, setPosition] = useState(0);
   const [goal, setGoal] = useState(0);
   const [tolerance, setTolerance] = useState(0);
-  const [Kp, setKp] = useState(0);
-  const [Ki, setKi] = useState(0);
-  const [Kd, setKd] = useState(0);
   const [pe, setPe] = useState(0);
   const [ie, setIe] = useState(0);
   const [de, setDe] = useState(0);
-  const [iMin, setIMin] = useState(0);
-  const [iMax, setIMax] = useState(0);
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
 
@@ -88,10 +83,7 @@ const Page = () => {
     tolerance,
     pe,
     ie,
-    de,
-    p,
-    i,
-    d
+    de
   }: PositionFeedback) => {
     // Update normalized position
     setPosition(position);
@@ -102,30 +94,18 @@ const Page = () => {
     // Update tolerance
     setTolerance(tolerance);
 
-    // Update current proportional gain
-    setKp(p);
-
-    // Update current integral gain
-    setKi(i);
-
-    // Update current derivative gain
-    setKd(d);
-
     // Update current proportional error
     setPe(pe);
-
     // Update current integral error
     setIe(ie);
-
     // Update current derivative error
     setDe(de);
-
-    // TODO: iMin/iMax from settings or from message?
   }, []);
 
   const {
     publishPosition,
     publishVelocity,
+    publishConfiguration,
     publishEstop,
     publishSteps
   } = useMotorControl({
@@ -175,11 +155,7 @@ const Page = () => {
           goal={goal}
           tolerance={tolerance}
           publishPosition={publishPosition}
-          Kp={Kp}
-          Ki={Ki}
-          Kd={Kd}
-          iMin={iMin}
-          iMax={iMax}
+          publishConfiguration={publishConfiguration}
           pe={pe}
           ie={ie}
           de={de}

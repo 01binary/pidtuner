@@ -134,15 +134,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         r="52.3"
       />
       <g id="spacer-left">
-        <line
-          fill="none"
-          stroke="#D3D3D3"
-          strokeWidth="2"
-          x1="20.3"
-          y1="95.5"
-          x2="0"
-          y2="95.5"
-        />
         <path
           fill="none"
           stroke="#D3D3D3"
