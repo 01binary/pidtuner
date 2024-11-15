@@ -69,41 +69,14 @@ export const PositionSlider = () => {
         y2="46.7"
       />
   
-      <g id="head">
-        <polygon
-          fill="#FFFFFF"
-          stroke="#000000"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points="9.5,16.9 17.7,29.8 26,16.9 26,5.3 9.5,5.3"
-        />
-        <line
-          stroke="#EC008C"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          x1="33.2"
-          y1="6.5"
-          x2="53.8"
-          y2="6.5"
-        />
-        <path
-          fill="#EC008C"
-          d="M51.1,6.5l-3.3-5.4L48,1l8.8,3.5c3.1,0.7,6.1,1.4,9.2,2c-3.1,0.7-6.1,1.4-9.2,2L48,12.1L47.8,12L51.1,6.5z"
-        />
-        <line
-          stroke="#376BE8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          x1="2.5"
-          y1="6.5"
-          x2="-18.1"
-          y2="6.5"
-        />
-        <path
-          fill="#376BE8"
-          d="M-15.5,6.5l3.3,5.4l-0.2,0.1l-8.8-3.5c-3.1-0.7-6.1-1.4-9.2-2c3.1-0.7,6.1-1.4,9.2-2l8.8-3.5l0.2,0.1L-15.5,6.5z"
-        />
-      </g>
+      <polygon
+        id="head"
+        fill="#FFFFFF"
+        stroke="#000000"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points="9.5,16.9 17.7,29.8 26,16.9 26,5.3 9.5,5.3"
+      />
     </svg>
   )
 };

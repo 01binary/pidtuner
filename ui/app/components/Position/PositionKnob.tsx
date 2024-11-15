@@ -149,34 +149,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         strokeWidth="2"
         d="M166.9,33.5l-6.6,6.5c14.3,14.2,23.1,33.8,23.1,55.5c0,21.6-8.8,41.1-22.9,55.3l6.4,6.4"
       />
-      {error > 0 && <g id="arrow-ccw">
-        <path
-          fill="none"
-          stroke="#EC008C"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M188.8,49.8c4.2,6.3,7.5,13.1,10,20.3"
-        />
-        <path
-          fill="#EC008C"
-          d="M190.3,52l6.3-0.6l0-0.2l-8.1-5c-2.4-2.1-4.7-4.1-7.1-6.2c1.3,2.9,2.6,5.7,3.9,8.6l2.4,9.2l0.2,0.1
-          L190.3,52z"
-        />
-      </g>}
-      {error < 0 && <g id="arrow-cw">
-        <path
-          fill="none"
-          stroke="#376BE8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M188.8,141.3c4.2-6.3,7.5-13.1,10-20.3"
-        />
-        <path
-          fill="#376BE8"
-          d="M190.3,139l-2.4-5.9l-0.2,0.1l-2.4,9.2c-1.3,2.9-2.6,5.7-3.9,8.6c2.4-2.1,4.7-4.1,7.1-6.2l8.1-5l0-0.2
-          L190.3,139z"
-        />
-      </g>}
       <text
         id="label-min"
         transform="matrix(1 0 0 1 96.7357 13.4993)"
