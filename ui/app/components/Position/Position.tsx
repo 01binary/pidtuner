@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Module } from "../Module";
 import {
   ConfigurationCommand,
@@ -41,12 +41,6 @@ export const Position: FC<PositionProps> = ({
   const [Kd, setKd] = useState(DEFAULT_CONFIGURATION.Kd)
   const [iMin, setIMin] = useState(DEFAULT_CONFIGURATION.iMax)
   const [iMax, setIMax] = useState(DEFAULT_CONFIGURATION.iMax)
-
-  const [peTemp, setPe] = useState(0);
-
-  useEffect(() => {
-    window.setInterval(() => {setPe(v => v + 1)}, 500)
-  }, [])
 
   useEffect(() => {
     publishPosition({ goal, tolerance });
@@ -176,7 +170,9 @@ export const Position: FC<PositionProps> = ({
       <Separator spacing="1rem" />
 
       <Group>
-        <Gauge value={peTemp} label="P error" />
+        <Gauge value={pe} label="P error" />
+        <Gauge value={ie} label="I error" />
+        <Gauge value={de} label="D error" />
       </Group>
     </Module>
   );

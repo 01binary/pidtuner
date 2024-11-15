@@ -1,9 +1,21 @@
-import { FC, useState, useEffect, useMemo, useRef } from "react";
+import { FC, useState, useEffect } from "react";
 import { inter } from "../../inter";
 import styles from "./Gauge.module.css";
 
-const DIV = 10
-const MAX_STEP = 100000
+const DIV = 10;
+const STEP_COUNT = 100;
+const MAX_STEP = 100000;
+const STEP_HEIGHT = 22;
+const STEP_FONT_HEIGHT = 11;
+const GAUGE_HEIGHT = 143;
+
+const getOffsetFromStep = (stepIndex: number) => (
+  stepIndex * STEP_HEIGHT
+)
+
+const getOffsetFromValue = (value: number, stepSize: number) => (
+  GAUGE_HEIGHT / 2 - value / stepSize * STEP_HEIGHT + STEP_HEIGHT / 2
+)
 
 const getStepSize = (range: number) => {
   for (let step = 1; step < MAX_STEP; step = step * DIV) {
@@ -19,9 +31,20 @@ const translation = (x: number, y: number) => (
   `matrix(1 0 0 1 ${x} ${y})`
 );
 
-const formatLabel = (value: number, step: number) => (
-  step < 1 ? value.toFixed(1) : value.toString()
+const formatStepLabel = (value: number, stepSize: number) => (
+  stepSize < 1 ? value.toFixed(1) : Math.ceil(value).toString()
 )
+
+const formatLabel = (value: number) => {
+  const initial = value.toString()
+  const point = initial.indexOf('.')
+
+  if (point >= 0 && initial.length - point > 1) {
+    return value.toFixed(1);
+  } else {
+    return initial;
+  }
+}
 
 type GaugeType = {
   value: number;
@@ -46,11 +69,11 @@ export const Gauge: FC<GaugeType> = ({
     setMax(newMax);
   }, [value, min, max]);
 
-  const stepCount = Math.ceil(range / step);
-  const steps = [...Array(stepCount).keys()]
-    .map(stepIndex => stepIndex * step);
+  const steps = [...Array(STEP_COUNT).keys()]
+    .map(stepIndex => stepIndex * step)
+    .concat(max);
 
-  const offset = 18 - value / step * 18 - 18/2;
+  const offset = getOffsetFromValue(value, step);
 
   return (
     <div className={styles.gauge}>
@@ -59,9 +82,57 @@ export const Gauge: FC<GaugeType> = ({
       </div>
       <svg
         width="66px"
-        height="144px"
-        viewBox="0 0 66 144"
+        height="143px"
+        viewBox="0 0 66 143"
       >
+        <line
+          id="scale"
+          fill="none"
+          stroke="#999"
+          x1="50"
+          y1="3"
+          x2="50"
+          y2="140"
+        />
+        <g
+          style={{ transition: 'transform 0.3s ease-in-out' }}
+          transform={translation(0, offset)}
+        >
+          {steps.map((stepValue, stepIndex) => {
+            const stepOffset = getOffsetFromStep(stepIndex)
+            return (
+              <g key={stepValue}>
+                <text
+                  key={stepValue}
+                  x="13"
+                  y={stepOffset - STEP_HEIGHT / 2 + STEP_FONT_HEIGHT / 2 - 1}
+                  width="26"
+                  height={STEP_HEIGHT}
+                  fontFamily={inter.style.fontFamily}
+                  fontSize={`${STEP_FONT_HEIGHT}px`}
+                >
+                  {formatStepLabel(stepValue, step)}
+                </text>
+                <line
+                  stroke="#999"
+                  strokeWidth="1"
+                  x1="39"
+                  y1={stepOffset + STEP_HEIGHT / 2}
+                  x2="50"
+                  y2={stepOffset + STEP_HEIGHT / 2}
+                />
+                <line
+                  stroke="#999"
+                  strokeWidth="1"
+                  x1="44"
+                  y1={stepOffset + STEP_HEIGHT}
+                  x2="50"
+                  y2={stepOffset + STEP_HEIGHT}
+                />
+              </g>
+            )
+          })}
+        </g>
         <path
           id="border"
           fill="#D3D3D3"
@@ -69,31 +140,6 @@ export const Gauge: FC<GaugeType> = ({
             C66.1,2.5,63.5,0,60.4,0z M62.5,134.5c0,3.1-2.5,5.6-5.6,5.6H9.2c-3.1,0-5.6-2.5-5.6-5.6V9c0-3.1,2.5-5.6,5.6-5.6h47.6
             c3.1,0,5.6,2.5,5.6,5.6V134.5z"
         />
-        <line
-          id="scale"
-          fill="none"
-          stroke="#424242"
-          strokeMiterlimit="10"
-          x1="49.9"
-          y1="3.3"
-          x2="49.9"
-          y2="140.1"
-        />
-        <g style={{ transition: 'transform 0.3s ease-in-out' }} transform={translation(0, offset)}>
-          {steps.map((stepValue, stepIndex) => (
-            <text
-              key={stepValue}
-              x="12.9"
-              y={22.7 * stepIndex}
-              width="25.8"
-              height="18"
-              fontFamily={inter.style.fontFamily}
-              fontSize="10.5px"
-            >
-              {formatLabel(stepValue, step)}
-            </text>
-          ))}
-        </g>
         <polygon
           id="arrow"
           fill="#FFFFFF"
@@ -104,7 +150,7 @@ export const Gauge: FC<GaugeType> = ({
         />
       </svg>
       <div className={styles.gaugeValue}>
-        {value}
+        {formatLabel(value)}
       </div>
     </div>
   )
