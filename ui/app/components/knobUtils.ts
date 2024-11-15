@@ -4,12 +4,12 @@ export const MAX_ANGLE = Math.PI;
 export const BIAS_ANGLE = Math.PI / 2;
 export const RAD_TO_DEG = 57.2958;
 
-export const getValueFromAngle = (angle: number) => {
+export const getValueFromAngle = (angle: number, isFullRange: boolean) => {
   const norm = angle / MAX_ANGLE;
   return norm;
 };
 
-export const getAngleFromValue = (norm: number) => {
+export const getAngleFromValue = (norm: number, isFullRange: boolean) => {
   return norm * MAX_ANGLE;
 };
 
@@ -19,7 +19,9 @@ export const getAngleFromPoint = (
   cx: number,
   cy: number,
   ox: number,
-  oy: number) => {
+  oy: number,
+  isFullRange: boolean
+) => {
   const sin = y - (cy - oy);
   const cos = x - (cx - ox);
   return Math.atan2(sin, cos) + BIAS_ANGLE;
@@ -31,6 +33,7 @@ type KnobProps = {
   handleChange: (value: number) => void;
   centerX?: number;
   centerY?: number;
+  isFullRange?: boolean;
 }
 
 export const useKnob = ({
@@ -38,7 +41,8 @@ export const useKnob = ({
   wrap = true,
   handleChange,
   centerX,
-  centerY
+  centerY,
+  isFullRange = false
 }: KnobProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const knobRef = useRef<SVGPathElement>(null);
@@ -72,7 +76,7 @@ export const useKnob = ({
   }, [centerX, centerY]);
 
   useEffect(() => {
-    const nextAngle = getAngleFromValue(value);
+    const nextAngle = getAngleFromValue(value, isFullRange);
 
     if (Math.abs(nextAngle - angle) > 0.0001) {
       setAngle(nextAngle);
@@ -85,7 +89,7 @@ export const useKnob = ({
 
     const { offsetX, offsetY } = e.nativeEvent;
     const initialOffset = getAngleFromPoint(
-      offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+      offsetX, offsetY, knobCenterX, knobCenterY, originX, originY, isFullRange);
 
     setOffsetAngle(initialOffset - angle);
   }, [knobCenterX, knobCenterY, originX, originY, angle]);
@@ -106,7 +110,7 @@ export const useKnob = ({
       const { offsetX, offsetY } = e.nativeEvent;
 
       const currentAngle = getAngleFromPoint(
-        offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+        offsetX, offsetY, knobCenterX, knobCenterY, originX, originY, isFullRange);
 
       let delta = currentAngle - offsetAngle - angle;
 
@@ -126,7 +130,7 @@ export const useKnob = ({
       if (nextAngle > Math.PI || nextAngle < -Math.PI)
         return;
 
-      handleChange(getValueFromAngle(nextAngle));
+      handleChange(getValueFromAngle(nextAngle, isFullRange));
     }
   }, [
     angle,
