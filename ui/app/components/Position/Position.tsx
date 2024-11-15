@@ -61,6 +61,10 @@ export const Position: FC<PositionProps> = ({
     setGoal(e.target.value / 100);
   }, []);
 
+  const handleChangeTolerance = useCallback((e) => {
+    setTolerance(e.target.value);
+  }, []);
+
   const error = position - goal;
 
   return (
@@ -83,7 +87,7 @@ export const Position: FC<PositionProps> = ({
           type="number"
           label="Tolerance"
           value={tolerance}
-          onChange={e => setTolerance(e.target.value)}
+          onChange={handleChangeTolerance}
         />
       </Group>
 
