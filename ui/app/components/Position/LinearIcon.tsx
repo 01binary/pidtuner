@@ -5,14 +5,12 @@ export const LinearIcon = () => (
       stroke="#000000"
       strokeLinecap="round"
       strokeLinejoin="round"
-      stroke-miterlimit="10"
       points="1.1,12.6 1.1,11.4 22.9,11.4 22.9,12.6 "
     />
     <line
       stroke="#000000"
       strokeLinecap="round"
       strokeLinejoin="round"
-      stroke-miterlimit="10"
       x1="12"
       y1="12.6"
       x2="12"
