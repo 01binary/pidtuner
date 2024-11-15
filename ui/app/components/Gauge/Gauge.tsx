@@ -101,9 +101,8 @@ export const Gauge: FC<GaugeType> = ({
           {steps.map((stepValue, stepIndex) => {
             const stepOffset = getOffsetFromStep(stepIndex)
             return (
-              <g key={stepValue}>
+              <g key={`step${stepValue}-${stepIndex}`}>
                 <text
-                  key={stepValue}
                   x="13"
                   y={stepOffset - STEP_HEIGHT / 2 + STEP_FONT_HEIGHT / 2 - 1}
                   width="26"

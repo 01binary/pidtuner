@@ -28,6 +28,7 @@ export const Controls: FC<ControlsProps> = ({
     />
 
     <PrimaryInput
+      id="grid"
       type="number"
       label="Grid (s)"
       value={grid}

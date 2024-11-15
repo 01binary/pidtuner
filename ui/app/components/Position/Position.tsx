@@ -79,6 +79,7 @@ export const Position: FC<PositionProps> = ({
         />
 
         <PrimaryInput
+          id="tolerance"
           type="number"
           label="Tolerance"
           value={tolerance}
@@ -106,6 +107,7 @@ export const Position: FC<PositionProps> = ({
       <Group vertical tight>
         <Group alignTop tight>
           <PrimaryInput
+            id="kp"
             type="number"
             value={Kp}
             label="P"
@@ -117,6 +119,7 @@ export const Position: FC<PositionProps> = ({
 
         <Group alignTop tight>
           <PrimaryInput
+            id="ki"
             type="number"
             value={Ki}
             label="I"
@@ -128,6 +131,7 @@ export const Position: FC<PositionProps> = ({
 
         <Group alignTop tight>
           <PrimaryInput
+            id="kd"
             type="number"
             value={Kd}
             label="D"
@@ -146,6 +150,7 @@ export const Position: FC<PositionProps> = ({
       <Group vertical tight>
         <Group alignTop>
           <PrimaryInput
+            id="imin"
             type="number"
             value={iMin}
             label="Imin"
@@ -157,6 +162,7 @@ export const Position: FC<PositionProps> = ({
 
         <Group alignTop>
           <PrimaryInput
+            id="imax"
             type="number"
             value={iMax}
             label="Imax"
