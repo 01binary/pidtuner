@@ -22,6 +22,12 @@ const getErrorDasharray = (circumference: number, norm: number) => {
   return `${circumference * factor},${circumference * (1 - factor)}`
 }
 
+const getErrorRotationFull = (position: number, error: number): number => (
+  error < 0
+    ? position * Math.PI - Math.PI / 2
+    : (position - error) * Math.PI - Math.PI / 2
+);
+
 const ERROR_CIRCUMFERENCE = getCircumference(ERROR_RADIUS)
 const OFFSET_CIRCUMFERENCE = getCircumference(OFFSET_RADIUS)
 
@@ -29,6 +35,7 @@ type PositionKnobProps = {
   goal: number;
   position: number;
   error: number;
+  isFullRange: boolean;
   handleChange: (goal: number) => void;
 };
 
@@ -36,6 +43,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
   goal,
   position,
   error,
+  isFullRange,
   handleChange
 }) => {
   const centerRef = useRef<SVGElement>(null);
@@ -56,7 +64,8 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     wrap: true,
     centerX,
     centerY,
-    handleChange
+    handleChange,
+    isFullRange
   })
 
   useLayoutEffect(() => {
@@ -82,9 +91,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     }
   }, [handleMouseUp]);
 
-  const errorRotation = error < 0
-    ? position * Math.PI - Math.PI / 2
-    : (position - error) * Math.PI - Math.PI / 2
+  const errorRotation = getErrorRotationFull(position, error)
 
   return (
     <svg
@@ -149,22 +156,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         strokeWidth="2"
         d="M166.9,33.5l-6.6,6.5c14.3,14.2,23.1,33.8,23.1,55.5c0,21.6-8.8,41.1-22.9,55.3l6.4,6.4"
       />
-      <text
-        id="label-min"
-        transform="matrix(1 0 0 1 96.7357 13.4993)"
-        fontFamily={inter.style.fontFamily}
-        fontSize="18px"
-      >
-        0
-      </text>
-      <text
-        id="label-max"
-        transform="matrix(1 0 0 1 86.5052 188.6604)"
-        fontFamily={inter.style.fontFamily}
-        fontSize="18px"
-      >
-        100
-      </text>
       <g id="ticks">
         <line fill="none" stroke="#A5A5A5" x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>
         <line fill="none" stroke="#A5A5A5" x1="101.9" y1="33.5" x2="101.9" y2="22.2"/>

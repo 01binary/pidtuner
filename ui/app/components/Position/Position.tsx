@@ -74,15 +74,11 @@ export const Position: FC<PositionProps> = ({
     setTolerance(e.target.value);
   }, []);
 
-  const handleFullRange = useCallback((e) => {
-    setFullRange(true);
+  const handleToggleHalfFullRange = useCallback(() => {
+    setFullRange(lastSetting => !lastSetting);
   }, []);
 
-  const handleHalfRange = useCallback((e) => {
-    setFullRange(false);
-  }, []);
-
-  const handleLinearRadial = useCallback((e) => {
+  const handleToggleLinearRadial = useCallback(() => {
     setIsRadial(lastSetting => !lastSetting);
   }, []);
 
@@ -119,6 +115,7 @@ export const Position: FC<PositionProps> = ({
             position={position}
             error={error}
             handleChange={setGoal}
+            isFullRange={isFullRange}
           />
         )
         : (
@@ -128,20 +125,14 @@ export const Position: FC<PositionProps> = ({
 
       <Group vertical marginLeft>
         <button
-          title="Full Range"
-          onClick={handleFullRange}
+          onClick={handleToggleHalfFullRange}
+          title={isFullRange ? 'Switch to 1/2 range' : 'Switch to full range'}
         >
-          <FullRangeIcon />
+          {isFullRange ? <HalfRangeIcon /> : <FullRangeIcon />}
         </button>
         <button
-          title="Half Range"
-          onClick={handleHalfRange}
-        >
-          <HalfRangeIcon />
-        </button>
-        <button
-          title="Switch between Linear and Radial"
-          onClick={handleLinearRadial}
+          title={isRadial ? 'Switch to linear control' : 'Switch to radial control'}
+          onClick={handleToggleLinearRadial}
         >
           {isRadial ? <LinearIcon /> : <RadialIcon />}
         </button>
