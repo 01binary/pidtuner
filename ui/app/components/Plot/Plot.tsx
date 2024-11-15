@@ -237,21 +237,21 @@ export const Plot: FC<PlotProps> = ({
             />
 
             {/* Bottom axis tick marks */}
-            <g
+            {data.length > 0 && <g
               ref={axisBottomRef}
               className={styles.axisBottom}
               transform={`translate(0,${HEIGHT - MARGIN_BOTTOM + SPACING})`}
-            />
+            />}
 
             {/* Bottom axis domain */}
-            <line
+            {data.length > 0 && <line
               className={styles.axisBottom__domain}
               x1={SPACING_HALF}
               y1={HEIGHT - MARGIN_BOTTOM + SPACING}
               x2={width ?? 0 - MARGIN_RIGHT}
               y2={HEIGHT - MARGIN_BOTTOM + SPACING}
               strokeWidth="1"
-            />
+            />}
 
             {LEGEND.map(({ key, color, min, max }) => (
               enabled[key]
