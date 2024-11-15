@@ -7,6 +7,7 @@
 
 .gaugeLabel {
   color: var(--darkGray);
+  text-wrap: nowrap;
 }
 
 .gaugeValue {

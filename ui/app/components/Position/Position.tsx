@@ -16,6 +16,7 @@ import { FullRangeIcon } from "./FullRangeIcon";
 import { HalfRangeIcon } from "./HalfRangeIcon";
 import { RadialIcon } from "./RadialIcon";
 import { LinearIcon } from "./LinearIcon";
+import { PositionSlider } from "./PositionSlider";
 
 type PositionProps = {
   publishPosition: (command: PositionCommand) => void;
@@ -111,12 +112,19 @@ export const Position: FC<PositionProps> = ({
         />
       </Group>
 
-      <PositionKnob
-        goal={goal}
-        position={position}
-        error={error}
-        handleChange={setGoal}
-      />
+      {isRadial
+        ? (
+          <PositionKnob
+            goal={goal}
+            position={position}
+            error={error}
+            handleChange={setGoal}
+          />
+        )
+        : (
+          <PositionSlider />
+        )
+      }
 
       <Group vertical marginLeft>
         <button
@@ -135,7 +143,7 @@ export const Position: FC<PositionProps> = ({
           title="Switch between Linear and Radial"
           onClick={handleLinearRadial}
         >
-          {isRadial ? <RadialIcon /> : <LinearIcon />}
+          {isRadial ? <LinearIcon /> : <RadialIcon />}
         </button>
       </Group>
 
