@@ -12,6 +12,10 @@ import { Group } from "../Group";
 import { PositionKnob } from "./PositionKnob";
 import { Separator } from "../Separator";
 import { Gauge } from "../Gauge/Gauge";
+import { FullRangeIcon } from "./FullRangeIcon";
+import { HalfRangeIcon } from "./HalfRangeIcon";
+import { RadialIcon } from "./RadialIcon";
+import { LinearIcon } from "./LinearIcon";
 
 type PositionProps = {
   publishPosition: (command: PositionCommand) => void;
@@ -36,11 +40,13 @@ export const Position: FC<PositionProps> = ({
 }) => {
   const [goal, setGoal] = useState(initialGoal);
   const [tolerance, setTolerance] = useState(initialTolerance);
-  const [Kp, setKp] = useState(DEFAULT_CONFIGURATION.Kp)
-  const [Ki, setKi] = useState(DEFAULT_CONFIGURATION.Ki)
-  const [Kd, setKd] = useState(DEFAULT_CONFIGURATION.Kd)
-  const [iMin, setIMin] = useState(DEFAULT_CONFIGURATION.iMax)
-  const [iMax, setIMax] = useState(DEFAULT_CONFIGURATION.iMax)
+  const [Kp, setKp] = useState(DEFAULT_CONFIGURATION.Kp);
+  const [Ki, setKi] = useState(DEFAULT_CONFIGURATION.Ki);
+  const [Kd, setKd] = useState(DEFAULT_CONFIGURATION.Kd);
+  const [iMin, setIMin] = useState(DEFAULT_CONFIGURATION.iMax);
+  const [iMax, setIMax] = useState(DEFAULT_CONFIGURATION.iMax);
+  const [isRadial, setIsRadial] = useState(true);
+  const [isFullRange, setFullRange] = useState(false);
 
   useEffect(() => {
     publishPosition({ goal, tolerance });
@@ -48,14 +54,16 @@ export const Position: FC<PositionProps> = ({
 
   useEffect(() => {
     publishConfiguration({
-      ...DEFAULT_CONFIGURATION,
-      Kp,
-      Ki,
-      Kd,
-      iMin,
-      iMax
+      ...DEFAULT_CONFIGURATION, Kp, Ki, Kd, iMin, iMax
     })
-  }, [Kp, Ki, Kd, iMin, iMax, publishConfiguration])
+  }, [
+    Kp,
+    Ki,
+    Kd,
+    iMin,
+    iMax,
+    publishConfiguration
+  ]);
 
   const handleChangeGoal = useCallback((e) => {
     setGoal(e.target.value / 100);
@@ -63,6 +71,18 @@ export const Position: FC<PositionProps> = ({
 
   const handleChangeTolerance = useCallback((e) => {
     setTolerance(e.target.value);
+  }, []);
+
+  const handleFullRange = useCallback((e) => {
+    setFullRange(true);
+  }, []);
+
+  const handleHalfRange = useCallback((e) => {
+    setFullRange(false);
+  }, []);
+
+  const handleLinearRadial = useCallback((e) => {
+    setIsRadial(lastSetting => !lastSetting);
   }, []);
 
   const error = position - goal;
@@ -91,11 +111,6 @@ export const Position: FC<PositionProps> = ({
         />
       </Group>
 
-      <Separator
-        invert
-        spacingLeft="1rem"
-      />
-
       <PositionKnob
         goal={goal}
         position={position}
@@ -103,8 +118,29 @@ export const Position: FC<PositionProps> = ({
         handleChange={setGoal}
       />
 
+      <Group vertical marginLeft>
+        <button
+          title="Full Range"
+          onClick={handleFullRange}
+        >
+          <FullRangeIcon />
+        </button>
+        <button
+          title="Half Range"
+          onClick={handleHalfRange}
+        >
+          <HalfRangeIcon />
+        </button>
+        <button
+          title="Switch between Linear and Radial"
+          onClick={handleLinearRadial}
+        >
+          {isRadial ? <RadialIcon /> : <LinearIcon />}
+        </button>
+      </Group>
+
       <Separator
-        spacingLeft="1.5rem"
+        spacingLeft="1rem"
         spacingRight="1rem"
       />
 
@@ -177,7 +213,7 @@ export const Position: FC<PositionProps> = ({
         </Group>
       </Group>
 
-      <Separator spacing="1rem" />
+      <Separator spacingRight="0.5rem" />
 
       <Group>
         <Gauge value={pe} label="P error" />

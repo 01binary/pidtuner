@@ -7,6 +7,7 @@ type GroupProps = {
   center?: boolean;
   alignTop?: boolean;
   marginTop?: boolean;
+  marginLeft?: boolean;
   tight?: boolean;
 };
 
@@ -16,6 +17,7 @@ export const Group: FC<GroupProps> = ({
   center,
   alignTop,
   marginTop,
+  marginLeft,
   tight
 }) => (
   <section
@@ -25,6 +27,7 @@ export const Group: FC<GroupProps> = ({
       center && styles.center,
       alignTop && styles.top,
       marginTop && styles.marginTop,
+      marginLeft && styles.marginLeft,
       tight ? styles.tight : styles.relaxed
     ].filter(Boolean).join(' ')}
   >
