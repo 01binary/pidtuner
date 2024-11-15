@@ -81,7 +81,6 @@ export const useKnob = ({
 
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
-    e.stopPropagation();
     isMouseDownRef.current = true;
 
     const { offsetX, offsetY } = e.nativeEvent;
@@ -92,14 +91,16 @@ export const useKnob = ({
   }, [knobCenterX, knobCenterY, originX, originY, angle]);
 
   const handleMouseUp = useCallback((e) => {
+    if (e.target.tagName === 'INPUT') {
+      return;
+    }
+
     e.preventDefault();
-    e.stopPropagation();
     isMouseDownRef.current = false;
   }, []);
 
   const handleMouseMove = useCallback((e) => {
     e.preventDefault();
-    e.stopPropagation();
 
     if (isMouseDownRef.current) {
       const { offsetX, offsetY } = e.nativeEvent;

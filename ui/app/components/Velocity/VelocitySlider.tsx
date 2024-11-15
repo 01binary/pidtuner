@@ -41,7 +41,6 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
       return;
 
     e.preventDefault();
-    e.stopPropagation();
 
     const { clientY: mousePosition } = e;
     const { y: sliderTop, height: sliderHeight } = sliderRef.current
@@ -57,7 +56,6 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
       return;
 
     e.preventDefault();
-    e.stopPropagation();
 
     const { clientY: mousePosition } = e;
     const { top: min, bottom: max } = borderRef.current
@@ -70,8 +68,11 @@ export const VelocitySlider: FC<VelocitySliderProps> = ({
   }, []);
 
   const handleMouseUp = useCallback((e) => {
+    if (e.target.tagName === 'INPUT') {
+      return;
+    }
+
     e.preventDefault();
-    e.stopPropagation();
 
     isDraggingRef.current = false;
   }, []);
