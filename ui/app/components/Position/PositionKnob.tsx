@@ -22,7 +22,7 @@ const getErrorDasharray = (circumference: number, norm: number) => {
   return `${circumference * factor},${circumference * (1 - factor)}`
 }
 
-const getErrorRotationFull = (position: number, error: number): number => (
+const getErrorRotationHalf = (position: number, error: number): number => (
   error < 0
     ? position * Math.PI - Math.PI / 2
     : (position - error) * Math.PI - Math.PI / 2
@@ -91,7 +91,9 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     }
   }, [handleMouseUp]);
 
-  const errorRotation = getErrorRotationFull(position, error)
+  const errorRotation = isFullRange
+    ? 0
+    : getErrorRotationHalf(position, error)
 
   return (
     <svg

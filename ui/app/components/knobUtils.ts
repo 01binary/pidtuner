@@ -1,16 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { MouseEventHandler, useCallback, useEffect, useRef, useState } from "react";
 
-export const MAX_ANGLE = Math.PI;
-export const BIAS_ANGLE = Math.PI / 2;
 export const RAD_TO_DEG = 57.2958;
+export const EPSILON = 0.0001;
 
 export const getValueFromAngle = (angle: number, isFullRange: boolean) => {
-  const norm = angle / MAX_ANGLE;
-  return norm;
+  if (isFullRange) {
+    return Math.max(0, (angle + Math.PI / 2) / (Math.PI * 2))
+  } else {
+    return angle / Math.PI;
+  }
 };
 
 export const getAngleFromValue = (norm: number, isFullRange: boolean) => {
-  return norm * MAX_ANGLE;
+  return isFullRange
+    ? norm * 2 * Math.PI - Math.PI / 2
+    : norm * Math.PI;
 };
 
 export const getAngleFromPoint = (
@@ -22,9 +26,18 @@ export const getAngleFromPoint = (
   oy: number,
   isFullRange: boolean
 ) => {
-  const sin = y - (cy - oy);
-  const cos = x - (cx - ox);
-  return Math.atan2(sin, cos) + BIAS_ANGLE;
+  let sin = y - (cy - oy);
+  let cos = x - (cx - ox);
+
+  const magnitude = Math.sqrt(sin * sin + cos * cos);
+  sin = sin / magnitude;
+  cos = cos / magnitude;
+
+  const angle = Math.atan2(sin, cos);
+
+  return isFullRange
+    ? angle
+    : angle + Math.PI / 2;;
 };
 
 type KnobProps = {
@@ -37,7 +50,7 @@ type KnobProps = {
 }
 
 export const useKnob = ({
-  value,
+  value = 0,
   wrap = true,
   handleChange,
   centerX,
@@ -53,6 +66,11 @@ export const useKnob = ({
   const [angle, setAngle] = useState(0);
   const [offsetAngle, setOffsetAngle] = useState(0);
   const isMouseDownRef = useRef(false);
+
+  useEffect(() => {
+    setAngle(getAngleFromValue(0, isFullRange));
+    handleChange(0);
+  }, [isFullRange])
 
   useEffect(() => {
     if (!knobRef.current || !svgRef.current) return;
@@ -78,12 +96,12 @@ export const useKnob = ({
   useEffect(() => {
     const nextAngle = getAngleFromValue(value, isFullRange);
 
-    if (Math.abs(nextAngle - angle) > 0.0001) {
+    if (Math.abs(nextAngle - angle) > EPSILON) {
       setAngle(nextAngle);
     }
   }, [value, angle]);
 
-  const handleMouseDown = useCallback((e) => {
+  const handleMouseDown: MouseEventHandler = useCallback((e) => {
     e.preventDefault();
     isMouseDownRef.current = true;
 
@@ -91,10 +109,14 @@ export const useKnob = ({
     const initialOffset = getAngleFromPoint(
       offsetX, offsetY, knobCenterX, knobCenterY, originX, originY, isFullRange);
 
-    setOffsetAngle(initialOffset - angle);
-  }, [knobCenterX, knobCenterY, originX, originY, angle]);
+    if (isFullRange) {
+      setOffsetAngle(initialOffset);
+    } else {
+      setOffsetAngle(initialOffset - angle);
+    }
+  }, [knobCenterX, knobCenterY, originX, originY, angle, isFullRange]);
 
-  const handleMouseUp = useCallback((e) => {
+  const handleMouseUp: MouseEventHandler = useCallback((e) => {
     if (e.target.tagName === 'INPUT') {
       return;
     }
@@ -103,7 +125,7 @@ export const useKnob = ({
     isMouseDownRef.current = false;
   }, []);
 
-  const handleMouseMove = useCallback((e) => {
+  const handleMouseMove: MouseEventHandler = useCallback((e) => {
     e.preventDefault();
 
     if (isMouseDownRef.current) {
@@ -112,23 +134,37 @@ export const useKnob = ({
       const currentAngle = getAngleFromPoint(
         offsetX, offsetY, knobCenterX, knobCenterY, originX, originY, isFullRange);
 
-      let delta = currentAngle - offsetAngle - angle;
+      let nextAngle = 0;
 
-      if (wrap && delta < 0) {
-        // Wrap
-        delta += Math.PI * 2;
+      if (isFullRange) {
+        nextAngle = currentAngle - offsetAngle - Math.PI / 2;
+        const delta = nextAngle - angle;
+
+        // Prevent crossing over
+        if (Math.abs(delta) > Math.PI * 1.5) {
+          nextAngle = currentAngle < 0
+            ? getAngleFromValue(1, true)
+            : getAngleFromValue(0, true);
+        }
+      } else {
+        let delta = currentAngle - offsetAngle - angle;
+
+        if (wrap && delta < 0) {
+          // Wrap
+          delta += Math.PI * 2;
+        }
+
+        if (delta > Math.PI) {
+          // Map 0..360 to -180..180.
+          delta -= Math.PI * 2;
+        }
+
+        nextAngle = angle + delta;
+
+        // Prevent crossing over from max positive to max negative
+        if (nextAngle > Math.PI || nextAngle < -Math.PI)
+          return;
       }
-
-      if (delta > Math.PI) {
-        // Map 0..360 to -180..180.
-        delta -= Math.PI * 2;
-      }
-
-      let nextAngle = angle + delta;
-
-      // Prevent crossing over from max positive to max negative
-      if (nextAngle > Math.PI || nextAngle < -Math.PI)
-        return;
 
       handleChange(getValueFromAngle(nextAngle, isFullRange));
     }

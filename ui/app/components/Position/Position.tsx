@@ -47,7 +47,7 @@ export const Position: FC<PositionProps> = ({
   const [iMin, setIMin] = useState(DEFAULT_CONFIGURATION.iMax);
   const [iMax, setIMax] = useState(DEFAULT_CONFIGURATION.iMax);
   const [isRadial, setIsRadial] = useState(true);
-  const [isFullRange, setFullRange] = useState(false);
+  const [isFullRange, setFullRange] = useState(true);
 
   useEffect(() => {
     publishPosition({ goal, tolerance });
@@ -94,7 +94,7 @@ export const Position: FC<PositionProps> = ({
           type="number"
           value={Math.round(goal * 100)}
           onChange={handleChangeGoal}
-          min={-100}
+          min={isFullRange ? 0 : -100}
           max={100}
           step={1}
         />
@@ -105,6 +105,8 @@ export const Position: FC<PositionProps> = ({
           label="Tolerance"
           value={tolerance}
           onChange={handleChangeTolerance}
+          min={0}
+          max={100}
         />
       </Group>
 
