@@ -69,7 +69,6 @@ export const useKnob = ({
 
   useEffect(() => {
     setAngle(getAngleFromValue(0, isFullRange));
-    handleChange(0);
   }, [isFullRange])
 
   useEffect(() => {
@@ -111,6 +110,7 @@ export const useKnob = ({
 
     if (isFullRange) {
       setOffsetAngle(initialOffset);
+      console.log({initialOffset})
     } else {
       setOffsetAngle(initialOffset - angle);
     }
@@ -134,17 +134,18 @@ export const useKnob = ({
       const currentAngle = getAngleFromPoint(
         offsetX, offsetY, knobCenterX, knobCenterY, originX, originY, isFullRange);
 
-      let nextAngle = 0;
-
       if (isFullRange) {
-        nextAngle = currentAngle - offsetAngle - Math.PI / 2;
-        const delta = nextAngle - angle;
+        const nextAngle = currentAngle - offsetAngle - Math.PI / 2;
+        const nextValue = getValueFromAngle(nextAngle, isFullRange);
+        const delta = value - nextValue;
 
         // Prevent crossing over
-        if (Math.abs(delta) > Math.PI * 1.5) {
-          nextAngle = currentAngle < 0
-            ? getAngleFromValue(1, true)
-            : getAngleFromValue(0, true);
+        if (Math.abs(delta) > 0.5) {
+          console.warn('crossover guard')
+          handleChange(delta < 0 ? 0 : 1)
+        } else {
+          console.log('ok', {delta})
+          handleChange(nextValue);
         }
       } else {
         let delta = currentAngle - offsetAngle - angle;
@@ -159,14 +160,15 @@ export const useKnob = ({
           delta -= Math.PI * 2;
         }
 
-        nextAngle = angle + delta;
+        let nextAngle = angle + delta;
 
         // Prevent crossing over from max positive to max negative
         if (nextAngle > Math.PI || nextAngle < -Math.PI)
           return;
-      }
 
-      handleChange(getValueFromAngle(nextAngle, isFullRange));
+        const nextValue = getValueFromAngle(nextAngle, isFullRange);
+        handleChange(nextValue);
+      }
     }
   }, [
     angle,
