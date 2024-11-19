@@ -1,13 +1,46 @@
 "use client";
 
-import { useCallback, useEffect, FC } from "react";
+import {
+  useCallback,
+  useEffect,
+  FC,
+  useRef,
+  useState,
+  useLayoutEffect,
+  MouseEventHandler
+} from "react";
 import { inter } from "../../inter";
-import { RAD_TO_DEG, useKnob } from "../knobUtils";
 import styles from "./VelocityKnob.module.css";
 
 const INCREMENTS = [
   0.08, 0.13, 0.18, 0.25, 0.27, 0.33, 0.4, 0.46, 0.50, 0.56, 0.62, 0.68, 0.75, 0.78, 0.85, 0.9
 ];
+
+export const RAD_TO_DEG = 57.2958;
+export const EPSILON = 0.0001;
+
+export const getValueFromAngle = (angle: number) => {
+  return angle / Math.PI;
+};
+
+export const getAngleFromValue = (norm: number) => {
+  return norm * Math.PI;
+};
+
+export const getAngleFromPoint = (
+  x: number,
+  y: number,
+  cx: number,
+  cy: number,
+  ox: number,
+  oy: number
+) => {
+  const sin = y - (cy - oy);
+  const cos = x - (cx - ox);
+  const angle = Math.atan2(sin, cos);
+
+  return angle + Math.PI / 2;
+};
 
 type VelocityKnobProps = {
   velocity: number;
@@ -20,22 +53,99 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
   handleChange,
   invert
 }) => {
-  const {
-    svgRef,
-    knobRef,
-    handleMouseDown,
-    handleMouseUp,
-    handleMouseMove,
-    knobCenterX,
-    knobCenterY,
+  const svgRef = useRef<SVGSVGElement>(null);
+  const knobRef = useRef<SVGPathElement>(null);
+  const [knobCenterX, setKnobCenterX] = useState(0);
+  const [knobCenterY, setKnobCenterY] = useState(0);
+  const [originX, setOriginX] = useState(0);
+  const [originY, setOriginY] = useState(0);
+  const [angle, setAngle] = useState(0);
+  const [offsetAngle, setOffsetAngle] = useState(0);
+  const isMouseDownRef = useRef(false);
+
+  useLayoutEffect(() => {
+    if (!knobRef.current || !svgRef.current) return;
+
+    const { x, y, width, height } = knobRef.current
+      .getBoundingClientRect();
+
+    const { x: ox, y: oy } = svgRef.current
+      .getBoundingClientRect();
+
+    setKnobCenterX(x + width / 2);
+    setKnobCenterY(y + height / 2);
+
+    setOriginX(ox);
+    setOriginY(oy);
+  }, []);
+
+  useEffect(() => {
+    const nextAngle = getAngleFromValue(velocity);
+
+    if (Math.abs(nextAngle - angle) > EPSILON) {
+      setAngle(nextAngle);
+    }
+  }, [velocity, angle]);
+
+  const handleMouseDown: MouseEventHandler = useCallback((e) => {
+    e.preventDefault();
+    isMouseDownRef.current = true;
+
+    const { offsetX, offsetY } = e.nativeEvent;
+    const initialOffset = getAngleFromPoint(
+      offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+
+    setOffsetAngle(initialOffset - angle);
+  }, [knobCenterX, knobCenterY, originX, originY, angle]);
+
+  const handleMouseUp: MouseEventHandler = useCallback((e) => {
+    if (e.target.tagName === 'INPUT') {
+      return;
+    }
+
+    e.preventDefault();
+    isMouseDownRef.current = false;
+  }, []);
+
+  const handleMouseMove: MouseEventHandler = useCallback((e) => {
+    e.preventDefault();
+
+    if (isMouseDownRef.current) {
+      const { offsetX, offsetY } = e.nativeEvent;
+
+      const currentAngle = getAngleFromPoint(
+        offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+
+      let delta = currentAngle - offsetAngle - angle;
+
+      if (delta < 0) {
+        // Wrap
+        delta += Math.PI * 2;
+      }
+
+      if (delta > Math.PI) {
+        // Map 0..360 to -180..180.
+        delta -= Math.PI * 2;
+      }
+
+      const nextAngle = angle + delta;
+
+      // Prevent crossing over from max positive to max negative
+      if (nextAngle > Math.PI || nextAngle < -Math.PI)
+        return;
+
+      const nextValue = getValueFromAngle(nextAngle);
+      handleChange(nextValue);
+    }
+  }, [
+    angle,
     originX,
     originY,
-    angle
-  } = useKnob({
-    value: velocity,
-    wrap: true,
+    knobCenterX,
+    knobCenterY,
+    offsetAngle,
     handleChange
-  })
+  ]);
 
   const handleMarkClick = useCallback((
     index: number,

@@ -92,6 +92,8 @@ export const useKnob = ({
     setOriginY(oy);
   }, [centerX, centerY]);
 
+  console.log({ knobCenterX, knobCenterY, originX, originY })
+
   useEffect(() => {
     const nextAngle = getAngleFromValue(value, isFullRange);
 
