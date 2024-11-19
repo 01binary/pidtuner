@@ -63,7 +63,7 @@ const getCircumference = (radius: number) => (
 )
 
 const getGoalDasharray = (circumference: number, norm: number) => {
-  const factor = Math.abs(norm) / 2;
+  const factor = Math.abs(norm);
   return `${circumference * factor},${circumference * (1 - factor)}`
 }
 
@@ -224,6 +224,9 @@ export const PositionKnob: FC<PositionKnobProps> = ({
   }, [handleMouseUp]);
 
   const errorRotation = 0; // ?
+  const rangeRotation = goal < 0 ? goal * Math.PI * 2 : 0;
+
+  console.log(goal)
 
   return (
     <svg
@@ -242,7 +245,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         cy="95.5"
         r="52.3"
       />
-      <circle
+      {/*<circle
         id="error"
         fill="none"
         stroke="#EC008C"
@@ -256,7 +259,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         cx="101.9"
         cy="95.5"
         r="46.3"
-      />
+      />*/}
       <circle
         id="offset"
         fill="none"
@@ -266,7 +269,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         strokeDashoffset={OFFSET_CIRCUMFERENCE * 0.25}
         style={{
           transformOrigin: '101.9px 95.5px',
-          transform: `rotate(${goal < 0 ? goal * Math.PI : 0}rad)`,
+          transform: `rotate(${rangeRotation}rad)`,
         }}
         cx="101.9"
         cy="95.5"

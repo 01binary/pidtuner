@@ -71,10 +71,6 @@ export const Position: FC<PositionProps> = ({
     setTolerance(e.target.value);
   }, []);
 
-  const handleToggleHalfFullRange = useCallback(() => {
-    setFullRange(lastSetting => !lastSetting);
-  }, []);
-
   const handleToggleLinearRadial = useCallback(() => {
     setIsRadial(lastSetting => !lastSetting);
   }, []);
