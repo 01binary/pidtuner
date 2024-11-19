@@ -1,12 +1,43 @@
 "use client";
 
-import { useEffect, FC, useRef, useState, useLayoutEffect } from "react";
-import { inter } from "../../inter";
-import { RAD_TO_DEG, useKnob } from "../knobUtils";
+import {
+  useEffect,
+  FC,
+  useRef,
+  useState,
+  useLayoutEffect,
+  MouseEventHandler,
+  useCallback
+} from "react";
 import styles from "./PositionKnob.module.css";
 
 const ERROR_RADIUS = 46.3
 const OFFSET_RADIUS = 52.3
+const RAD_TO_DEG = 57.2958;
+const EPSILON = 0.0001;
+
+const getValueFromAngle = (angle: number) => {
+  return Math.max(0, (angle + Math.PI / 2) / (Math.PI * 2));
+};
+
+const getAngleFromValue = (norm: number) => {
+  return norm * 2 * Math.PI - Math.PI / 2;
+};
+
+const getAngleFromPoint = (
+  x: number,
+  y: number,
+  cx: number,
+  cy: number,
+  ox: number,
+  oy: number
+) => {
+  const sin = y - (cy - oy);
+  const cos = x - (cx - ox);
+  const angle = Math.atan2(sin, cos);
+
+  return angle;
+};
 
 const getCircumference = (radius: number) => (
   2 * Math.PI * radius
@@ -46,32 +77,20 @@ export const PositionKnob: FC<PositionKnobProps> = ({
   isFullRange,
   handleChange
 }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const knobRef = useRef<SVGPathElement>(null);
   const centerRef = useRef<SVGElement>(null);
   const [centerX, setCenterX] = useState(0);
   const [centerY, setCenterY] = useState(0);
-
-  const {
-    svgRef,
-    knobRef,
-    handleMouseDown,
-    handleMouseUp,
-    handleMouseMove,
-    originX,
-    originY,
-    angle
-  } = useKnob({
-    value: goal,
-    wrap: true,
-    centerX,
-    centerY,
-    handleChange,
-    isFullRange
-  })
+  const [originX, setOriginX] = useState(0);
+  const [originY, setOriginY] = useState(0);
+  const [angle, setAngle] = useState(0);
+  const [offsetAngle, setOffsetAngle] = useState(0);
+  const isMouseDownRef = useRef(false);
 
   useLayoutEffect(() => {
-    if (!centerRef.current) {
+    if (!centerRef.current || !knobRef.current || !svgRef.current)
       return
-    }
 
     const {
       left,
@@ -82,7 +101,71 @@ export const PositionKnob: FC<PositionKnobProps> = ({
 
     setCenterX(left + width / 2);
     setCenterY(top + height / 2);
-  }, [])
+
+    const { x: ox, y: oy } = svgRef.current
+      .getBoundingClientRect();
+
+    setOriginX(ox);
+    setOriginY(oy);
+  }, []);
+
+  useEffect(() => {
+    const nextAngle = getAngleFromValue(goal);
+
+    if (Math.abs(nextAngle - angle) > EPSILON) {
+      setAngle(nextAngle);
+    }
+  }, [goal, angle]);
+
+  const handleMouseDown: MouseEventHandler = useCallback((e) => {
+    e.preventDefault();
+    isMouseDownRef.current = true;
+
+    const { offsetX, offsetY } = e.nativeEvent;
+    const initialOffset = getAngleFromPoint(
+      offsetX, offsetY, centerX, centerY, originX, originY);
+
+    setOffsetAngle(initialOffset);
+  }, [centerX, centerY, originX, originY]);
+
+  const handleMouseUp: MouseEventHandler = useCallback((e) => {
+    if (e.target.tagName === 'INPUT') {
+      return;
+    }
+
+    e.preventDefault();
+    isMouseDownRef.current = false;
+  }, []);
+
+  const handleMouseMove: MouseEventHandler = useCallback((e) => {
+    e.preventDefault();
+
+    if (isMouseDownRef.current) {
+      const { offsetX, offsetY } = e.nativeEvent;
+
+      const currentAngle = getAngleFromPoint(
+        offsetX, offsetY, centerX, centerY, originX, originY);
+
+      const nextAngle = currentAngle - offsetAngle - Math.PI / 2;
+      const nextValue = getValueFromAngle(nextAngle);
+      const delta = goal - nextValue;
+
+      // Prevent crossing over
+      if (Math.abs(delta) > 0.5) {
+        handleChange(delta < 0 ? 0 : 1)
+      } else {
+        handleChange(nextValue);
+      }
+    }
+  }, [
+    goal,
+    originX,
+    originY,
+    centerX,
+    centerY,
+    offsetAngle,
+    handleChange
+  ]);
 
   useEffect(() => {
     document.addEventListener('mouseup', handleMouseUp, true);
@@ -91,9 +174,7 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     }
   }, [handleMouseUp]);
 
-  const errorRotation = isFullRange
-    ? 0
-    : getErrorRotationHalf(position, error)
+  const errorRotation = 0; // ?
 
   return (
     <svg

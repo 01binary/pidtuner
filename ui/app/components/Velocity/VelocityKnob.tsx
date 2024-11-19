@@ -12,22 +12,21 @@ import {
 import { inter } from "../../inter";
 import styles from "./VelocityKnob.module.css";
 
+const RAD_TO_DEG = 57.2958;
+const EPSILON = 0.0001;
 const INCREMENTS = [
   0.08, 0.13, 0.18, 0.25, 0.27, 0.33, 0.4, 0.46, 0.50, 0.56, 0.62, 0.68, 0.75, 0.78, 0.85, 0.9
 ];
 
-export const RAD_TO_DEG = 57.2958;
-export const EPSILON = 0.0001;
-
-export const getValueFromAngle = (angle: number) => {
+const getValueFromAngle = (angle: number) => {
   return angle / Math.PI;
 };
 
-export const getAngleFromValue = (norm: number) => {
+const getAngleFromValue = (norm: number) => {
   return norm * Math.PI;
 };
 
-export const getAngleFromPoint = (
+const getAngleFromPoint = (
   x: number,
   y: number,
   cx: number,
