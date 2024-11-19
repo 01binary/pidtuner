@@ -9,20 +9,39 @@ import {
   MouseEventHandler,
   useCallback
 } from "react";
+import { inter } from "../../inter";
 import styles from "./PositionKnob.module.css";
 
 const ERROR_RADIUS = 46.3
 const OFFSET_RADIUS = 52.3
 const RAD_TO_DEG = 57.2958;
 const EPSILON = 0.0001;
+const CROSSOVER = 3;
 
-const getValueFromAngle = (angle: number) => {
-  return Math.max(0, (angle + Math.PI / 2) / (Math.PI * 2));
-};
+const getAngleFromValueBidirectional = (
+  value: number,
+  min: number,
+  max: number
+): number => {
+  const midpoint = (min + max) / 2;
+  const range = max - min;
+  const half = range / 2;
+  const norm = (value - midpoint) / half;
 
-const getAngleFromValue = (norm: number) => {
-  return norm * 2 * Math.PI - Math.PI / 2;
-};
+  // Map the normalized value to radians (-π to π)
+  return norm * Math.PI;
+}
+
+const getValueFromAngleBidirectional = (angle: number, min: number, max: number): number => {
+  // Map the angle (-π to π) to normalized value (-1 to 1)
+  const norm = angle / Math.PI;
+
+  // Map the normalized value to the range [min, max]
+  const range = max - min;
+  const knobValue = ((norm + 1) / 2) * range + min;
+
+  return knobValue;
+}
 
 const getAngleFromPoint = (
   x: number,
@@ -66,7 +85,8 @@ type PositionKnobProps = {
   goal: number;
   position: number;
   error: number;
-  isFullRange: boolean;
+  min: number;
+  max: number;
   handleChange: (goal: number) => void;
 };
 
@@ -74,19 +94,24 @@ export const PositionKnob: FC<PositionKnobProps> = ({
   goal,
   position,
   error,
-  isFullRange,
+  min,
+  max,
   handleChange
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const knobRef = useRef<SVGPathElement>(null);
   const centerRef = useRef<SVGElement>(null);
+
   const [centerX, setCenterX] = useState(0);
   const [centerY, setCenterY] = useState(0);
   const [originX, setOriginX] = useState(0);
   const [originY, setOriginY] = useState(0);
   const [angle, setAngle] = useState(0);
-  const [offsetAngle, setOffsetAngle] = useState(0);
+
+  const offsetRef = useRef(0);
+  const startRef = useRef(0);
   const isMouseDownRef = useRef(false);
+  const crossOverRef = useRef(false);
 
   useLayoutEffect(() => {
     if (!centerRef.current || !knobRef.current || !svgRef.current)
@@ -110,23 +135,27 @@ export const PositionKnob: FC<PositionKnobProps> = ({
   }, []);
 
   useEffect(() => {
-    const nextAngle = getAngleFromValue(goal);
+    if (crossOverRef.current) return;
+
+    const nextAngle = getAngleFromValueBidirectional(goal, min, max);
 
     if (Math.abs(nextAngle - angle) > EPSILON) {
       setAngle(nextAngle);
     }
-  }, [goal, angle]);
+  }, [goal, angle, min, max]);
 
   const handleMouseDown: MouseEventHandler = useCallback((e) => {
     e.preventDefault();
     isMouseDownRef.current = true;
 
     const { offsetX, offsetY } = e.nativeEvent;
-    const initialOffset = getAngleFromPoint(
+
+    offsetRef.current = getAngleFromPoint(
       offsetX, offsetY, centerX, centerY, originX, originY);
 
-    setOffsetAngle(initialOffset);
-  }, [centerX, centerY, originX, originY]);
+    startRef.current = angle;
+
+  }, [centerX, centerY, originX, originY, angle, goal]);
 
   const handleMouseUp: MouseEventHandler = useCallback((e) => {
     if (e.target.tagName === 'INPUT') {
@@ -143,28 +172,48 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     if (isMouseDownRef.current) {
       const { offsetX, offsetY } = e.nativeEvent;
 
-      const currentAngle = getAngleFromPoint(
-        offsetX, offsetY, centerX, centerY, originX, originY);
+      // Angle from mouse position
+      const angleFromPoint = getAngleFromPoint(
+        offsetX,
+        offsetY,
+        centerX,
+        centerY,
+        originX,
+        originY
+      );
 
-      const nextAngle = currentAngle - offsetAngle - Math.PI / 2;
-      const nextValue = getValueFromAngle(nextAngle);
-      const delta = goal - nextValue;
+      // Offset
+      const angleWithOffset = angleFromPoint - offsetRef.current + startRef.current;
 
-      // Prevent crossing over
-      if (Math.abs(delta) > 0.5) {
-        handleChange(delta < 0 ? 0 : 1)
+      // Wrap
+      const angleWrapped = angleWithOffset > Math.PI
+        ? angleWithOffset - Math.PI * 2
+        : angleWithOffset;
+
+      // Map
+      const value = getValueFromAngleBidirectional(angleWrapped, min, max);
+
+      // Crossover
+      const delta = angleWrapped - angle;
+
+      if (Math.abs(delta) >= CROSSOVER) {
+        crossOverRef.current = true;
+        handleChange(delta > 0 ? min : max);
+        setAngle(delta > 0 ? -Math.PI : Math.PI);
       } else {
-        handleChange(nextValue);
+        crossOverRef.current = false;
+        handleChange(value);
       }
     }
   }, [
-    goal,
+    angle,
     originX,
     originY,
     centerX,
     centerY,
-    offsetAngle,
-    handleChange
+    handleChange,
+    min,
+    max
   ]);
 
   useEffect(() => {
@@ -239,6 +288,22 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         strokeWidth="2"
         d="M166.9,33.5l-6.6,6.5c14.3,14.2,23.1,33.8,23.1,55.5c0,21.6-8.8,41.1-22.9,55.3l6.4,6.4"
       />
+      <text
+        id="label-min"
+        transform="matrix(1 0 0 1 96.7357 13.4993)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="18px"
+      >
+        {0}
+      </text>
+      <text
+        id="label-max"
+        transform="matrix(1 0 0 1 92 188.6604)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="18px"
+      >
+        {max * 100}
+      </text>
       <g id="ticks">
         <line fill="none" stroke="#A5A5A5" x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>
         <line fill="none" stroke="#A5A5A5" x1="101.9" y1="33.5" x2="101.9" y2="22.2"/>

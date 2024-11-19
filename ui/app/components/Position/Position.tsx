@@ -12,8 +12,6 @@ import { Group } from "../Group";
 import { PositionKnob } from "./PositionKnob";
 import { Separator } from "../Separator";
 import { Gauge } from "../Gauge/Gauge";
-import { FullRangeIcon } from "./FullRangeIcon";
-import { HalfRangeIcon } from "./HalfRangeIcon";
 import { RadialIcon } from "./RadialIcon";
 import { LinearIcon } from "./LinearIcon";
 import { PositionSlider } from "./PositionSlider";
@@ -47,7 +45,6 @@ export const Position: FC<PositionProps> = ({
   const [iMin, setIMin] = useState(DEFAULT_CONFIGURATION.iMax);
   const [iMax, setIMax] = useState(DEFAULT_CONFIGURATION.iMax);
   const [isRadial, setIsRadial] = useState(true);
-  const [isFullRange, setFullRange] = useState(true);
 
   useEffect(() => {
     publishPosition({ goal, tolerance });
@@ -94,8 +91,8 @@ export const Position: FC<PositionProps> = ({
           type="number"
           value={Math.round(goal * 100)}
           onChange={handleChangeGoal}
-          min={isFullRange ? 0 : -50}
-          max={isFullRange ? 100 : 50}
+          min={-50}
+          max={50}
           step={1}
         />
 
@@ -117,7 +114,8 @@ export const Position: FC<PositionProps> = ({
             position={position}
             error={error}
             handleChange={setGoal}
-            isFullRange={isFullRange}
+            min={-0.5}
+            max={0.5}
           />
         )
         : (
@@ -126,12 +124,6 @@ export const Position: FC<PositionProps> = ({
       }
 
       <Group vertical marginLeft>
-        <button
-          onClick={handleToggleHalfFullRange}
-          title={isFullRange ? 'Switch to 1/2 range' : 'Switch to full range'}
-        >
-          {isFullRange ? <HalfRangeIcon /> : <FullRangeIcon />}
-        </button>
         <button
           title={isRadial ? 'Switch to linear control' : 'Switch to radial control'}
           onClick={handleToggleLinearRadial}
