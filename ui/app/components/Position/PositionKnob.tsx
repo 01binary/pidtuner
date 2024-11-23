@@ -1,5 +1,3 @@
-"use client";
-
 import { FC, useEffect, useRef, useState, useCallback } from "react";
 import { inter } from "../../inter";
 import styles from "./PositionKnob.module.css";
