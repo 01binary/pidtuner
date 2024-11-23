@@ -262,6 +262,25 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         cy="95.5"
         r="52.3"
       />
+
+      {Math.abs(goal - position) >= 1
+        // Draw circle if error >= 2π
+        ? <circle
+            fill="#EC008C"
+            cx={CX}
+            cy={CY}
+            r={ERROR_RADIUS}
+          />
+        // Draw arc(s) if error < 2π
+        : getPie(goal, position, CX, CY, ERROR_RADIUS).map(path => (
+          <path
+            key={path}
+            fill="#EC008C"
+            d={path}
+          />
+        ))
+      }
+
       <circle
         id="offset"
         fill="none"
@@ -387,14 +406,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
           />
         </g>
       </g>
-      {/*"#EC008C"*/}
-      {getPie(goal, position, CX, CY, ERROR_RADIUS).map((path, index) => (
-        <path
-          key={path}
-          fill={['blue', 'green'][index]}
-          d={path}
-        />
-      ))}
     </svg>
   );
 }
