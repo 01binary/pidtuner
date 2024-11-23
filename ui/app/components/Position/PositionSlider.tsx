@@ -121,17 +121,31 @@ export const PositionSlider: FC<PositionSliderProps> = ({
           />
 
           <text
+            className={styles.interactive}
             transform="matrix(1 0 0 1 12.4579 93.6534)"
             fontFamily={inter.style.fontFamily}
             fontSize="18px"
+            onClick={() => handleChange(min)}
           >
             0
           </text>
 
           <text
+            className={styles.interactive}
+            transform="matrix(1 0 0 1 88 93.6534)"
+            fontFamily={inter.style.fontFamily}
+            fontSize="18px"
+            onClick={() => handleChange((max - min) / 2)}
+          >
+            50
+          </text>
+
+          <text
+            className={styles.interactive}
             transform="matrix(1 0 0 1 165.4023 93.6534)"
             fontFamily={inter.style.fontFamily}
             fontSize="18px"
+            onClick={() => handleChange(max)}
           >
             100
           </text>
@@ -150,7 +164,7 @@ export const PositionSlider: FC<PositionSliderProps> = ({
 
         <polygon
           id="head"
-          className={styles.track}
+          className={styles.interactive}
           style={{
             transform: getSliderTransform(goal),
           }}
