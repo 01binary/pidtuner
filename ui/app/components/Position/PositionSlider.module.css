@@ -13,3 +13,7 @@
 .positionSlider text {
   user-select: none;
 }
+
+.track {
+  cursor: pointer;
+}

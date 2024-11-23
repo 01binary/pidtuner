@@ -1,12 +1,86 @@
+import { FC, useCallback, useRef, useEffect } from "react";
 import { inter } from "../../inter";
 import styles from "./PositionSlider.module.css";
 
-export const PositionSlider = () => {
+const RANGE = 163;
+
+const getSliderTransform = (position: number) => (
+  `translate(${position * RANGE}px, 0px)`
+)
+
+const clamp = (value: number, min: number, max: number) => (
+  Math.max(Math.min(value, max), min)
+)
+
+type PositionSliderProps = {
+  goal: number;
+  position: number;
+  handleChange: (position: number) => void;
+  min: number;
+  max: number;
+}
+
+export const PositionSlider: FC<PositionSliderProps> = ({
+  goal,
+  position,
+  handleChange,
+  min,
+  max
+}) => {
+  const borderRef = useRef<SVGRectElement>(null);
+  const sliderRef = useRef<SVGGElement>(null);
+  const isDraggingRef = useRef<boolean>(false);
+  const offsetRef = useRef<number>(0);
+
+  const handleMouseDown = useCallback((e) => {
+    if (!sliderRef.current || !borderRef.current)
+      return;
+
+    e.preventDefault();
+
+    const { clientX: mousePosition } = e;
+    isDraggingRef.current = true;
+    offsetRef.current = mousePosition;
+  }, []);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isDraggingRef.current || !borderRef.current)
+      return;
+
+    e.preventDefault();
+
+    const { clientX: mousePosition } = e;
+    const norm = (mousePosition - offsetRef.current) / RANGE;
+    const value = norm * (max - min) + min;
+
+    console.log({ norm, value })
+    handleChange(clamp(value, 0, 1));
+  }, [min, max, handleChange]);
+
+  const handleMouseUp = useCallback((e) => {
+    if (e.target.tagName === 'INPUT') {
+      return;
+    }
+
+    e.preventDefault();
+
+    isDraggingRef.current = false;
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp, true);
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp, true);
+    }
+  }, [handleMouseUp]);
+
   return (
     <div className={styles.positionSlider}>
       <svg
         width="200.4px"
         height="96px"
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
       >
         <rect
           id="error"
@@ -19,6 +93,7 @@ export const PositionSlider = () => {
 
         <rect
           id="track"
+          ref={borderRef}
           x="17.7"
           y="17"
           fill="none"
@@ -69,14 +144,22 @@ export const PositionSlider = () => {
           x2="43.6"
           y2="46.7"
         />
-    
+
         <polygon
           id="head"
+          ref={sliderRef}
+          className={styles.track}
+          style={{
+            transform: getSliderTransform(goal),
+          }}
           fill="#FFFFFF"
           stroke="#000000"
           strokeLinecap="round"
           strokeLinejoin="round"
           points="9.5,16.9 17.7,29.8 26,16.9 26,5.3 9.5,5.3"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
         />
       </svg>
     </div>

@@ -77,20 +77,24 @@ export const Position: FC<PositionProps> = ({
     setIsRadial(lastSetting => !lastSetting);
   }, []);
 
-  const error = position - goal;
-
   return (
     <Module
       title="Position"
-      image={<img src="/position.svg" width="32" height="32" />}
+      image={
+        <img
+          src="/position.svg"
+          width="32"
+          height="32"
+        />
+      }
     >
       <Group vertical alignTop marginTop>
         <PrimaryInput
           type="number"
           value={Math.round(goal * 100)}
           onChange={handleChangeGoal}
-          min={-50}
-          max={50}
+          min={isRadial ? -50 : 0}
+          max={isRadial ? 50 : 100}
           step={1}
         />
 
@@ -107,7 +111,7 @@ export const Position: FC<PositionProps> = ({
         <PrimaryInput
           id="pos"
           type="number"
-          label="Position"
+          label="Ref"
           value={position * 100}
           onChange={e => setPosition(e.target.value / 100)}
         />
@@ -118,14 +122,19 @@ export const Position: FC<PositionProps> = ({
           <PositionKnob
             goal={goal}
             position={position}
-            error={error}
             handleChange={setGoal}
             min={-0.5}
             max={0.5}
           />
         )
         : (
-          <PositionSlider />
+          <PositionSlider
+            goal={goal}
+            position={position}
+            handleChange={setGoal}
+            min={0}
+            max={1}
+          />
         )
       }
 
