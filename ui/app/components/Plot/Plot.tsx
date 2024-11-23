@@ -158,33 +158,35 @@ export const Plot: FC<PlotProps> = ({
             onEnable={handleToggleLegendSeries}
           />
 
-          <button
-            title="Enable capture"
-            onClick={handleToggleCapture}
-          >
-            {isCapturing
-              ? <img src="/pause.svg" width="24" height="24" />
-              : <img src="/record.svg" width="24" height="24" />
-            }
-          </button>
+          <div className={styles.toolbarGroup}>
+            <button
+              title="Enable capture"
+              onClick={handleToggleCapture}
+            >
+              {isCapturing
+                ? <img src="/pause.svg" width="24" height="24" />
+                : <img src="/record.svg" width="24" height="24" />
+              }
+            </button>
 
-          <button
-            onClick={handleExport}
-            title="Export measurements"
-          >
-            <img src="/export.svg" width="24" height="24" />
-          </button>
+            <button
+              onClick={handleExport}
+              title="Export measurements"
+            >
+              <img src="/export.svg" width="24" height="24" />
+            </button>
 
-          <button
-            className="warning estop"
-            title="Emergency stop"
-            onClick={onEStop}
-          >
-            {isEmergencyStop
-              ? <img src="/estop-on.svg" width="24" height="24" />
-              : <img src="/estop.svg" width="24" height="24" />
-            }
-          </button>
+            <button
+              className="warning estop"
+              title="Emergency stop"
+              onClick={onEStop}
+            >
+              {isEmergencyStop
+                ? <img src="/estop-on.svg" width="24" height="24" />
+                : <img src="/estop.svg" width="24" height="24" />
+              }
+            </button>
+          </div>
         </div>
       </section>
 

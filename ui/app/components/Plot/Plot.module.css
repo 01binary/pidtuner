@@ -23,6 +23,12 @@
   flex-wrap: wrap;
 }
 
+.toolbarGroup {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
 @media (max-width: 600px) {
   .plotHeader {
     flex-direction: column;
