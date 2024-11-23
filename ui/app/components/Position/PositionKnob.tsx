@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  FC,
-  useRef,
-  useState,
-  useLayoutEffect,
-  MouseEventHandler,
-  useCallback
-} from "react";
+import { FC, useEffect, useRef, useState, useCallback } from "react";
 import { inter } from "../../inter";
 import styles from "./PositionKnob.module.css";
 
@@ -17,12 +9,10 @@ const OFFSET_RADIUS = 52.3
 const RAD_TO_DEG = 57.2958;
 const EPSILON = 0.0001;
 const CROSSOVER = 3;
+const CX = 101.89999389648438;
+const CY = 95.19999694824219;
 
-const getAngleFromValueBidirectional = (
-  value: number,
-  min: number,
-  max: number
-): number => {
+const getAngleFromValue = (value: number, min: number, max: number): number => {
   const midpoint = (min + max) / 2;
   const range = max - min;
   const half = range / 2;
@@ -32,7 +22,7 @@ const getAngleFromValueBidirectional = (
   return norm * Math.PI;
 }
 
-const getValueFromAngleBidirectional = (angle: number, min: number, max: number): number => {
+const getValueFromAngle = (angle: number, min: number, max: number): number => {
   // Map the angle (-π to π) to normalized value (-1 to 1)
   const norm = angle / Math.PI;
 
@@ -43,48 +33,49 @@ const getValueFromAngleBidirectional = (angle: number, min: number, max: number)
   return knobValue;
 }
 
-const getAngleFromPoint = (
-  x: number,
-  y: number,
-  cx: number,
-  cy: number,
-  ox: number,
-  oy: number
-) => {
-  const sin = y - (cy - oy);
-  const cos = x - (cx - ox);
+const getAngleFromPoint = (x: number, y: number, cx: number, cy: number) => {
+  const sin = y - cy;
+  const cos = x - cx;
   const angle = Math.atan2(sin, cos);
 
   return angle;
 };
 
+const getSectorFromValue = (
+  cx: number,
+  cy: number,
+  radius: number,
+  value: number
+) => {
+  const angle = -value * Math.PI * 2 + Math.PI / 2;
+  const x = cx + Math.cos(angle) * radius;
+  const y = cy - Math.sin(angle) * radius;
+
+  return { x, y };
+}
+
 const getCircumference = (radius: number) => (
   2 * Math.PI * radius
-)
-
-const getGoalDasharray = (circumference: number, norm: number) => {
-  const factor = Math.abs(norm);
-  return `${circumference * factor},${circumference * (1 - factor)}`
-}
-
-const getErrorDasharray = (circumference: number, norm: number) => {
-  const factor = Math.abs(norm);
-  return `${circumference * factor},${circumference * (1 - factor)}`
-}
-
-const getErrorRotationHalf = (position: number, error: number): number => (
-  error < 0
-    ? position * Math.PI - Math.PI / 2
-    : (position - error) * Math.PI - Math.PI / 2
 );
 
-const ERROR_CIRCUMFERENCE = getCircumference(ERROR_RADIUS)
-const OFFSET_CIRCUMFERENCE = getCircumference(OFFSET_RADIUS)
+const getDasharray = (circumference: number, norm: number) => {
+  const factor = Math.abs(norm);
+  return `${circumference * factor},${circumference * (1 - factor)}`
+};
+
+const getDasharrayOffset = (circumference: number) => (
+  circumference * 0.25
+);
+
+const getDasharrayTransform = (value: number) => (
+  `rotate(${value < 0 ? value * Math.PI * 2 : 0}rad)`
+);
+
+const OFFSET_CIRCUMFERENCE = getCircumference(OFFSET_RADIUS);
 
 type PositionKnobProps = {
   goal: number;
   position: number;
-  error: number;
   min: number;
   max: number;
   handleChange: (goal: number) => void;
@@ -93,94 +84,51 @@ type PositionKnobProps = {
 export const PositionKnob: FC<PositionKnobProps> = ({
   goal,
   position,
-  error,
   min,
   max,
   handleChange
 }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const knobRef = useRef<SVGPathElement>(null);
-  const centerRef = useRef<SVGElement>(null);
-
-  const [centerX, setCenterX] = useState(0);
-  const [centerY, setCenterY] = useState(0);
-  const [originX, setOriginX] = useState(0);
-  const [originY, setOriginY] = useState(0);
-  const [angle, setAngle] = useState(0);
-
   const offsetRef = useRef(0);
   const startRef = useRef(0);
   const isMouseDownRef = useRef(false);
   const crossOverRef = useRef(false);
 
-  useLayoutEffect(() => {
-    if (!centerRef.current || !knobRef.current || !svgRef.current)
-      return
-
-    const {
-      left,
-      top,
-      width,
-      height
-    } = centerRef.current.getBoundingClientRect()
-
-    setCenterX(left + width / 2);
-    setCenterY(top + height / 2);
-
-    const { x: ox, y: oy } = svgRef.current
-      .getBoundingClientRect();
-
-    setOriginX(ox);
-    setOriginY(oy);
-  }, []);
+  const [angle, setAngle] = useState(0);
 
   useEffect(() => {
     if (crossOverRef.current) return;
 
-    const nextAngle = getAngleFromValueBidirectional(goal, min, max);
+    const nextAngle = getAngleFromValue(goal, min, max);
 
     if (Math.abs(nextAngle - angle) > EPSILON) {
       setAngle(nextAngle);
     }
   }, [goal, angle, min, max]);
 
-  const handleMouseDown: MouseEventHandler = useCallback((e) => {
+  const handleMouseDown = useCallback((e) => {
     e.preventDefault();
     isMouseDownRef.current = true;
 
     const { offsetX, offsetY } = e.nativeEvent;
 
-    offsetRef.current = getAngleFromPoint(
-      offsetX, offsetY, centerX, centerY, originX, originY);
-
+    offsetRef.current = getAngleFromPoint(offsetX, offsetY, CX, CY);
     startRef.current = angle;
+  }, [angle]);
 
-  }, [centerX, centerY, originX, originY, angle, goal]);
-
-  const handleMouseUp: MouseEventHandler = useCallback((e) => {
-    if (e.target.tagName === 'INPUT') {
-      return;
-    }
-
+  const handleMouseUp = useCallback((e) => {
+    if (e.target.tagName === 'INPUT') return;
     e.preventDefault();
     isMouseDownRef.current = false;
   }, []);
 
-  const handleMouseMove: MouseEventHandler = useCallback((e) => {
+  const handleMouseMove = useCallback((e) => {
     e.preventDefault();
 
     if (isMouseDownRef.current) {
       const { offsetX, offsetY } = e.nativeEvent;
 
       // Angle from mouse position
-      const angleFromPoint = getAngleFromPoint(
-        offsetX,
-        offsetY,
-        centerX,
-        centerY,
-        originX,
-        originY
-      );
+      const angleFromPoint = getAngleFromPoint(offsetX, offsetY, CX, CY);
 
       // Offset
       const angleWithOffset = angleFromPoint - offsetRef.current + startRef.current;
@@ -191,30 +139,20 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         : angleWithOffset;
 
       // Map
-      const value = getValueFromAngleBidirectional(angleWrapped, min, max);
+      const value = getValueFromAngle(angleWrapped, min, max);
 
       // Crossover
       const delta = angleWrapped - angle;
+      crossOverRef.current = Math.abs(delta) >= CROSSOVER
 
-      if (Math.abs(delta) >= CROSSOVER) {
-        crossOverRef.current = true;
+      if (crossOverRef.current) {
         handleChange(delta > 0 ? min : max);
         setAngle(delta > 0 ? -Math.PI : Math.PI);
       } else {
-        crossOverRef.current = false;
         handleChange(value);
       }
     }
-  }, [
-    angle,
-    originX,
-    originY,
-    centerX,
-    centerY,
-    handleChange,
-    min,
-    max
-  ]);
+  }, [angle, handleChange, min, max]);
 
   useEffect(() => {
     document.addEventListener('mouseup', handleMouseUp, true);
@@ -223,14 +161,18 @@ export const PositionKnob: FC<PositionKnobProps> = ({
     }
   }, [handleMouseUp]);
 
-  const errorRotation = 0; // ?
-  const rangeRotation = goal < 0 ? goal * Math.PI * 2 : 0;
+  const {
+    x: goalX,
+    y: goalY
+  } = getSectorFromValue(CX, CY, ERROR_RADIUS, goal);
 
-  console.log(goal)
+  const {
+    x: errorX,
+    y: errorY
+  } = getSectorFromValue(CX, CY, ERROR_RADIUS, position);
 
   return (
     <svg
-      ref={svgRef}
       width="200.4px"
       height="193.2px"
       onMouseMove={handleMouseMove}
@@ -245,31 +187,16 @@ export const PositionKnob: FC<PositionKnobProps> = ({
         cy="95.5"
         r="52.3"
       />
-      {/*<circle
-        id="error"
-        fill="none"
-        stroke="#EC008C"
-        strokeWidth="6"
-        strokeDasharray={getErrorDasharray(ERROR_CIRCUMFERENCE, Math.abs(error) / 2)}
-        strokeDashoffset={0}
-        style={{
-          transformOrigin: '101.9px 95.5px',
-          transform: `rotate(${errorRotation}rad)`,
-        }}
-        cx="101.9"
-        cy="95.5"
-        r="46.3"
-      />*/}
       <circle
         id="offset"
         fill="none"
         stroke="#424242"
         strokeWidth="4"
-        strokeDasharray={getGoalDasharray(OFFSET_CIRCUMFERENCE, goal)}
-        strokeDashoffset={OFFSET_CIRCUMFERENCE * 0.25}
+        strokeDasharray={getDasharray(OFFSET_CIRCUMFERENCE, goal)}
+        strokeDashoffset={getDasharrayOffset(OFFSET_CIRCUMFERENCE)}
         style={{
           transformOrigin: '101.9px 95.5px',
-          transform: `rotate(${rangeRotation}rad)`,
+          transform: getDasharrayTransform(goal),
         }}
         cx="101.9"
         cy="95.5"
@@ -307,62 +234,58 @@ export const PositionKnob: FC<PositionKnobProps> = ({
       >
         {max * 100}
       </text>
-      <g id="ticks">
-        <line fill="none" stroke="#A5A5A5" x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>
-        <line fill="none" stroke="#A5A5A5" x1="101.9" y1="33.5" x2="101.9" y2="22.2"/>
-        <line fill="none" stroke="#A5A5A5" x1="91.1" y1="34.4" x2="90.1" y2="28.9"/>
-        <line fill="none" stroke="#A5A5A5" x1="80.6" y1="37.2" x2="78.7" y2="31.9"/>
-        <line fill="none" stroke="#A5A5A5" x1="70.8" y1="41.8" x2="68" y2="36.9"/>
-        <line fill="none" stroke="#A5A5A5" x1="61.8" y1="47.8" x2="58.3" y2="43.6"/>
-        <line fill="none" stroke="#A5A5A5" x1="54.1" y1="55.5" x2="50" y2="52"/>
-        <line fill="none" stroke="#A5A5A5" x1="48.1" y1="64.5" x2="43.2" y2="61.7"/>
-        <line fill="none" stroke="#A5A5A5" x1="43.6" y1="74.3" x2="38" y2="72.3"/>
-        <line fill="none" stroke="#A5A5A5" x1="40.8" y1="84.7" x2="35.2" y2="83.8"/>
-        <line fill="none" stroke="#A5A5A5" x1="39.8" y1="95.5" x2="28.5" y2="95.5"/>
-        <line fill="none" stroke="#A5A5A5" x1="162.6" y1="95.6" x2="175.2" y2="95.5"/>
-        <line fill="none" stroke="#A5A5A5" x1="162.9" y1="84.7" x2="168.5" y2="83.8"/>
-        <line fill="none" stroke="#A5A5A5" x1="160.2" y1="74.3" x2="165.5" y2="72.3"/>
-        <line fill="none" stroke="#A5A5A5" x1="155.6" y1="64.5" x2="160.5" y2="61.7"/>
-        <line fill="none" stroke="#A5A5A5" x1="149.4" y1="55.6" x2="153.7" y2="52"/>
-        <line fill="none" stroke="#A5A5A5" x1="141.9" y1="47.8" x2="145.4" y2="43.6"/>
-        <line fill="none" stroke="#A5A5A5" x1="132.9" y1="41.8" x2="135.7" y2="36.9"/>
-        <line fill="none" stroke="#A5A5A5" x1="123.1" y1="37.2" x2="125.1" y2="31.6"/>
-        <line fill="none" stroke="#A5A5A5" x1="112.6" y1="34.4" x2="113.6" y2="28.9"/>
-        <line fill="none" stroke="#A5A5A5" x1="101.9" y1="157.5" x2="101.9" y2="168.8"/>
-        <line fill="none" stroke="#A5A5A5" x1="91.1" y1="156.6" x2="90.1" y2="162.2"/>
-        <line fill="none" stroke="#A5A5A5" x1="80.6" y1="153.8" x2="78.7" y2="159.1"/>
-        <line fill="none" stroke="#A5A5A5" x1="70.8" y1="149.2" x2="68" y2="154.1"/>
-        <line fill="none" stroke="#A5A5A5" x1="61.8" y1="143.2" x2="58.3" y2="147.4"/>
-        <line fill="none" stroke="#A5A5A5" x1="54.1" y1="135.5" x2="50" y2="139"/>
-        <line fill="none" stroke="#A5A5A5" x1="48.1" y1="126.5" x2="43.2" y2="129.3"/>
-        <line fill="none" stroke="#A5A5A5" x1="43.6" y1="116.7" x2="38" y2="118.8"/>
-        <line fill="none" stroke="#A5A5A5" x1="40.8" y1="106.3" x2="35.2" y2="107.3"/>
-        <line fill="none" stroke="#A5A5A5" x1="162.9" y1="106.3" x2="168.5" y2="107.3"/>
-        <line fill="none" stroke="#A5A5A5" x1="160.2" y1="116.7" x2="165.5" y2="118.7"/>
-        <line fill="none" stroke="#A5A5A5" x1="155.6" y1="126.5" x2="160.5" y2="129.3"/>
-        <line fill="none" stroke="#A5A5A5" x1="149.4" y1="135.4" x2="153.7" y2="139"/>
-        <line fill="none" stroke="#A5A5A5" x1="141.9" y1="143.2" x2="145.4" y2="147.4"/>
-        <line fill="none" stroke="#A5A5A5" x1="132.9" y1="149.2" x2="135.7" y2="154.1"/>
-        <line fill="none" stroke="#A5A5A5" x1="123.1" y1="153.8" x2="125.1" y2="159.4"/>
-        <line fill="none" stroke="#A5A5A5" x1="112.6" y1="156.6" x2="113.6" y2="162.2"/>
+      <g id="ticks" fill="none" stroke="#A5A5A5">
+        <line x1="162.6" y1="95.6" x2="168.4" y2="95.6"/>
+        <line x1="101.9" y1="33.5" x2="101.9" y2="22.2"/>
+        <line x1="91.1" y1="34.4" x2="90.1" y2="28.9"/>
+        <line x1="80.6" y1="37.2" x2="78.7" y2="31.9"/>
+        <line x1="70.8" y1="41.8" x2="68" y2="36.9"/>
+        <line x1="61.8" y1="47.8" x2="58.3" y2="43.6"/>
+        <line x1="54.1" y1="55.5" x2="50" y2="52"/>
+        <line x1="48.1" y1="64.5" x2="43.2" y2="61.7"/>
+        <line x1="43.6" y1="74.3" x2="38" y2="72.3"/>
+        <line x1="40.8" y1="84.7" x2="35.2" y2="83.8"/>
+        <line x1="39.8" y1="95.5" x2="28.5" y2="95.5"/>
+        <line x1="162.6" y1="95.6" x2="175.2" y2="95.5"/>
+        <line x1="162.9" y1="84.7" x2="168.5" y2="83.8"/>
+        <line x1="160.2" y1="74.3" x2="165.5" y2="72.3"/>
+        <line x1="155.6" y1="64.5" x2="160.5" y2="61.7"/>
+        <line x1="149.4" y1="55.6" x2="153.7" y2="52"/>
+        <line x1="141.9" y1="47.8" x2="145.4" y2="43.6"/>
+        <line x1="132.9" y1="41.8" x2="135.7" y2="36.9"/>
+        <line x1="123.1" y1="37.2" x2="125.1" y2="31.6"/>
+        <line x1="112.6" y1="34.4" x2="113.6" y2="28.9"/>
+        <line x1="101.9" y1="157.5" x2="101.9" y2="168.8"/>
+        <line x1="91.1" y1="156.6" x2="90.1" y2="162.2"/>
+        <line x1="80.6" y1="153.8" x2="78.7" y2="159.1"/>
+        <line x1="70.8" y1="149.2" x2="68" y2="154.1"/>
+        <line x1="61.8" y1="143.2" x2="58.3" y2="147.4"/>
+        <line x1="54.1" y1="135.5" x2="50" y2="139"/>
+        <line x1="48.1" y1="126.5" x2="43.2" y2="129.3"/>
+        <line x1="43.6" y1="116.7" x2="38" y2="118.8"/>
+        <line x1="40.8" y1="106.3" x2="35.2" y2="107.3"/>
+        <line x1="162.9" y1="106.3" x2="168.5" y2="107.3"/>
+        <line x1="160.2" y1="116.7" x2="165.5" y2="118.7"/>
+        <line x1="155.6" y1="126.5" x2="160.5" y2="129.3"/>
+        <line x1="149.4" y1="135.4" x2="153.7" y2="139"/>
+        <line x1="141.9" y1="143.2" x2="145.4" y2="147.4"/>
+        <line x1="132.9" y1="149.2" x2="135.7" y2="154.1"/>
+        <line x1="123.1" y1="153.8" x2="125.1" y2="159.4"/>
+        <line x1="112.6" y1="156.6" x2="113.6" y2="162.2"/>
       </g>
       <g
         id="knob"
-        ref={knobRef}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
         style={{
           cursor: "pointer",
-          transformOrigin: `${centerX - originX}px ${
-            centerY - originY
-          }px`,
+          transformOrigin: '101.9px 95.2px',
           transform: `rotate(${angle * RAD_TO_DEG}deg)`,
         }}
       >
         <circle
           id="knob-shadow"
-          ref={centerRef}
           cx="101.9"
           cy="95.2"
           r="43.6"
@@ -389,6 +312,24 @@ export const PositionKnob: FC<PositionKnobProps> = ({
           />
         </g>
       </g>
+      <line
+        id="goalLine"
+        stroke="blue"
+        strokeWidth="1"
+        x1={CX}
+        y1={CY}
+        x2={goalX}
+        y2={goalY}
+      />
+      <line
+        id="errorLine"
+        stroke="red"
+        strokeWidth="1"
+        x1={CX}
+        y1={CY}
+        x2={errorX}
+        y2={errorY}
+      />
     </svg>
   );
 }

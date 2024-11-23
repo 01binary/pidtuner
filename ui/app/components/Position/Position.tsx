@@ -30,7 +30,7 @@ type PositionProps = {
 export const Position: FC<PositionProps> = ({
   publishPosition,
   publishConfiguration,
-  position,
+  position: todo,
   goal: initialGoal,
   tolerance: initialTolerance,
   pe,
@@ -45,6 +45,8 @@ export const Position: FC<PositionProps> = ({
   const [iMin, setIMin] = useState(DEFAULT_CONFIGURATION.iMax);
   const [iMax, setIMax] = useState(DEFAULT_CONFIGURATION.iMax);
   const [isRadial, setIsRadial] = useState(true);
+
+  const [position, setPosition] = useState(0)
 
   useEffect(() => {
     publishPosition({ goal, tolerance });
@@ -92,7 +94,7 @@ export const Position: FC<PositionProps> = ({
           step={1}
         />
 
-        <PrimaryInput
+        {/*<PrimaryInput
           id="tolerance"
           type="number"
           label="Tolerance"
@@ -100,6 +102,14 @@ export const Position: FC<PositionProps> = ({
           onChange={handleChangeTolerance}
           min={0}
           max={100}
+        />*/}
+
+        <PrimaryInput
+          id="pos"
+          type="number"
+          label="Position"
+          value={position * 100}
+          onChange={e => setPosition(e.target.value / 100)}
         />
       </Group>
 
