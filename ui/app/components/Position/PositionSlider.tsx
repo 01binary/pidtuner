@@ -154,11 +154,11 @@ export const PositionSlider: FC<PositionSliderProps> = ({
         <line
           id="current"
           stroke="#424242"
-          strokeWidth="6"
+          strokeWidth="4"
           strokeLinejoin="round"
           x1="17.7"
           y1="46.7"
-          x2="43.6"
+          x2={17.7 + goal * RANGE}
           y2="46.7"
         />
 
