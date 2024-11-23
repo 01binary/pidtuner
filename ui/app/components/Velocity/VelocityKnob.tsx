@@ -1,21 +1,28 @@
-"use client";
-
-import {
-  useCallback,
-  useEffect,
-  FC,
-  useRef,
-  useState,
-  useLayoutEffect,
-  MouseEventHandler
-} from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { inter } from "../../inter";
 import styles from "./VelocityKnob.module.css";
 
-const RAD_TO_DEG = 57.2958;
 const EPSILON = 0.0001;
+const CX = 161.25885009765625;
+const CY = 86.61251068115234;
+
 const INCREMENTS = [
-  0.08, 0.13, 0.18, 0.25, 0.27, 0.33, 0.4, 0.46, 0.50, 0.56, 0.62, 0.68, 0.75, 0.78, 0.85, 0.9
+  0.08,
+  0.13,
+  0.18,
+  0.25,
+  0.27,
+  0.33,
+  0.4,
+  0.46,
+  0.50,
+  0.56,
+  0.62,
+  0.68,
+  0.75,
+  0.78,
+  0.85,
+  0.9
 ];
 
 const getValueFromAngle = (angle: number) => {
@@ -30,12 +37,10 @@ const getAngleFromPoint = (
   x: number,
   y: number,
   cx: number,
-  cy: number,
-  ox: number,
-  oy: number
+  cy: number
 ) => {
-  const sin = y - (cy - oy);
-  const cos = x - (cx - ox);
+  const sin = y - cy;
+  const cos = x - cx;
   const angle = Math.atan2(sin, cos);
 
   return angle + Math.PI / 2;
@@ -52,31 +57,9 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
   handleChange,
   invert
 }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const knobRef = useRef<SVGPathElement>(null);
-  const [knobCenterX, setKnobCenterX] = useState(0);
-  const [knobCenterY, setKnobCenterY] = useState(0);
-  const [originX, setOriginX] = useState(0);
-  const [originY, setOriginY] = useState(0);
   const [angle, setAngle] = useState(0);
   const [offsetAngle, setOffsetAngle] = useState(0);
   const isMouseDownRef = useRef(false);
-
-  useLayoutEffect(() => {
-    if (!knobRef.current || !svgRef.current) return;
-
-    const { x, y, width, height } = knobRef.current
-      .getBoundingClientRect();
-
-    const { x: ox, y: oy } = svgRef.current
-      .getBoundingClientRect();
-
-    setKnobCenterX(x + width / 2);
-    setKnobCenterY(y + height / 2);
-
-    setOriginX(ox);
-    setOriginY(oy);
-  }, []);
 
   useEffect(() => {
     const nextAngle = getAngleFromValue(velocity);
@@ -86,18 +69,18 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
     }
   }, [velocity, angle]);
 
-  const handleMouseDown: MouseEventHandler = useCallback((e) => {
+  const handleMouseDown = useCallback((e) => {
     e.preventDefault();
     isMouseDownRef.current = true;
 
     const { offsetX, offsetY } = e.nativeEvent;
     const initialOffset = getAngleFromPoint(
-      offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+      offsetX, offsetY, CX, CY);
 
     setOffsetAngle(initialOffset - angle);
-  }, [knobCenterX, knobCenterY, originX, originY, angle]);
+  }, [angle]);
 
-  const handleMouseUp: MouseEventHandler = useCallback((e) => {
+  const handleMouseUp = useCallback((e) => {
     if (e.target.tagName === 'INPUT') {
       return;
     }
@@ -106,45 +89,38 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
     isMouseDownRef.current = false;
   }, []);
 
-  const handleMouseMove: MouseEventHandler = useCallback((e) => {
+  const handleMouseMove = useCallback((e) => {
     e.preventDefault();
 
     if (isMouseDownRef.current) {
       const { offsetX, offsetY } = e.nativeEvent;
 
       const currentAngle = getAngleFromPoint(
-        offsetX, offsetY, knobCenterX, knobCenterY, originX, originY);
+        offsetX, offsetY, CX, CY);
 
       let delta = currentAngle - offsetAngle - angle;
 
+      // Wrap
       if (delta < 0) {
-        // Wrap
         delta += Math.PI * 2;
       }
 
+      // Map 0..2π to -π..π
       if (delta > Math.PI) {
-        // Map 0..360 to -180..180.
         delta -= Math.PI * 2;
       }
 
+      // Crossover
       const nextAngle = angle + delta;
 
-      // Prevent crossing over from max positive to max negative
       if (nextAngle > Math.PI || nextAngle < -Math.PI)
         return;
 
+      // Map -π..π to min..max
       const nextValue = getValueFromAngle(nextAngle);
       handleChange(nextValue);
     }
-  }, [
-    angle,
-    originX,
-    originY,
-    knobCenterX,
-    knobCenterY,
-    offsetAngle,
-    handleChange
-  ]);
+  }, [angle, offsetAngle, handleChange]);
 
   const handleMarkClick = useCallback((
     index: number,
@@ -168,7 +144,6 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
 
   return (
     <svg
-      ref={svgRef}
       className={styles.velocityKnob}
       width="330px"
       height="185px"
@@ -178,15 +153,12 @@ export const VelocityKnob: FC<VelocityKnobProps> = ({
     >
       <g
         id="knobInteractive"
-        ref={knobRef}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         style={{
           cursor: "pointer",
-          transformOrigin: `${knobCenterX - originX}px ${
-            knobCenterY - originY
-          }px`,
-          transform: `rotate(${angle * RAD_TO_DEG}deg)`,
+          transformOrigin: `${CX}px ${CY}px`,
+          transform: `rotate(${angle}rad)`,
         }}
       >
         <path
