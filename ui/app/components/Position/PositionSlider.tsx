@@ -28,20 +28,22 @@ export const PositionSlider: FC<PositionSliderProps> = ({
   max
 }) => {
   const borderRef = useRef<SVGRectElement>(null);
-  const sliderRef = useRef<SVGGElement>(null);
   const isDraggingRef = useRef<boolean>(false);
   const offsetRef = useRef<number>(0);
 
   const handleMouseDown = useCallback((e) => {
-    if (!sliderRef.current || !borderRef.current)
+    if (!borderRef.current)
       return;
 
     e.preventDefault();
 
     const { clientX: mousePosition } = e;
+    const { left: minPosition } = borderRef.current.getBoundingClientRect();
+    const center = goal * RANGE;
+
+    offsetRef.current = mousePosition - minPosition - center;
     isDraggingRef.current = true;
-    offsetRef.current = mousePosition;
-  }, []);
+  }, [goal]);
 
   const handleMouseMove = useCallback((e) => {
     if (!isDraggingRef.current || !borderRef.current)
@@ -50,10 +52,11 @@ export const PositionSlider: FC<PositionSliderProps> = ({
     e.preventDefault();
 
     const { clientX: mousePosition } = e;
-    const norm = (mousePosition - offsetRef.current) / RANGE;
-    const value = norm * (max - min) + min;
+    const { left: minPosition } = borderRef.current.getBoundingClientRect();
 
-    console.log({ norm, value })
+    const norm = (mousePosition - minPosition - offsetRef.current) / RANGE;
+    const value = norm * (max - min) + min;
+  
     handleChange(clamp(value, 0, 1));
   }, [min, max, handleChange]);
 
@@ -147,7 +150,6 @@ export const PositionSlider: FC<PositionSliderProps> = ({
 
         <polygon
           id="head"
-          ref={sliderRef}
           className={styles.track}
           style={{
             transform: getSliderTransform(goal),
