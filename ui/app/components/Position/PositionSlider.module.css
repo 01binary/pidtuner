@@ -1,0 +1,15 @@
+.positionSlider {
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin-right: -1rem;
+}
+
+@media (max-width: 600px) {
+  .positionSlider {
+    margin-right: initial;
+  }
+}
+
+.positionSlider text {
+  user-select: none;
+}
