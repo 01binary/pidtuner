@@ -1,4 +1,4 @@
-export const HEIGHT = 300;
+export const HEIGHT = 257;
 export const MARGIN_LEFT = 56;
 export const MARGIN_TOP = 8;
 export const MARGIN_RIGHT = 8;
