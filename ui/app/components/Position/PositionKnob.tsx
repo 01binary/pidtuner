@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState, useCallback } from "react";
 import { inter } from "../../inter";
 import styles from "./PositionKnob.module.css";
 
-const ERROR_RADIUS = 46.3
+const ERROR_RADIUS = 52
 const OFFSET_RADIUS = 52.3
 const RAD_TO_DEG = 57.2958;
 const EPSILON = 0.0001;
@@ -10,7 +10,7 @@ const CROSSOVER = 3;
 const CX = 101.89999389648438;
 const CY = 95.19999694824219;
 
-const getAngleFromValue = (value: number, min: number, max: number): number => {
+const getAngleFromValue = (value: number, min: number, max: number) => {
   const midpoint = (min + max) / 2;
   const range = max - min;
   const half = range / 2;
@@ -20,7 +20,7 @@ const getAngleFromValue = (value: number, min: number, max: number): number => {
   return norm * Math.PI;
 }
 
-const getValueFromAngle = (angle: number, min: number, max: number): number => {
+const getValueFromAngle = (angle: number, min: number, max: number) => {
   // Map the angle (-π to π) to normalized value (-1 to 1)
   const norm = angle / Math.PI;
 
@@ -37,7 +37,7 @@ const getAngleFromPoint = (x: number, y: number, cx: number, cy: number) => {
   const angle = Math.atan2(sin, cos);
 
   return angle;
-};
+}
 
 const getSectorFromValue = (
   cx: number,
@@ -46,28 +46,115 @@ const getSectorFromValue = (
   value: number
 ) => {
   const angle = -value * Math.PI * 2 + Math.PI / 2;
-  const x = cx + Math.cos(angle) * radius;
-  const y = cy - Math.sin(angle) * radius;
+  const cos = Math.cos(angle);
+  const sin = - Math.sin(angle);
+  const x = cx + cos * radius;
+  const y = cy + sin * radius;
 
-  return { x, y };
+  return { x, y, angle };
+}
+
+const moveTo = (x: number, y: number) => (
+  // M x y
+  `M ${x} ${y}`
+)
+
+const arc = (
+  radius: number,
+  x: number,
+  y: number,
+  largeArcFlag: boolean = false
+) => (
+  // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+  `A ${radius} ${radius} 0 ${largeArcFlag ? '1' : '0'} 1 ${x} ${y}`
+)
+
+const lineTo = (x: number, y: number) => (
+  // L x y
+  `L ${x} ${y}`
+)
+
+const differentSign = (first: number, second: number) => (
+  first < 0 && second > 0 || first > 0 && second < 0
+)
+
+const getPie = (
+  from: number,
+  to: number,
+  cx: number,
+  cy: number,
+  radius: number
+): string[] => {
+  const {
+    x: fromX,
+    y: fromY,
+    angle: fromAngle
+  } = getSectorFromValue(cx, cy, radius, from < to ? from : to);
+
+  const {
+    x: toX,
+    y: toY,
+    angle: toAngle
+  } = getSectorFromValue(cx, cy, radius, from < to ? to : from);
+
+  if (Math.abs(fromAngle - toAngle) > Math.PI) {
+    const mid = to - Math.abs(from - to) - 0.5;
+
+    if (differentSign(from, to)) {
+      // Draw reverse arc if arc angle > π and difference > π
+      return [
+        [
+          moveTo(fromX, fromY),
+          arc(radius, toX, toY, true),
+          lineTo(cx, cy)
+        ].join(' ')
+      ];
+    } else {
+      // Draw two arcs if arc angle > π and difference within π
+      const {
+        x: midX,
+        y: midY
+      } = getSectorFromValue(cx, cy, radius, mid);
+  
+      return [
+        [
+          moveTo(fromX, fromY),
+          arc(radius, midX, midY),
+          lineTo(midX, midY)
+        ].join(' '),
+        [
+          moveTo(midX, midY),
+          arc(radius, toX, toY),
+          lineTo(cx, cy)
+        ].join(' ')
+      ];
+    }
+  } else {
+    // Draw single arc if arc angle <= π
+    return [[
+      moveTo(fromX, fromY),
+      arc(radius, toX, toY),
+      lineTo(cx, cy)
+    ].join(' ')];
+  }
 }
 
 const getCircumference = (radius: number) => (
   2 * Math.PI * radius
-);
+)
 
 const getDasharray = (circumference: number, norm: number) => {
   const factor = Math.abs(norm);
   return `${circumference * factor},${circumference * (1 - factor)}`
-};
+}
 
 const getDasharrayOffset = (circumference: number) => (
   circumference * 0.25
-);
+)
 
 const getDasharrayTransform = (value: number) => (
   `rotate(${value < 0 ? value * Math.PI * 2 : 0}rad)`
-);
+)
 
 const OFFSET_CIRCUMFERENCE = getCircumference(OFFSET_RADIUS);
 
@@ -158,16 +245,6 @@ export const PositionKnob: FC<PositionKnobProps> = ({
       document.removeEventListener('mouseup', handleMouseUp, true);
     }
   }, [handleMouseUp]);
-
-  const {
-    x: goalX,
-    y: goalY
-  } = getSectorFromValue(CX, CY, ERROR_RADIUS, goal);
-
-  const {
-    x: errorX,
-    y: errorY
-  } = getSectorFromValue(CX, CY, ERROR_RADIUS, position);
 
   return (
     <svg
@@ -310,24 +387,14 @@ export const PositionKnob: FC<PositionKnobProps> = ({
           />
         </g>
       </g>
-      <line
-        id="goalLine"
-        stroke="blue"
-        strokeWidth="1"
-        x1={CX}
-        y1={CY}
-        x2={goalX}
-        y2={goalY}
-      />
-      <line
-        id="errorLine"
-        stroke="red"
-        strokeWidth="1"
-        x1={CX}
-        y1={CY}
-        x2={errorX}
-        y2={errorY}
-      />
+      {/*"#EC008C"*/}
+      {getPie(goal, position, CX, CY, ERROR_RADIUS).map((path, index) => (
+        <path
+          key={path}
+          fill={['blue', 'green'][index]}
+          d={path}
+        />
+      ))}
     </svg>
   );
 }
