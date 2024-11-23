@@ -85,13 +85,14 @@ export const PositionSlider: FC<PositionSliderProps> = ({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
-        <rect
+        <line
           id="error"
-          x="17.7"
-          y="17"
-          fill="#D3D3D3"
-          width="25.9"
-          height="29.6"
+          y1="31.75"
+          y2="31.75"
+          x1={17.7 + position * RANGE}
+          x2={17.7 + goal * RANGE}
+          stroke="#EC008C"
+          strokeWidth="29.5"
         />
 
         <rect
