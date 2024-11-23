@@ -166,9 +166,7 @@ export const PositionSlider: FC<PositionSliderProps> = ({
         <polygon
           id="head"
           className={styles.interactive}
-          style={{
-            transform: getSliderTransform(goal),
-          }}
+          style={{ transform: getSliderTransform(goal) }}
           fill="#FFFFFF"
           stroke="#000000"
           strokeLinecap="round"
