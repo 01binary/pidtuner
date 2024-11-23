@@ -88,7 +88,7 @@ export const Position: FC<PositionProps> = ({
         />
       }
     >
-      <Group vertical alignTop marginTop>
+      <Group vertical marginTop>
         <PrimaryInput
           type="number"
           value={Math.round(goal * 100)}
@@ -98,7 +98,7 @@ export const Position: FC<PositionProps> = ({
           step={1}
         />
 
-        {/*<PrimaryInput
+        <PrimaryInput
           id="tolerance"
           type="number"
           label="Tolerance"
@@ -106,14 +106,6 @@ export const Position: FC<PositionProps> = ({
           onChange={handleChangeTolerance}
           min={0}
           max={100}
-        />*/}
-
-        <PrimaryInput
-          id="pos"
-          type="number"
-          label="Ref"
-          value={position * 100}
-          onChange={e => setPosition(e.target.value / 100)}
         />
       </Group>
 

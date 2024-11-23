@@ -25,6 +25,12 @@
   align-self: flex-start;
 }
 
+@media (max-width: 600px) {
+  .top {
+    align-self: initial;
+  }
+}
+
 .marginTop {
   margin-top: 28px;
 }
