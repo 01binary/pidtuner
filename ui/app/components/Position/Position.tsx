@@ -30,7 +30,7 @@ type PositionProps = {
 export const Position: FC<PositionProps> = ({
   publishPosition,
   publishConfiguration,
-  position: todo,
+  position,
   goal: initialGoal,
   tolerance: initialTolerance,
   pe,
@@ -38,18 +38,21 @@ export const Position: FC<PositionProps> = ({
   de
 }) => {
   const [goal, setGoal] = useState(initialGoal);
-  const [tolerance, setTolerance] = useState(initialTolerance);
+  const [tolerance, setTolerance] = useState(initialTolerance ?? 5);
   const [Kp, setKp] = useState(DEFAULT_CONFIGURATION.Kp);
   const [Ki, setKi] = useState(DEFAULT_CONFIGURATION.Ki);
   const [Kd, setKd] = useState(DEFAULT_CONFIGURATION.Kd);
   const [iMin, setIMin] = useState(DEFAULT_CONFIGURATION.iMax);
   const [iMax, setIMax] = useState(DEFAULT_CONFIGURATION.iMax);
   const [isRadial, setIsRadial] = useState(true);
-
-  const [position, setPosition] = useState(0)
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
-    publishPosition({ goal, tolerance });
+    if (isInitializedRef.current) {
+      publishPosition({ goal, tolerance });
+    }
+
+    isInitializedRef.current = true;
   }, [goal, tolerance, publishPosition]);
 
   useEffect(() => {
@@ -65,12 +68,20 @@ export const Position: FC<PositionProps> = ({
     publishConfiguration
   ]);
 
-  const handleChangeGoal = useCallback((e) => {
+  const handleChangeGoalInput = useCallback((e) => {
     setGoal(e.target.value / 100);
   }, []);
 
+  const handleChangeGoalKnob = useCallback((value) => {
+    if (isRadial) {
+      setGoal(value + 0.5);
+    } else {
+      setGoal(value)
+    }
+  }, [isRadial]);
+
   const handleChangeTolerance = useCallback((e) => {
-    setTolerance(e.target.value);
+    setTolerance(e.target.value / 100);
   }, []);
 
   const handleToggleLinearRadial = useCallback(() => {
@@ -92,7 +103,7 @@ export const Position: FC<PositionProps> = ({
         <PrimaryInput
           type="number"
           value={Math.round(goal * 100)}
-          onChange={handleChangeGoal}
+          onChange={handleChangeGoalInput}
           min={isRadial ? -50 : 0}
           max={isRadial ? 50 : 100}
           step={1}
@@ -102,7 +113,7 @@ export const Position: FC<PositionProps> = ({
           id="tolerance"
           type="number"
           label="Tolerance"
-          value={tolerance}
+          value={tolerance * 100}
           onChange={handleChangeTolerance}
           min={0}
           max={100}
@@ -114,7 +125,7 @@ export const Position: FC<PositionProps> = ({
           <PositionKnob
             goal={goal}
             position={position}
-            handleChange={setGoal}
+            handleChange={handleChangeGoalKnob}
             min={-0.5}
             max={0.5}
           />
@@ -123,7 +134,7 @@ export const Position: FC<PositionProps> = ({
           <PositionSlider
             goal={goal}
             position={position}
-            handleChange={setGoal}
+            handleChange={handleChangeGoalKnob}
             min={0}
             max={1}
           />
@@ -150,9 +161,9 @@ export const Position: FC<PositionProps> = ({
             id="kp"
             type="number"
             value={Kp}
-            label="P"
+            label="Kp"
             largeLabel
-            labelWidth="2rem"
+            labelWidth="4rem"
             onChange={(e) => setKp(e.target.value)}
           />
         </Group>
@@ -162,9 +173,9 @@ export const Position: FC<PositionProps> = ({
             id="ki"
             type="number"
             value={Ki}
-            label="I"
+            label="Ki"
             largeLabel
-            labelWidth="2rem"
+            labelWidth="4rem"
             onChange={(e) => setKi(e.target.value)}
           />
         </Group>
@@ -174,9 +185,9 @@ export const Position: FC<PositionProps> = ({
             id="kd"
             type="number"
             value={Kd}
-            label="D"
+            label="Kd"
             largeLabel
-            labelWidth="2rem"
+            labelWidth="4rem"
             onChange={(e) => setKd(e.target.value)}
           />
         </Group>
@@ -195,7 +206,7 @@ export const Position: FC<PositionProps> = ({
             value={iMin}
             label="Imin"
             largeLabel
-            labelWidth="5.5rem"
+            labelWidth="6rem"
             onChange={(e) => setIMin(e.target.value)}
           />
         </Group>
@@ -207,7 +218,7 @@ export const Position: FC<PositionProps> = ({
             value={iMax}
             label="Imax"
             largeLabel
-            labelWidth="5.5rem"
+            labelWidth="6rem"
             onChange={(e) => setIMax(e.target.value)}
           />
         </Group>
