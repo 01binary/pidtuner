@@ -30,7 +30,7 @@ const Page = () => {
   const [amps, setAmps] = useState(0);
   const [position, setPosition] = useState(0);
   const [goal, setGoal] = useState(0);
-  const [tolerance, setTolerance] = useState(0);
+  const [tolerance, setTolerance] = useState(0.1);
   const [pe, setPe] = useState(0);
   const [ie, setIe] = useState(0);
   const [de, setDe] = useState(0);

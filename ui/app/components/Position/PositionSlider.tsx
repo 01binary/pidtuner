@@ -1,15 +1,12 @@
 import { FC, useCallback, useRef, useEffect } from "react";
-import { inter } from "../../inter";
+import { inter } from "@/app/inter";
+import { clamp } from "@/app/utils";
 import styles from "./PositionSlider.module.css";
 
 const RANGE = 163;
 
 const getSliderTransform = (position: number) => (
   `translate(${position * RANGE}px, 0px)`
-)
-
-const clamp = (value: number, min: number, max: number) => (
-  Math.max(Math.min(value, max), min)
 )
 
 type PositionSliderProps = {

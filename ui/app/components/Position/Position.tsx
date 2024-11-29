@@ -7,6 +7,7 @@ import {
   DEFAULT_CONFIGURATION,
   PositionCommand
 } from "@/app/useMotorControl";
+import { clamp } from "@/app/utils";
 import { PrimaryInput } from "../PrimaryInput";
 import { Group } from "../Group";
 import { PositionKnob } from "./PositionKnob";
@@ -38,7 +39,7 @@ export const Position: FC<PositionProps> = ({
   de
 }) => {
   const [goal, setGoal] = useState(initialGoal);
-  const [tolerance, setTolerance] = useState(initialTolerance ?? 5);
+  const [tolerance, setTolerance] = useState(initialTolerance);
   const [Kp, setKp] = useState(DEFAULT_CONFIGURATION.Kp);
   const [Ki, setKi] = useState(DEFAULT_CONFIGURATION.Ki);
   const [Kd, setKd] = useState(DEFAULT_CONFIGURATION.Kd);
@@ -48,14 +49,12 @@ export const Position: FC<PositionProps> = ({
   const isInitializedRef = useRef(false);
 
   useEffect(() => {
-    if (isInitializedRef.current) {
-      publishPosition({ goal, tolerance });
-    }
-
-    isInitializedRef.current = true;
+    if (!isInitializedRef.current) return;
+    publishPosition({ goal, tolerance });
   }, [goal, tolerance, publishPosition]);
 
   useEffect(() => {
+    if (!isInitializedRef.current) return;
     publishConfiguration({
       ...DEFAULT_CONFIGURATION, Kp, Ki, Kd, iMin, iMax
     })
@@ -69,11 +68,15 @@ export const Position: FC<PositionProps> = ({
   ]);
 
   const handleChangeGoalInput = useCallback((e) => {
+    isInitializedRef.current = true;
+    console.log('goal input change')
     setGoal(e.target.value / 100);
   }, []);
 
-  const handleChangeGoalKnob = useCallback((value) => {
+  const handleChangeGoalKnob = useCallback((value: number) => {
+    isInitializedRef.current = true;
     if (isRadial) {
+      console.log('goal knob change', value + 0.5)
       setGoal(value + 0.5);
     } else {
       setGoal(value)
@@ -81,6 +84,7 @@ export const Position: FC<PositionProps> = ({
   }, [isRadial]);
 
   const handleChangeTolerance = useCallback((e) => {
+    isInitializedRef.current = true;
     setTolerance(e.target.value / 100);
   }, []);
 
@@ -123,8 +127,8 @@ export const Position: FC<PositionProps> = ({
       {isRadial
         ? (
           <PositionKnob
-            goal={goal}
-            position={position}
+            goal={clamp(goal - 0.5, -0.5, 0.5)}
+            position={clamp(position, -0.5, 0.5)}
             handleChange={handleChangeGoalKnob}
             min={-0.5}
             max={0.5}
