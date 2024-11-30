@@ -69,6 +69,14 @@ export const Meter: FC<MeterProps> = ({
         {label}
       </text>
 
+      <text
+        transform="matrix(1 0 0 1 90 73.905)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="24px"
+      >
+        {value}
+      </text>
+
       <g
         id="indicator"
         className={styles.indicator}
