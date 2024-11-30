@@ -182,7 +182,7 @@ const Page = () => {
         />
         <Configuration
           configuration={config}
-          publishConfiguration={publishConfiguration}
+          publishConfiguration={handlePublishConfiguration}
         />
       </main>
     </>

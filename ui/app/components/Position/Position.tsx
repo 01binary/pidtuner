@@ -42,32 +42,16 @@ export const Position: FC<PositionProps> = ({
 }) => {
   const [goal, setGoal] = useState(initialGoal);
   const [tolerance, setTolerance] = useState(DEFAULT_TOLERANCE);
-  const [Kp, setKp] = useState(configuration.Kp);
-  const [Ki, setKi] = useState(configuration.Ki);
-  const [Kd, setKd] = useState(configuration.Kd);
-  const [iMin, setIMin] = useState(configuration.iMax);
-  const [iMax, setIMax] = useState(configuration.iMax);
   const [isRadial, setIsRadial] = useState(true);
+
   const isChangedRef = useRef(false);
+
+  const { Kp, Ki, Kd, iMin, iMax } = configuration;
 
   useEffect(() => {
     if (!isChangedRef.current) return;
     publishPosition({ goal, tolerance });
   }, [goal, tolerance, publishPosition]);
-
-  useEffect(() => {
-    if (!isChangedRef.current) return;
-    publishConfiguration({
-      ...DEFAULT_CONFIGURATION, Kp, Ki, Kd, iMin, iMax
-    })
-  }, [
-    Kp,
-    Ki,
-    Kd,
-    iMin,
-    iMax,
-    publishConfiguration
-  ]);
 
   const handleChangeGoalInput = useCallback((e) => {
     isChangedRef.current = true;
@@ -95,27 +79,42 @@ export const Position: FC<PositionProps> = ({
 
   const handleChangeKp = useCallback((e) => {
     isChangedRef.current = true;
-    setKp(e.target.value);
+    publishConfiguration({
+      ...configuration,
+      Kp: e.target.value
+    });
   }, []);
 
   const handleChangeKi = useCallback((e) => {
     isChangedRef.current = true;
-    setKi(e.target.value);
+    publishConfiguration({
+      ...configuration,
+      Ki: e.target.value
+    });
   }, []);
 
   const handleChangeKd = useCallback((e) => {
     isChangedRef.current = true;
-    setKd(e.target.value);
+    publishConfiguration({
+      ...configuration,
+      Kd: e.target.value
+    });
   }, []);
 
   const handleChangeIMin = useCallback((e) => {
     isChangedRef.current = true;
-    setIMin(e.target.value);
+    publishConfiguration({
+      ...configuration,
+      iMin: e.target.value
+    });
   }, []);
 
   const handleChangeIMax = useCallback((e) => {
     isChangedRef.current = true;
-    setIMax(e.target.value);
+    publishConfiguration({
+      ...configuration,
+      iMax: e.target.value
+    });
   }, []);
 
   return (
