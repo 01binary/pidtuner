@@ -1,6 +1,11 @@
 "use client";
 
-import { useCallback, useState, useRef, useEffect } from "react";
+import {
+  useCallback,
+  useState,
+  useRef,
+  useEffect
+} from "react";
 import {
   DEFAULT_ADDDRESS,
   VelocityFeedback,
@@ -8,14 +13,15 @@ import {
   rosTimeToSec,
   StepCommand,
   ControlMode,
-  PositionFeedback
+  PositionFeedback,
+  DEFAULT_CONFIGURATION
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
+import { Configuration } from "./components/Configuration";
 import { Velocity } from "./components/Velocity";
 import { Position } from "./components/Position";
 import { Steps } from "./components/Steps";
-import { Settings } from "./components/Settings";
 
 const Page = () => {
   const [address, setAddress] = useState(DEFAULT_ADDDRESS);
@@ -36,6 +42,7 @@ const Page = () => {
   const [de, setDe] = useState(0);
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
+  const configuration = DEFAULT_CONFIGURATION;
 
   useEffect(() => {
     isCapturingRef.current = isCapturing;
@@ -167,7 +174,9 @@ const Page = () => {
           setStep={setStep}
           publishSteps={handlePublishSteps}
         />
-        {/*<Settings />*/}
+        <Configuration
+          values={configuration}
+        />
       </main>
     </>
   );

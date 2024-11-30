@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo } from "react";
-import { settings } from "../package.json";
+import pkg from "../package.json";
 
-export const DEFAULT_ADDDRESS = settings.serverAddress;
+export const DEFAULT_ADDDRESS = pkg.settings.serverAddress;
 
 const VELOCITY_FEEDBACK_TOPIC = "/velocity_feedback";
 const VELOCITY_FEEDBACK_TYPE = "pidtuner/VelocityFeedback";
