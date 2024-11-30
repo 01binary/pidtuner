@@ -238,6 +238,7 @@ export const Position: FC<PositionProps> = ({
             largeLabel
             labelWidth="6rem"
             onChange={handleChangeIMin}
+            style={{ width: '1.5em' }}
           />
         </Group>
 
@@ -250,6 +251,7 @@ export const Position: FC<PositionProps> = ({
             largeLabel
             labelWidth="6rem"
             onChange={handleChangeIMax}
+            style={{ width: '1.5em' }}
           />
         </Group>
       </Group>
