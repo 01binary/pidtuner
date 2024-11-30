@@ -128,7 +128,7 @@ export const Position: FC<PositionProps> = ({
         ? (
           <PositionKnob
             goal={clamp(goal - 0.5, -0.5, 0.5)}
-            position={clamp(position, -0.5, 0.5)}
+            position={clamp(position - 0.5, -0.5, 0.5)}
             handleChange={handleChangeGoalKnob}
             min={-0.5}
             max={0.5}
