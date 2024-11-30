@@ -99,39 +99,34 @@ export const SETTINGS = [
     label: 'Proportional gain',
     type: 'number',
     min: -10000,
-    max: 10000,
-    step: 0.001
+    max: 10000
   },
   {
     name: 'Ki',
     label: 'Integral gain',
     type: 'number',
     min: -10000,
-    max: 10000,
-    step: 0.001
+    max: 10000
   },
   {
     name: 'Kd',
     label: 'Derivative gain',
     type: 'number',
     min: -10000,
-    max: 10000,
-    step: 0.001
+    max: 10000
   },
   {
     name: 'iMin',
     label: 'Integral Min',
     type: 'number',
     min: -10000,
-    max: 10000,
-    step: 0.001
+    max: 10000
   },
   {
     name: 'iMax',
     label: 'Integral Max',
     type: 'number',
     min: -10000,
-    max: 10000,
-    step: 0.001
+    max: 10000
   }
 ];
