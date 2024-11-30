@@ -434,7 +434,7 @@ void positionFeedback()
   }
   else
   {
-    command = pid.getCommand(error, dt);
+    command = clamp(pid.getCommand(error, dt), -1.0, 1.0);
     commandToPwm(command, pwmMin, pwmMax, pwmInvert, lpwm, rpwm);
   }
 
