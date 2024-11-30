@@ -10,7 +10,6 @@ import React, {
   useRef,
   ChangeEventHandler
 } from "react";
-import { Input } from "../Input";
 import { ControlMode } from "@/app/useMotorControl";
 import { PlotType } from "./PlotType";
 import styles from "./Plot.module.css";
@@ -55,7 +54,6 @@ type PlotProps = {
 
 export const Plot: FC<PlotProps> = ({
   server,
-  onServerChange,
   isConnected,
   isCapturing,
   setCapturing,
@@ -117,7 +115,6 @@ export const Plot: FC<PlotProps> = ({
   }, []);
 
   const handleToggleLegendSeries = useCallback((key: string, enabled: boolean) => {
-    console.log(key, '->', enabled);
     setEnabled(current => ({
       ...current,
       [key]: enabled
@@ -139,13 +136,9 @@ export const Plot: FC<PlotProps> = ({
         </h1>
 
         <div className={styles.plotToolbar}>
-          <Input
-            id="server"
-            label="server"
-            type="text"
-            value={server}
-            onChange={onServerChange}
-          />
+          <div className={styles.static}>
+            server: {' '}{server}
+          </div>
 
           {isConnected
             ? <img width="32" height="32" src="/bridge-on.svg" />
