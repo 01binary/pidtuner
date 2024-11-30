@@ -37,7 +37,8 @@ const MODE = ["Velocity", "Position", "Step"];
 const LEGEND = [
   { key: "command", color: "#376be8", label: "command", min: -1, max: 1 },
   { key: "absolute", color: "#ec008c", label: "absolute", min: 0, max: 1 },
-  { key: "quadrature", color: "#795da3", label: "quadrature" }
+  { key: "quadrature", color: "#795da3", label: "quadrature" },
+  { key: "goal", color: "#00ccbe", label: "goal" }
 ];
 
 type PlotProps = {
@@ -68,7 +69,8 @@ export const Plot: FC<PlotProps> = ({
   const [enabled, setEnabled] = useState<{ [key: string]: boolean | undefined }>({
     command: true,
     absolute: true,
-    quadrature: true
+    quadrature: true,
+    goal: true
   });
 
   const width = useMemo(() => (
