@@ -57,14 +57,12 @@ export const Gauge: FC<GaugeType> = ({
 }) => {
   const [min, setMin] = useState(value);
   const [max, setMax] = useState(value);
-  const [range, setRange] = useState(1);
   const [step, setStep] = useState(1);
 
   useEffect(() => {
     const newMin = Math.min(min, value);
     const newMax = Math.max(max, value);
-    setRange(newMax - newMin);
-    setStep(getStepSize(newMax - newMin))
+    setStep(getStepSize(Math.abs(newMax - newMin)))
     setMin(newMin);
     setMax(newMax);
   }, [value, min, max]);
@@ -73,7 +71,7 @@ export const Gauge: FC<GaugeType> = ({
     .map(stepIndex => stepIndex * step)
     .concat(max);
 
-  const offset = getOffsetFromValue(value, step);
+  const offset = getOffsetFromValue(Math.abs(value), step);
 
   return (
     <div className={styles.gauge}>

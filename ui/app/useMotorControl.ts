@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import pkg from "../package.json";
 
-export const DEFAULT_ADDDRESS = pkg.settings.serverAddress;
+export const DEFAULT_ADDRESS = pkg.settings.serverAddress;
 
 const VELOCITY_FEEDBACK_TOPIC = "/velocity_feedback";
 const VELOCITY_FEEDBACK_TYPE = "pidtuner/VelocityFeedback";

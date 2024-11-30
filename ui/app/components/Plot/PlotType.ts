@@ -3,4 +3,5 @@ export type PlotType = {
   command: number;
   absolute: number;
   quadrature: number;
+  goal: number;
 };

@@ -7,14 +7,15 @@ import {
   useEffect
 } from "react";
 import {
-  DEFAULT_ADDDRESS,
+  DEFAULT_ADDRESS,
+  DEFAULT_CONFIGURATION,
   VelocityFeedback,
+  PositionFeedback,
   useMotorControl,
-  rosTimeToSec,
   StepCommand,
   ControlMode,
-  PositionFeedback,
-  DEFAULT_CONFIGURATION
+  rosTimeToSec,
+  ConfigurationCommand
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
@@ -24,7 +25,8 @@ import { Position } from "./components/Position";
 import { Steps } from "./components/Steps";
 
 const Page = () => {
-  const [address, setAddress] = useState(DEFAULT_ADDDRESS);
+  const [address, setAddress] = useState(DEFAULT_ADDRESS);
+  const [config, setConfig] = useState<ConfigurationCommand>(DEFAULT_CONFIGURATION);
   const [isConnected, setConnected] = useState(false);
   const [isCapturing, setCapturing] = useState<boolean>(true);
   const [mode, setMode] = useState<ControlMode>(0);
@@ -36,13 +38,12 @@ const Page = () => {
   const [amps, setAmps] = useState(0);
   const [position, setPosition] = useState(0);
   const [goal, setGoal] = useState(0);
-  const [tolerance, setTolerance] = useState(0.1);
   const [pe, setPe] = useState(0);
   const [ie, setIe] = useState(0);
   const [de, setDe] = useState(0);
+
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
-  const configuration = DEFAULT_CONFIGURATION;
 
   useEffect(() => {
     isCapturingRef.current = isCapturing;
@@ -60,7 +61,9 @@ const Page = () => {
     const time = rosTimeToSec(velocity.time);
     const start = rosTimeToSec(velocity.start);
 
-    if (!firstTimeRef.current) firstTimeRef.current = time;
+    if (!firstTimeRef.current) {
+      firstTimeRef.current = time;
+    }
 
     setEmergencyStop(velocity.estop);
     setMode(velocity.mode);
@@ -79,7 +82,8 @@ const Page = () => {
         time: time - firstTimeRef.current,
         command: velocity.command,
         absolute: velocity.absolute,
-        quadrature: velocity.quadrature
+        quadrature: velocity.quadrature,
+        goal
       }));
     }
   }, []);
@@ -87,7 +91,6 @@ const Page = () => {
   const handlePosition = useCallback(({
     position,
     goal,
-    tolerance,
     pe,
     ie,
     de
@@ -97,9 +100,6 @@ const Page = () => {
 
     // Update normalized goal position
     setGoal(goal);
-
-    // Update tolerance
-    setTolerance(tolerance);
 
     // Update current proportional error
     setPe(pe);
@@ -133,6 +133,12 @@ const Page = () => {
     publishSteps(command);
   }, [publishSteps]);
 
+  const handlePublishConfiguration = useCallback((command: ConfigurationCommand) => {
+    console.log('setting', command)
+    setConfig(command);
+    publishConfiguration(command);
+  }, [publishConfiguration])
+
   return (
     <>
       <header>
@@ -158,11 +164,11 @@ const Page = () => {
           amps={amps}
         />
         <Position
-          position={position}
           goal={goal}
-          tolerance={tolerance}
+          position={position}
+          configuration={config}
           publishPosition={publishPosition}
-          publishConfiguration={publishConfiguration}
+          publishConfiguration={handlePublishConfiguration}
           pe={pe}
           ie={ie}
           de={de}
@@ -175,7 +181,8 @@ const Page = () => {
           publishSteps={handlePublishSteps}
         />
         <Configuration
-          values={configuration}
+          configuration={config}
+          publishConfiguration={publishConfiguration}
         />
       </main>
     </>
