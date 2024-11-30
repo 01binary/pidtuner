@@ -134,7 +134,6 @@ const Page = () => {
   }, [publishSteps]);
 
   const handlePublishConfiguration = useCallback((command: ConfigurationCommand) => {
-    console.log('setting', command)
     setConfig(command);
     publishConfiguration(command);
   }, [publishConfiguration])

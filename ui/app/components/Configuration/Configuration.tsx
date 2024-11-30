@@ -29,17 +29,17 @@ const Row: FC<RowProps> = ({
     </td>
     <td className={styles.value}>
       {type === 'number'
-        ? (
-            <input
-              type='number'
-              {...options}
-              value={value}
-              onChange={(e) => onChange(name, e.target.valueAsNumber)}
-            />
-          )
-        : (
-            <div>boolean</div>
-          )
+        ? <input
+            type='number'
+            {...options}
+            value={value}
+            onChange={(e) => onChange(name, e.target.valueAsNumber)}
+          />
+        : <input
+            type='checkbox'
+            checked={value}
+            onChange={(e) => onChange(name, e.target.checked)}
+          />
       }
     </td>
   </tr>
