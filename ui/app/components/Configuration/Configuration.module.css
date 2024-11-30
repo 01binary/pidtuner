@@ -1,12 +1,36 @@
 .settings {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 800px;
 }
 
 .setting {
+  background: var(--background);
+}
+
+.setting:hover {
+  background: var(--xxlightGray);
+}
+
+.setting:hover .key {
+  border-color: var(--lightGray);
+}
+
+.setting:hover .value {
+  border-color: var(--lightGray);
+}
+
+.key, .value {
+  border-bottom: 1px solid;
+  border-color: var(--xlightGray);
+  padding: 0.5rem 0 0.1rem 0.5rem;
 }
 
 .key {
+  user-select: none;
 }
 
 .value {

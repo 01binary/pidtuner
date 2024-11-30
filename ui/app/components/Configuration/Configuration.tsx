@@ -4,7 +4,7 @@ import styles from "./Configuration.module.css";
 
 const SETTINGS = [
   {
-    key: 'LPWMpin',
+    name: 'LPWMpin',
     label: 'LPWM Pin',
     type: 'number',
     min: 0,
@@ -12,7 +12,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'RPWMpin',
+    name: 'RPWMpin',
     label: 'RPWM Pin',
     type: 'number',
     min: 0,
@@ -20,7 +20,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'ADCpin',
+    name: 'ADCpin',
     label: 'ADC Pin',
     type: 'number',
     min: 0,
@@ -28,7 +28,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'csPin',
+    name: 'csPin',
     label: 'CS Pin',
     type: 'number',
     min: 0,
@@ -36,7 +36,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'Apin',
+    name: 'Apin',
     label: 'A Pin',
     type: 'number',
     min: 0,
@@ -44,7 +44,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'Bpin',
+    name: 'Bpin',
     label: 'B Pin',
     type: 'number',
     min: 0,
@@ -52,7 +52,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'pwmMin',
+    name: 'pwmMin',
     label: 'PWM Min',
     type: 'number',
     min: -1000,
@@ -60,7 +60,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'pwmMax',
+    name: 'pwmMax',
     label: 'PWM Max',
     type: 'number',
     min: -1000,
@@ -68,7 +68,7 @@ const SETTINGS = [
     step: 1
   },
   {
-    key: 'absoluteMin',
+    name: 'absoluteMin',
     label: 'Absolute Min',
     type: 'number',
     min: -1000,
@@ -76,7 +76,7 @@ const SETTINGS = [
     step: 0.001
   },
   {
-    key: 'absoluteMax',
+    name: 'absoluteMax',
     label: 'Absolute Max',
     type: 'number',
     min: -1000,
@@ -84,22 +84,22 @@ const SETTINGS = [
     step: 0.001
   },
   {
-    key: 'pwmInvert',
+    name: 'pwmInvert',
     label: 'PWM Invert',
     type: 'boolean'
   },
   {
-    key: 'absoluteInvert',
+    name: 'absoluteInvert',
     label: 'Absolute Invert',
     type: 'boolean'
   },
   {
-    key: 'quadratureInvert',
+    name: 'quadratureInvert',
     label: 'Quadrature Invert',
     type: 'boolean'
   },
   {
-    key: 'Kp',
+    name: 'Kp',
     label: 'Proportional gain',
     type: 'number',
     min: -10000,
@@ -107,7 +107,7 @@ const SETTINGS = [
     step: 0.001
   },
   {
-    key: 'Ki',
+    name: 'Ki',
     label: 'Integral gain',
     type: 'number',
     min: -10000,
@@ -115,7 +115,7 @@ const SETTINGS = [
     step: 0.001
   },
   {
-    key: 'Kd',
+    name: 'Kd',
     label: 'Derivative gain',
     type: 'number',
     min: -10000,
@@ -123,7 +123,7 @@ const SETTINGS = [
     step: 0.001
   },
   {
-    key: 'iMin',
+    name: 'iMin',
     label: 'Integral Min',
     type: 'number',
     min: -10000,
@@ -131,7 +131,7 @@ const SETTINGS = [
     step: 0.001
   },
   {
-    key: 'iMax',
+    name: 'iMax',
     label: 'Integral Max',
     type: 'number',
     min: -10000,
@@ -141,7 +141,7 @@ const SETTINGS = [
 ];
 
 type RowProps = {
-  key: string;
+  name: string;
   label: string;
   type: string;
   value: number | boolean;
@@ -151,25 +151,18 @@ type RowProps = {
 };
 
 const Row: FC<RowProps> = ({
-  key,
+  name,
   label,
   type,
   value,
   ...options
 }) => (
   <tr className={styles.setting}>
-    <td className={styles.setting}>
+    <td className={styles.key}>
       {label}
     </td>
     <td className={styles.value}>
-      {type === "number"
-        ? (
-            <input type="number" {...options} value={value as number} />
-          )
-        : (
-            <input type="checkbox" checked={value as boolean} />
-          )
-      }
+      {value}
     </td>
   </tr>
 )
@@ -187,14 +180,17 @@ export const Configuration: FC<ConfigurationProps> = ({
     title="Configuration"
     image={<img src="/configuration.svg" width="32" height="32" />}
   >
-    <table className={styles.settings}>
-    {SETTINGS.map(({ key, ...setting}) => (
-      <Row
-        key={key}
-        {...setting}
-        value={values[key]}
-      />
-    ))}
+    <table cellSpacing="0" className={styles.settings}>
+      <tbody>
+        {SETTINGS.map(({ name, ...setting}) => (
+          <Row
+            key={name}
+            name={name}
+            value={values[name]}
+            {...setting}
+          />
+        ))}
+      </tbody>
     </table>
   </Module>
 );
