@@ -4,7 +4,6 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Module } from "../Module";
 import {
   ConfigurationCommand,
-  DEFAULT_CONFIGURATION,
   PositionCommand
 } from "@/app/useMotorControl";
 import { clamp } from "@/app/utils";
@@ -16,6 +15,7 @@ import { Gauge } from "../Gauge/Gauge";
 import { RadialIcon } from "./RadialIcon";
 import { LinearIcon } from "./LinearIcon";
 import { PositionSlider } from "./PositionSlider";
+import styles from "./Position.module.css";
 
 const DEFAULT_TOLERANCE = 0.1;
 
@@ -83,7 +83,7 @@ export const Position: FC<PositionProps> = ({
       ...configuration,
       Kp: e.target.value
     });
-  }, []);
+  }, [configuration, publishConfiguration]);
 
   const handleChangeKi = useCallback((e) => {
     isChangedRef.current = true;
@@ -91,7 +91,7 @@ export const Position: FC<PositionProps> = ({
       ...configuration,
       Ki: e.target.value
     });
-  }, []);
+  }, [configuration, publishConfiguration]);
 
   const handleChangeKd = useCallback((e) => {
     isChangedRef.current = true;
@@ -99,7 +99,7 @@ export const Position: FC<PositionProps> = ({
       ...configuration,
       Kd: e.target.value
     });
-  }, []);
+  }, [configuration, publishConfiguration]);
 
   const handleChangeIMin = useCallback((e) => {
     isChangedRef.current = true;
@@ -107,7 +107,7 @@ export const Position: FC<PositionProps> = ({
       ...configuration,
       iMin: e.target.value
     });
-  }, []);
+  }, [configuration, publishConfiguration]);
 
   const handleChangeIMax = useCallback((e) => {
     isChangedRef.current = true;
@@ -115,7 +115,7 @@ export const Position: FC<PositionProps> = ({
       ...configuration,
       iMax: e.target.value
     });
-  }, []);
+  }, [configuration, publishConfiguration]);
 
   return (
     <Module
@@ -149,26 +149,38 @@ export const Position: FC<PositionProps> = ({
         />
       </Group>
 
-      {isRadial
-        ? (
-          <PositionKnob
-            goal={clamp(goal - 0.5, -0.5, 0.5)}
-            position={clamp(position - 0.5, -0.5, 0.5)}
-            handleChange={handleChangeGoalKnob}
-            min={-0.5}
-            max={0.5}
-          />
-        )
-        : (
-          <PositionSlider
-            goal={goal}
-            position={position}
-            handleChange={handleChangeGoalKnob}
-            min={0}
-            max={1}
-          />
-        )
-      }
+      <section className={styles.setPoint}>
+        <div className={isRadial ? styles.errorRadial : styles.errorLinear}>
+          <span className={styles.errorLabel}>
+            Error
+          </span>
+          {' '}
+          <span className={styles.errorValue}>
+            {Math.round((goal - position) * 100)}
+          </span>
+        </div>
+
+        {isRadial
+          ? (
+            <PositionKnob
+              goal={clamp(goal - 0.5, -0.5, 0.5)}
+              position={clamp(position - 0.5, -0.5, 0.5)}
+              handleChange={handleChangeGoalKnob}
+              min={-0.5}
+              max={0.5}
+            />
+          )
+          : (
+            <PositionSlider
+              goal={goal}
+              position={position}
+              handleChange={handleChangeGoalKnob}
+              min={0}
+              max={1}
+            />
+          )
+        }
+      </section>
 
       <Group vertical marginLeft>
         <button
