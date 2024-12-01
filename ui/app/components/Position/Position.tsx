@@ -60,7 +60,7 @@ export const Position: FC<PositionProps> = ({
 
   const handleChangeGoalInput = useCallback((e) => {
     isChangedRef.current = true;
-    setGoal(e.target.value / 100);
+    setGoal(e.target.valueAsNumber / 100);
   }, []);
 
   const handleChangeGoalKnob = useCallback((value: number) => {
@@ -74,7 +74,7 @@ export const Position: FC<PositionProps> = ({
 
   const handleChangeTolerance = useCallback((e) => {
     isChangedRef.current = true;
-    setTolerance(e.target.value / 100);
+    setTolerance(e.target.valueAsNumber / 100);
   }, []);
 
   const handleToggleLinearRadial = useCallback(() => {
@@ -85,7 +85,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      Kp: e.target.value
+      Kp: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -93,7 +93,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      Ki: e.target.value
+      Ki: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -101,7 +101,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      Kd: e.target.value
+      Kd: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -109,7 +109,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      iMin: e.target.value
+      iMin: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -117,7 +117,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      iMax: e.target.value
+      iMax: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
