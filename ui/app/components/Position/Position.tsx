@@ -245,7 +245,7 @@ export const Position: FC<PositionProps> = ({
             id="imin"
             type="number"
             value={iMin}
-            label="Imin"
+            label={<>I<sub>min</sub></>}
             largeLabel
             labelWidth="6rem"
             onChange={handleChangeIMin}
@@ -258,7 +258,7 @@ export const Position: FC<PositionProps> = ({
             id="imax"
             type="number"
             value={iMax}
-            label="Imax"
+            label={<>I<sub>max</sub></>}
             largeLabel
             labelWidth="6rem"
             onChange={handleChangeIMax}

@@ -24,6 +24,9 @@ const ESTOP_COMMAND_TYPE = "pidtuner/EmergencyStop";
 const CONFIG_COMMAND_TOPIC = "/configuration";
 const CONFIG_COMMAND_TYPE = "pidtuner/Configuration";
 
+const CONFIG_SERVER = "/configuration";
+const CONFIG_SERVER_TYPE = "pidtuner/ConfigurationServer";
+
 const DEFAULT_PARAMS = {};
 
 type RosTime = {
@@ -115,6 +118,10 @@ export type ConfigurationCommand = {
   iMax: number                // Max integral
 };
 
+export type ConfigurationServer = {
+  configuration: ConfigurationCommand;
+};
+
 export const DEFAULT_CONFIGURATION = {
   LPWMpin: 11,
   RPWMpin: 3,
@@ -132,7 +139,7 @@ export const DEFAULT_CONFIGURATION = {
   Kp: 10,
   Ki: 1,
   Kd: 1,
-  iMin: 0,
+  iMin: -1,
   iMax: 1
 }
 
@@ -145,7 +152,7 @@ type Params = {
 };
 
 export const useMotorControl = ({
-  address = DEFAULT_ADDDRESS,
+  address = DEFAULT_ADDRESS,
   onConnection,
   onError,
   onVelocity,
@@ -259,6 +266,18 @@ export const useMotorControl = ({
     return estopTopic;
   }, [ros]);
 
+  const configurationService = useMemo(() => {
+    if (!ros) return;
+
+    const configurationClient = new ROSLIB.Service({
+      ros,
+      name: CONFIG_SERVER,
+      serviceType: CONFIG_SERVER_TYPE
+    });
+
+    return configurationClient;
+  }, [ros])
+
   const publishVelocity = useCallback((velocity: VelocityCommand) => {
     if (!ros) return;
 
@@ -299,10 +318,28 @@ export const useMotorControl = ({
 
   }, [ros, configurationPublisher]);
 
+  const requestConfiguration = useCallback(() => {
+    if (!ros) return;
+
+    return new Promise<ConfigurationServer>((resolve, reject) => {
+      try {
+        configurationService.callService(
+          new ROSLIB.ServiceRequest(),
+          (result: ConfigurationServer) => {
+            console.log('service call result', result);
+            resolve(result);
+          });
+      } catch(e) {
+        reject(e);
+      }
+    });
+  }, [ros, configurationService]);
+
   return {
     publishVelocity,
     publishPosition,
     publishConfiguration,
+    requestConfiguration,
     publishEstop,
     publishSteps
   };

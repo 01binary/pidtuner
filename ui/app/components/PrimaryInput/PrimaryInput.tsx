@@ -4,7 +4,7 @@ import styles from "./PrimaryInput.module.css";
 type PrimaryInputProps = {
   id?: string;
   type?: string;
-  label?: string;
+  label: string | Element;
   largeLabel?: boolean;
   labelWidth?: string;
   units?: string;

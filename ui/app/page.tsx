@@ -47,6 +47,7 @@ const Page = () => {
   const firstTimeRef = useRef(0);
 
   useEffect(() => {
+    // Some handlers cannot have state in dependency list
     isCapturingRef.current = isCapturing;
   }, [isCapturing]);
 
@@ -115,6 +116,7 @@ const Page = () => {
     publishPosition,
     publishVelocity,
     publishConfiguration,
+    requestConfiguration,
     publishEstop,
     publishSteps
   } = useMotorControl({
@@ -138,7 +140,12 @@ const Page = () => {
   const handlePublishConfiguration = useCallback((command: ConfigurationCommand) => {
     setConfig(command);
     publishConfiguration(command);
-  }, [publishConfiguration])
+  }, [publishConfiguration]);
+
+  useEffect(() => {
+    // Request initial configuration
+    requestConfiguration()?.then(({ configuration }) => setConfig(configuration));
+  }, [requestConfiguration]);
 
   return (
     <>
