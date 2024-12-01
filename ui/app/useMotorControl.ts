@@ -136,9 +136,9 @@ export const DEFAULT_CONFIGURATION = {
   pwmInvert: false,
   absoluteInvert: false,
   quadratureInvert: true,
-  Kp: 0.1,
-  Ki: 0.01,
-  Kd: 0.01,
+  Kp: 1,
+  Ki: 0.1,
+  Kd: 0.1,
   iMin: -1,
   iMax: 1
 }

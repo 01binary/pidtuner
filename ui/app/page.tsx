@@ -93,7 +93,7 @@ const Page = () => {
       const pause = isStopped &&
         time - lastNonZeroVelocityTimeRef.current > RECORD_TIME_THRESHOLD
 
-      if (!pause || firstTimeRef.current === time) {
+      if (!pause) {
         // Don't capture if the motor is not doing anything for a while
         setData(d => d.concat({
           time: time - firstTimeRef.current,
