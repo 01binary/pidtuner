@@ -6,7 +6,7 @@ This application can help you characterize a DC motor and tune a PID controller 
 
 ![ui](./ui.png)
 
-## Install Packages
+## Install ROS Packages
 
 ```
 sudo apt-get install ros-${ROS_DISTRO}-rosserial-arduino
@@ -16,6 +16,12 @@ cd ~/catkin_ws/src
 
 rosdep install -y --from-paths . --ignore-src --rosdistro noetic
 ```
+
+## Install Arduino Packages
+
+* `QuadratureEncoder` by Cheng Saetern
+* `EnableInterrupt` by Mike "GreyGnome" Schwager
+* `Adafruit_INA260` by Adafruit
 
 ## Build
 

@@ -1,0 +1,55 @@
+.settings {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 800px;
+}
+
+.setting {
+  background: var(--background);
+}
+
+.setting:hover {
+  background: var(--xxmedium);
+}
+
+.setting:hover .key {
+  border-color: var(--medium);
+}
+
+.setting:hover .value {
+  border-color: var(--medium);
+}
+
+.key, .value {
+  border-bottom: 1px solid;
+  border-color: var(--xmedium);
+  padding: 0.25rem 0 0.1rem 0.5rem;
+}
+
+.key {
+  user-select: none;
+}
+
+.value {
+  text-align: right;
+}
+
+.value input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin-right: 3rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.value input[type='number'] {
+  border: none;
+  font-size: 24px;
+  width: 100%;
+  max-width: 3em;
+  padding: .25rem;
+  background: none;
+}

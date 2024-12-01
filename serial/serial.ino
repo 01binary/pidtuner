@@ -434,7 +434,7 @@ void positionFeedback()
   }
   else
   {
-    command = pid.getCommand(error, dt);
+    command = clamp(pid.getCommand(error, dt), -pwmMax, pwmMax);
     commandToPwm(command, pwmMin, pwmMax, pwmInvert, lpwm, rpwm);
   }
 
@@ -446,9 +446,6 @@ void positionFeedback()
   msg.pe = pid.pe;
   msg.ie = pid.ie;
   msg.de = pid.de;
-  msg.p = pid.p;
-  msg.i = pid.i;
-  msg.d = pid.d;
 
   positionPub.publish(&msg);
 }

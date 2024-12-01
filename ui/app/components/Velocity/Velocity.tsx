@@ -27,7 +27,7 @@ export const Velocity: FC<VelocityProps> = ({
 
   useEffect(() => {
     publishVelocity({ command: velocity });
-  }, [velocity]);
+  }, [publishVelocity, velocity]);
 
   const handleChangeVelocity = useCallback((e) => {
     setVelocity(e.target.value / 100);

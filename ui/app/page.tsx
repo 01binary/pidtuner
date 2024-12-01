@@ -1,23 +1,32 @@
 "use client";
 
-import { useCallback, useState, useRef, useEffect } from "react";
 import {
-  DEFAULT_ADDDRESS,
+  useCallback,
+  useState,
+  useRef,
+  useEffect
+} from "react";
+import {
+  DEFAULT_ADDRESS,
+  DEFAULT_CONFIGURATION,
   VelocityFeedback,
+  PositionFeedback,
   useMotorControl,
-  rosTimeToSec,
   StepCommand,
-  ControlMode
+  ControlMode,
+  rosTimeToSec,
+  ConfigurationCommand
 } from "./useMotorControl";
 import { Plot } from "./components/Plot";
 import { PlotType } from "./components/Plot/PlotType";
+import { Configuration } from "./components/Configuration";
 import { Velocity } from "./components/Velocity";
 import { Position } from "./components/Position";
 import { Steps } from "./components/Steps";
-import { Settings } from "./components/Settings";
 
 const Page = () => {
-  const [address, setAddress] = useState(DEFAULT_ADDDRESS);
+  const [address, setAddress] = useState(DEFAULT_ADDRESS);
+  const [config, setConfig] = useState<ConfigurationCommand>(DEFAULT_CONFIGURATION);
   const [isConnected, setConnected] = useState(false);
   const [isCapturing, setCapturing] = useState<boolean>(true);
   const [mode, setMode] = useState<ControlMode>(0);
@@ -27,6 +36,13 @@ const Page = () => {
   const [step, setStep] = useState(0);
   const [volts, setVolts] = useState(0);
   const [amps, setAmps] = useState(0);
+  const [position, setPosition] = useState(0);
+  const [goal, setGoal] = useState(0);
+  const [pe, setPe] = useState(0);
+  const [ie, setIe] = useState(0);
+  const [de, setDe] = useState(0);
+
+  const goalRef = useRef(goal);
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
 
@@ -46,7 +62,9 @@ const Page = () => {
     const time = rosTimeToSec(velocity.time);
     const start = rosTimeToSec(velocity.start);
 
-    if (!firstTimeRef.current) firstTimeRef.current = time;
+    if (!firstTimeRef.current) {
+      firstTimeRef.current = time;
+    }
 
     setEmergencyStop(velocity.estop);
     setMode(velocity.mode);
@@ -65,19 +83,45 @@ const Page = () => {
         time: time - firstTimeRef.current,
         command: velocity.command,
         absolute: velocity.absolute,
-        quadrature: velocity.quadrature
+        quadrature: velocity.quadrature,
+        goal: goalRef.current
       }));
     }
   }, []);
 
+  const handlePosition = useCallback(({
+    position,
+    goal,
+    pe,
+    ie,
+    de
+  }: PositionFeedback) => {
+    // Update normalized position
+    setPosition(position);
+
+    // Update normalized goal position
+    setGoal(goal);
+    goalRef.current = goal;
+
+    // Update current proportional error
+    setPe(pe);
+    // Update current integral error
+    setIe(ie);
+    // Update current derivative error
+    setDe(de);
+  }, []);
+
   const {
+    publishPosition,
     publishVelocity,
+    publishConfiguration,
     publishEstop,
     publishSteps
   } = useMotorControl({
     address,
     onConnection: handleConnection,
     onVelocity: handleVelocity,
+    onPosition: handlePosition,
     onError: handleError
   });
 
@@ -90,6 +134,11 @@ const Page = () => {
     setEmergencyStop(false);
     publishSteps(command);
   }, [publishSteps]);
+
+  const handlePublishConfiguration = useCallback((command: ConfigurationCommand) => {
+    setConfig(command);
+    publishConfiguration(command);
+  }, [publishConfiguration])
 
   return (
     <>
@@ -115,7 +164,16 @@ const Page = () => {
           volts={volts}
           amps={amps}
         />
-        {/*<Position />*/}
+        <Position
+          goal={goal}
+          position={position}
+          configuration={config}
+          publishPosition={publishPosition}
+          publishConfiguration={handlePublishConfiguration}
+          pe={pe}
+          ie={ie}
+          de={de}
+        />
         <Steps
           time={sequenceTime}
           step={step}
@@ -123,7 +181,10 @@ const Page = () => {
           setStep={setStep}
           publishSteps={handlePublishSteps}
         />
-        {/*<Settings />*/}
+        <Configuration
+          configuration={config}
+          publishConfiguration={handlePublishConfiguration}
+        />
       </main>
     </>
   );

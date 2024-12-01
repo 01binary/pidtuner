@@ -7,10 +7,16 @@
 
   --primary: #376be8;
   --primaryLight: #6088e4;
+  --secondary: #795da3;
   --danger: #ec008c;
   --warning: #fcd116;
-  --darkGray: #3B4A51;
-  --lightGray: #898989;
+  --foreground: #3b4a51;
+  --foregroundTranslucent: #3b4a51dd;
+  --medium: #898989;
+  --xmedium: #d3d3d3;
+  --xxmedium: #eeeeee;
+  --background: #ffffff;
+  --backgroundTranslucent: #ffffffAA;
 }
 
 body {
@@ -30,7 +36,7 @@ button {
   -moz-appearance: none;
   font-size: 16px;
   color: black;
-  min-width: 4rem;
+  min-width: 3rem;
   min-height: 48px;
   opacity: 0.8;
   transition: opacity 0.3s ease-out;

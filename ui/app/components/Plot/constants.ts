@@ -1,4 +1,4 @@
-export const HEIGHT = 300;
+export const HEIGHT = 257;
 export const MARGIN_LEFT = 56;
 export const MARGIN_TOP = 8;
 export const MARGIN_RIGHT = 8;
@@ -9,4 +9,4 @@ export const TICK_SIZE = 8;
 export const SPACING = 8;
 export const SPACING_HALF = 4;
 export const SAMPLE_WIDTH = 1;
-export const MIN_WIDTH = 600;
+export const MIN_WIDTH = 1350;

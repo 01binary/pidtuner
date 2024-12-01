@@ -10,7 +10,6 @@ import React, {
   useRef,
   ChangeEventHandler
 } from "react";
-import { Input } from "../Input";
 import { ControlMode } from "@/app/useMotorControl";
 import { PlotType } from "./PlotType";
 import styles from "./Plot.module.css";
@@ -33,12 +32,13 @@ import {
   MIN_WIDTH
 } from "./constants";
 
-const MODE = ["velocity", "position", "step"];
+const MODE = ["Velocity", "Position", "Step"];
 
 const LEGEND = [
   { key: "command", color: "#376be8", label: "command", min: -1, max: 1 },
   { key: "absolute", color: "#ec008c", label: "absolute", min: 0, max: 1 },
-  { key: "quadrature", color: "#795da3", label: "quadrature" }
+  { key: "quadrature", color: "#795da3", label: "quadrature" },
+  { key: "goal", color: "#00ccbe", label: "goal" }
 ];
 
 type PlotProps = {
@@ -55,7 +55,6 @@ type PlotProps = {
 
 export const Plot: FC<PlotProps> = ({
   server,
-  onServerChange,
   isConnected,
   isCapturing,
   setCapturing,
@@ -70,7 +69,8 @@ export const Plot: FC<PlotProps> = ({
   const [enabled, setEnabled] = useState<{ [key: string]: boolean | undefined }>({
     command: true,
     absolute: true,
-    quadrature: true
+    quadrature: true,
+    goal: true
   });
 
   const width = useMemo(() => (
@@ -86,6 +86,42 @@ export const Plot: FC<PlotProps> = ({
     [-1, 1],
     [HEIGHT - MARGIN_BOTTOM, MARGIN_TOP]
   ), []);
+
+  const quadratureToAbsoluteRef = useRef(0);
+  const lengthRef = useRef(0);
+
+  useEffect(() => {
+    if (data.length < 2) return;
+
+    let lastAbsolute = data[lengthRef.current].absolute;
+    let lastQuadrature = data[lengthRef.current].quadrature;
+    let avgDa = 0;
+    let avgDq = 0;
+
+    for (let n = lengthRef.current + 1; n < data.length; n++) {
+      const { absolute, quadrature } = data[n];
+
+      const da = Math.abs(lastAbsolute - absolute);
+      const dq = Math.abs(lastQuadrature - quadrature);
+
+      if (da < 0.000001 || dq < 0.000001) continue;
+
+      avgDa = (da + avgDa) / 2;
+      avgDq = (dq + avgDq) / 2;
+
+      lastAbsolute = absolute;
+      lastQuadrature = quadrature;
+    }
+
+    if (avgDq === 0) return;
+
+    const dadq = avgDa / avgDq;
+
+    quadratureToAbsoluteRef.current =
+      (quadratureToAbsoluteRef.current + dadq) / 2;
+
+    lengthRef.current = data.length;
+  }, [data]);
 
   useEffect(() => {
     d3
@@ -117,7 +153,6 @@ export const Plot: FC<PlotProps> = ({
   }, []);
 
   const handleToggleLegendSeries = useCallback((key: string, enabled: boolean) => {
-    console.log(key, '->', enabled);
     setEnabled(current => ({
       ...current,
       [key]: enabled
@@ -134,21 +169,14 @@ export const Plot: FC<PlotProps> = ({
       <section className={styles.plotHeader}>
         <img src="icon.svg" width="48" height="48" />
 
-        <h1>
-          Motor Control
-          <span className={styles.mode}>
-            {' '} / {MODE[mode]}
-          </span>
+        <h1 className={styles.plotTitle}>
+          {MODE[mode]} <span className={styles.mode}>control</span>
         </h1>
 
         <div className={styles.plotToolbar}>
-          <Input
-            id="server"
-            label="server"
-            type="text"
-            value={server}
-            onChange={onServerChange}
-          />
+          <div className={styles.static}>
+            server: {' '}{server}
+          </div>
 
           {isConnected
             ? <img width="32" height="32" src="/bridge-on.svg" />
@@ -161,37 +189,48 @@ export const Plot: FC<PlotProps> = ({
             onEnable={handleToggleLegendSeries}
           />
 
-          <button
-            title="Enable capture"
-            onClick={handleToggleCapture}
-          >
-            {isCapturing
-              ? <img src="/pause.svg" width="24" height="24" />
-              : <img src="/record.svg" width="24" height="24" />
-            }
-          </button>
+          <div className={styles.toolbarGroup}>
+            <button
+              title="Enable capture"
+              onClick={handleToggleCapture}
+            >
+              {isCapturing
+                ? <img src="/pause.svg" width="24" height="24" />
+                : <img src="/record.svg" width="24" height="24" />
+              }
+            </button>
 
-          <button
-            onClick={handleExport}
-            title="Export measurements"
-          >
-            <img src="/export.svg" width="24" height="24" />
-          </button>
+            <button
+              onClick={handleExport}
+              title="Export measurements"
+            >
+              <img src="/export.svg" width="24" height="24" />
+            </button>
 
-          <button
-            className="warning estop"
-            title="Emergency stop"
-            onClick={onEStop}
-          >
-            {isEmergencyStop
-              ? <img src="/estop-on.svg" width="24" height="24" />
-              : <img src="/estop.svg" width="24" height="24" />
-            }
-          </button>
+            <button
+              className="warning estop"
+              title="Emergency stop"
+              onClick={onEStop}
+            >
+              {isEmergencyStop
+                ? <img src="/estop-on.svg" width="24" height="24" />
+                : <img src="/estop.svg" width="24" height="24" />
+              }
+            </button>
+          </div>
         </div>
       </section>
 
       <section className={styles.plotStrip}>
+        {/* Quadrature to Absolute Mapping Indicator */ }
+        <div className={styles.absoluteToQuadratureRatio}>
+          <span className={styles.da}>δa</span>
+          {' / '}
+          <span className={styles.dq}>δq</span>
+          {' '}
+          {Math.round(quadratureToAbsoluteRef.current * 1e6) / 1e6}
+        </div>
+
         {/* Left Axis that doesn't scroll */}
         <svg
           width={AXIS_LEFT_WIDTH}
@@ -240,21 +279,21 @@ export const Plot: FC<PlotProps> = ({
             />
 
             {/* Bottom axis tick marks */}
-            <g
+            {data.length > 0 && <g
               ref={axisBottomRef}
               className={styles.axisBottom}
               transform={`translate(0,${HEIGHT - MARGIN_BOTTOM + SPACING})`}
-            />
+            />}
 
             {/* Bottom axis domain */}
-            <line
+            {data.length > 0 && <line
               className={styles.axisBottom__domain}
               x1={SPACING_HALF}
               y1={HEIGHT - MARGIN_BOTTOM + SPACING}
               x2={width ?? 0 - MARGIN_RIGHT}
               y2={HEIGHT - MARGIN_BOTTOM + SPACING}
               strokeWidth="1"
-            />
+            />}
 
             {LEGEND.map(({ key, color, min, max }) => (
               enabled[key]

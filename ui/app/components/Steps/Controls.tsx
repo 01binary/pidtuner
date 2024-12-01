@@ -18,7 +18,7 @@ export const Controls: FC<ControlsProps> = ({
   onGridChange,
   onPlay
 }) => (
-  <Group vertical>
+  <Group vertical alignTop marginTop>
     <PrimaryInput
       type="number"
       value={step}
@@ -28,6 +28,7 @@ export const Controls: FC<ControlsProps> = ({
     />
 
     <PrimaryInput
+      id="grid"
       type="number"
       label="Grid (s)"
       value={grid}
@@ -38,7 +39,7 @@ export const Controls: FC<ControlsProps> = ({
     <button
       title="Play"
       onClick={onPlay}
-      style={{ maxWidth: '48px'}}
+      style={{ maxWidth: '48px', marginTop: '24px' }}
     >
       <svg
         width="24px"

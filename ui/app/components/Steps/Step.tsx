@@ -50,7 +50,6 @@ export const Step: FC<StepProps> = ({
     if (isReadOnly) return;
 
     e.preventDefault();
-    e.stopPropagation();
 
     const { clientY, target } = e;
     const targetTop = target.getBoundingClientRect().top;
@@ -64,7 +63,6 @@ export const Step: FC<StepProps> = ({
 
   const handleMouseMove = useCallback((e) => {
     e.preventDefault();
-    e.stopPropagation();
 
     if (isDraggingRef.current) {
       const { clientY, target } = e;
@@ -75,8 +73,11 @@ export const Step: FC<StepProps> = ({
   }, [onChange]);
 
   const handleMouseUp = useCallback((e) => {
+    if (e.target.tagName === 'INPUT') {
+      return;
+    }
+
     e.preventDefault();
-    e.stopPropagation();
     isDraggingRef.current = false;
   }, []);
 

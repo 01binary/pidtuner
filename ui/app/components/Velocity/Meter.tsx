@@ -34,10 +34,10 @@ const useMovingAverageFilter = (value: number, size: number) => {
     if (nextRef.current === bufferRef.current.length)
       nextRef.current = 0;
 
-    return (
-      bufferRef.current.reduce((acc, v) => acc + v, 0) /
-      bufferRef.current.length
-    );
+    const sum = bufferRef.current.reduce((acc, v) => acc + (v ?? 0), 0);
+    const length = bufferRef.current.length;
+
+    return sum / length;
   }, [value]);
 
   return output;
@@ -67,6 +67,14 @@ export const Meter: FC<MeterProps> = ({
         fontSize="24px"
       >
         {label}
+      </text>
+
+      <text
+        transform="matrix(1 0 0 1 95 73.905)"
+        fontFamily={inter.style.fontFamily}
+        fontSize="24px"
+      >
+        {Math.round(Math.abs(value))}
       </text>
 
       <g

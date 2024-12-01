@@ -1,6 +1,6 @@
 .primaryInput {
-  font-size: 64px;
-  width: 138px;
+  font-size: 52px;
+  width: 120px;
   border: none;
 }
 
@@ -11,11 +11,17 @@
 }
 
 .label {
-  color: var(--darkGray);
-  font-size: 30px;
-  font-weight: 700;
-  margin-top: 16px;
-  margin-bottom: 8px;
+  color: black;
+  opacity: 0.65;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.largeLabel {
+  color: black;
+  opacity: 0.4;
+  font-size: 48px;
+  font-weight: 500;
 }
 
 .group {
@@ -25,7 +31,7 @@
 .units {
   font-weight: 500;
   font-size: 32px;
-  color: var(--darkGray);
+  color: var(--foreground);
 }
 
 @media (max-width: 600px) {

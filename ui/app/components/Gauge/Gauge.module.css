@@ -1,0 +1,15 @@
+.gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0 0.25rem;
+}
+
+.gaugeLabel {
+  color: var(--foreground);
+  text-wrap: nowrap;
+}
+
+.gaugeValue {
+  text-align: center;
+}
