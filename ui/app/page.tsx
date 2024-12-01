@@ -93,7 +93,7 @@ const Page = () => {
       const pause = isStopped &&
         time - lastNonZeroVelocityTimeRef.current > RECORD_TIME_THRESHOLD
 
-      if (!pause) {
+      if (!pause || firstTimeRef.current === time) {
         // Don't capture if the motor is not doing anything for a while
         setData(d => d.concat({
           time: time - firstTimeRef.current,
@@ -102,6 +102,13 @@ const Page = () => {
           quadrature: velocity.quadrature,
           goal: goalRef.current
         }));
+      }
+
+      if (velocity.mode !== ControlMode.POSITION) {
+        // Always track position
+        setPosition(velocity.absolute);
+        setGoal(velocity.absolute);
+        goalRef.current = velocity.absolute;
       }
 
       if (Math.abs(velocity.command) > RECORD_COMMAND_THRESHOLD) {
@@ -119,7 +126,6 @@ const Page = () => {
   }: PositionFeedback) => {
     // Update normalized position
     setPosition(position);
-
     // Update normalized goal position
     setGoal(goal);
 
@@ -166,7 +172,12 @@ const Page = () => {
 
   useEffect(() => {
     // Request initial configuration
-    requestConfiguration()?.then(({ configuration }) => setConfig(configuration));
+    requestConfiguration()?.then(({ configuration }) => setConfig({
+      ...configuration,
+      Kp: Math.round(configuration.Kp * 1e8) / 1e8,
+      Ki: Math.round(configuration.Ki * 1e8) / 1e8,
+      Kd: Math.round(configuration.Kd * 1e8) / 1e8
+    }));
   }, [requestConfiguration]);
 
   return (

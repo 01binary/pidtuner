@@ -49,13 +49,17 @@ export const Position: FC<PositionProps> = ({
   const { Kp, Ki, Kd, iMin, iMax } = configuration;
 
   useEffect(() => {
+    if (isChangedRef.current) return;
+    setGoal(initialGoal);
+  }, [initialGoal])
+
+  useEffect(() => {
     if (!isChangedRef.current) return;
     publishPosition({ goal, tolerance });
   }, [goal, tolerance, publishPosition]);
 
   const handleChangeGoalInput = useCallback((e) => {
     isChangedRef.current = true;
-    console.log('goal input change')
     setGoal(e.target.value / 100);
   }, []);
 
@@ -206,6 +210,7 @@ export const Position: FC<PositionProps> = ({
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKp}
+            style={{ width: '9.4rem' }}
           />
         </Group>
 
@@ -218,6 +223,7 @@ export const Position: FC<PositionProps> = ({
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKi}
+            style={{ width: '9.4rem' }}
           />
         </Group>
 
@@ -230,6 +236,7 @@ export const Position: FC<PositionProps> = ({
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKd}
+            style={{ width: '9.4rem' }}
           />
         </Group>
       </Group>

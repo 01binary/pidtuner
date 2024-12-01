@@ -136,9 +136,9 @@ export const DEFAULT_CONFIGURATION = {
   pwmInvert: false,
   absoluteInvert: false,
   quadratureInvert: true,
-  Kp: 10,
-  Ki: 1,
-  Kd: 1,
+  Kp: 0.1,
+  Ki: 0.01,
+  Kd: 0.01,
   iMin: -1,
   iMax: 1
 }
@@ -325,10 +325,7 @@ export const useMotorControl = ({
       try {
         configurationService.callService(
           new ROSLIB.ServiceRequest(),
-          (result: ConfigurationServer) => {
-            console.log('service call result', result);
-            resolve(result);
-          });
+          (result: ConfigurationServer) => resolve(result));
       } catch(e) {
         reject(e);
       }
