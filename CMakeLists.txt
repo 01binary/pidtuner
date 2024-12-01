@@ -28,6 +28,12 @@ add_message_files(
   Configuration.msg
 )
 
+add_service_files(
+  DIRECTORY srv
+  FILES
+  ConfigurationServer.srv
+)
+
 generate_messages(
   DEPENDENCIES
   std_msgs
