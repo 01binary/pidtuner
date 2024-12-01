@@ -11,11 +11,11 @@
 }
 
 .mode {
-  color: var(--darkGray);
+  color: var(--foreground);
 }
 
 .static {
-  color: var(--darkGray);
+  color: var(--foreground);
 }
 
 .plotToolbar {
@@ -50,6 +50,27 @@
 .plotStrip {
   display: flex;
   flex-direction: row;
+  position: relative;
+}
+
+.absoluteToQuadratureRatio {
+  position: absolute;
+  background: var(--backgroundTranslucent);
+  color: var(--foreground);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  top: 0.25rem;
+  right: 0;
+}
+
+.da {
+  color: var(--danger);
+  font-style: italic;
+}
+
+.dq {
+  color: var(--secondary);
+  font-style: italic;
 }
 
 .plotScroll {
@@ -63,16 +84,16 @@
 }
 
 .axisBottom {
-  color: var(--lightGray);
+  color: var(--medium);
   user-select: none;
 }
 
 .axisBottom text {
-  fill: var(--darkGray);
+  fill: var(--foreground);
 }
 
 .axisBottom__domain {
-  stroke: var(--lightGray);
+  stroke: var(--medium);
 }
 
 .axisBottom > .domain {
@@ -80,13 +101,13 @@
 }
 
 .axisLeft {
-  color: var(--lightGray);
+  color: var(--medium);
   flex-shrink: 0;
   user-select: none;
 }
 
 .axisLeft text {
-  fill: var(--darkGray);
+  fill: var(--foreground);
 }
 
 .legend {
@@ -107,7 +128,7 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  color: var(--darkGray);
+  color: var(--foreground);
   opacity: 0.5;
   transition: opacity .3s ease-out;
   cursor: pointer;

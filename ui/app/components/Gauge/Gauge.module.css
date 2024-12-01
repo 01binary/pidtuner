@@ -6,7 +6,7 @@
 }
 
 .gaugeLabel {
-  color: var(--darkGray);
+  color: var(--foreground);
   text-wrap: nowrap;
 }
 

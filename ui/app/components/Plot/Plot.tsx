@@ -87,6 +87,42 @@ export const Plot: FC<PlotProps> = ({
     [HEIGHT - MARGIN_BOTTOM, MARGIN_TOP]
   ), []);
 
+  const quadratureToAbsoluteRef = useRef(0);
+  const lengthRef = useRef(0);
+
+  useEffect(() => {
+    if (data.length < 2) return;
+
+    let lastAbsolute = data[lengthRef.current].absolute;
+    let lastQuadrature = data[lengthRef.current].quadrature;
+    let avgDa = 0;
+    let avgDq = 0;
+
+    for (let n = lengthRef.current + 1; n < data.length; n++) {
+      const { absolute, quadrature } = data[n];
+
+      const da = Math.abs(lastAbsolute - absolute);
+      const dq = Math.abs(lastQuadrature - quadrature);
+
+      if (da < 0.000001 || dq < 0.000001) continue;
+
+      avgDa = (da + avgDa) / 2;
+      avgDq = (dq + avgDq) / 2;
+
+      lastAbsolute = absolute;
+      lastQuadrature = quadrature;
+    }
+
+    if (avgDq === 0) return;
+
+    const dadq = avgDa / avgDq;
+
+    quadratureToAbsoluteRef.current =
+      (quadratureToAbsoluteRef.current + dadq) / 2;
+
+    lengthRef.current = data.length;
+  }, [data]);
+
   useEffect(() => {
     d3
       .select(axisBottomRef.current)
@@ -186,6 +222,15 @@ export const Plot: FC<PlotProps> = ({
       </section>
 
       <section className={styles.plotStrip}>
+        {/* Quadrature to Absolute Mapping Indicator */ }
+        <div className={styles.absoluteToQuadratureRatio}>
+          <span className={styles.da}>da</span>
+          {' / '}
+          <span className={styles.dq}>dq</span>
+          {' '}
+          {Math.round(quadratureToAbsoluteRef.current * 10000) / 10000}
+        </div>
+
         {/* Left Axis that doesn't scroll */}
         <svg
           width={AXIS_LEFT_WIDTH}

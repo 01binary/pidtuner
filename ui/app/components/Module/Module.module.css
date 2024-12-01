@@ -1,6 +1,6 @@
 .module {
   margin: 4px;
-  border: 1px solid var(--xlightGray);
+  border: 1px solid var(--xmedium);
   border-radius: 8px;
   padding: 8px;
   display: flex;
