@@ -17,7 +17,7 @@ import { LinearIcon } from "./LinearIcon";
 import { PositionSlider } from "./PositionSlider";
 import styles from "./Position.module.css";
 
-const DEFAULT_TOLERANCE = 0.1;
+const DEFAULT_TOLERANCE = 0.05;
 
 type PositionProps = {
   publishPosition: (command: PositionCommand) => void;
