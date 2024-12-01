@@ -24,11 +24,14 @@ import { Velocity } from "./components/Velocity";
 import { Position } from "./components/Position";
 import { Steps } from "./components/Steps";
 
+const RECORD_COMMAND_THRESHOLD = 0.01;
+const RECORD_TIME_THRESHOLD = 1;
+
 const Page = () => {
   const [address, setAddress] = useState(DEFAULT_ADDRESS);
   const [config, setConfig] = useState<ConfigurationCommand>(DEFAULT_CONFIGURATION);
   const [isConnected, setConnected] = useState(false);
-  const [isCapturing, setCapturing] = useState<boolean>(false);
+  const [isCapturing, setCapturing] = useState<boolean>(true);
   const [mode, setMode] = useState<ControlMode>(0);
   const [isEmergencyStop, setEmergencyStop] = useState<boolean>(false);
   const [data, setData] = useState<PlotType[]>([]);
@@ -59,11 +62,14 @@ const Page = () => {
     setConnected(false);
   }, []);
 
+  const lastNonZeroVelocityTimeRef = useRef(0);
+
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
     const time = rosTimeToSec(velocity.time);
     const start = rosTimeToSec(velocity.start);
 
     if (!firstTimeRef.current) {
+      // Allow continuing capture on page reload
       firstTimeRef.current = time;
     }
 
@@ -80,13 +86,27 @@ const Page = () => {
     }
 
     if (isCapturingRef.current) {
-      setData(d => d.concat({
-        time: time - firstTimeRef.current,
-        command: velocity.command,
-        absolute: velocity.absolute,
-        quadrature: velocity.quadrature,
-        goal: goalRef.current
-      }));
+      const isStopped = velocity.mode === ControlMode.STEP
+        ? velocity.estop
+        : Math.abs(velocity.command) < RECORD_COMMAND_THRESHOLD;
+
+      const pause = isStopped &&
+        time - lastNonZeroVelocityTimeRef.current > RECORD_TIME_THRESHOLD
+
+      if (!pause) {
+        // Don't capture if the motor is not doing anything for a while
+        setData(d => d.concat({
+          time: time - firstTimeRef.current,
+          command: velocity.command,
+          absolute: velocity.absolute,
+          quadrature: velocity.quadrature,
+          goal: goalRef.current
+        }));
+      }
+
+      if (Math.abs(velocity.command) > RECORD_COMMAND_THRESHOLD) {
+        lastNonZeroVelocityTimeRef.current = time;
+      }
     }
   }, []);
 
@@ -102,6 +122,8 @@ const Page = () => {
 
     // Update normalized goal position
     setGoal(goal);
+
+    // Keep reference to goal so velocity handler can log it
     goalRef.current = goal;
 
     // Update current proportional error
