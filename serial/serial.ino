@@ -16,6 +16,7 @@
 #include <pidtuner/PositionFeedback.h>
 #include <pidtuner/StepCommand.h>
 #include <pidtuner/Configuration.h>
+#include <pidtuner/ConfigurationServer.h>
 #include <pidtuner/EmergencyStop.h>
 #include <QuadratureEncoder.h>
 #include <Adafruit_INA260.h>
@@ -45,6 +46,9 @@ const char STEP_COMMAND[] = "step";
 
 // Configuration topic (see Configuration.msg)
 const char CONFIGURATION_COMMAND[] = "configuration";
+
+// Configuration server (see ConfigurationServer.srv)
+const char CONFIGURATION_SERVER[] = "configuration";
 
 // Emergency stop command topic (see EmergencyStop.msg)
 const char ESTOP_COMMAND[] = "estop";
@@ -87,6 +91,9 @@ void positionFeedback();
 void stepCommand(const pidtuner::StepCommand& msg);
 void stepFeedback();
 void configurationCommand(const pidtuner::Configuration& msg);
+void configurationServer(
+  const pidtuner::ConfigurationServer::Request& req,
+  pidtuner::ConfigurationServer::Response& res);
 void emergencyStop(const pidtuner::EmergencyStop& msg);
 void stop();
 
@@ -225,6 +232,12 @@ ros::Subscriber<pidtuner::StepCommand> stepSub(
 ros::Subscriber<pidtuner::Configuration> configSub(
   CONFIGURATION_COMMAND, configurationCommand);
 
+// Configuration service
+ros::ServiceServer<
+  pidtuner::ConfigurationServer::Request,
+  pidtuner::ConfigurationServer::Response
+> configServer(CONFIGURATION_SERVER, &configurationServer);
+
 // Emergency stop command subscriber
 ros::Subscriber<pidtuner::EmergencyStop> stopSub(
   ESTOP_COMMAND, emergencyStop);
@@ -284,6 +297,8 @@ void setup()
 
   node.advertise(velocityPub);
   node.advertise(positionPub);
+
+  node.advertiseService(configServer);
 
   node.subscribe(velocitySub);
   node.subscribe(positionSub);
@@ -540,4 +555,28 @@ void configurationCommand(const pidtuner::Configuration& msg)
   absoluteMin = msg.absoluteMin;
   absoluteMax = msg.absoluteMax;
   absoluteInvert = msg.absoluteInvert;
+}
+
+void configurationServer(
+  const pidtuner::ConfigurationServer::Request& req,
+  pidtuner::ConfigurationServer::Response& res)
+{
+  res.configuration.LPWMpin = lpwmPin;
+  res.configuration.RPWMpin = rpwmPin;
+  res.configuration.ADCpin = adcPin;
+  res.configuration.csPin = csPin;
+  res.configuration.Apin = aPin;
+  res.configuration.Bpin = bPin;
+  res.configuration.pwmMin = pwmMin;
+  res.configuration.pwmMax = pwmMax;
+  res.configuration.absoluteMin = absoluteMin;
+  res.configuration.absoluteMax = absoluteMax;
+  res.configuration.pwmInvert = pwmInvert;
+  res.configuration.absoluteInvert = absoluteInvert;
+  res.configuration.quadratureInvert = quadratureInvert;
+  res.configuration.Kp = pid.Kp;
+  res.configuration.Ki = pid.Ki;
+  res.configuration.Kd = pid.Kd;
+  res.configuration.iMin = pid.iMin;
+  res.configuration.iMax = pid.iMax;
 }
