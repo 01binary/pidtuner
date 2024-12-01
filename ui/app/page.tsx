@@ -28,7 +28,7 @@ const Page = () => {
   const [address, setAddress] = useState(DEFAULT_ADDRESS);
   const [config, setConfig] = useState<ConfigurationCommand>(DEFAULT_CONFIGURATION);
   const [isConnected, setConnected] = useState(false);
-  const [isCapturing, setCapturing] = useState<boolean>(true);
+  const [isCapturing, setCapturing] = useState<boolean>(false);
   const [mode, setMode] = useState<ControlMode>(0);
   const [isEmergencyStop, setEmergencyStop] = useState<boolean>(false);
   const [data, setData] = useState<PlotType[]>([]);
