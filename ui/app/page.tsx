@@ -42,6 +42,7 @@ const Page = () => {
   const [ie, setIe] = useState(0);
   const [de, setDe] = useState(0);
 
+  const goalRef = useRef(goal);
   const isCapturingRef = useRef(isCapturing);
   const firstTimeRef = useRef(0);
 
@@ -83,7 +84,7 @@ const Page = () => {
         command: velocity.command,
         absolute: velocity.absolute,
         quadrature: velocity.quadrature,
-        goal
+        goal: goalRef.current
       }));
     }
   }, []);
@@ -100,6 +101,7 @@ const Page = () => {
 
     // Update normalized goal position
     setGoal(goal);
+    goalRef.current = goal;
 
     // Update current proportional error
     setPe(pe);
