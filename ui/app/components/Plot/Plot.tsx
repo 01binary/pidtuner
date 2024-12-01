@@ -228,7 +228,7 @@ export const Plot: FC<PlotProps> = ({
           {' / '}
           <span className={styles.dq}>dq</span>
           {' '}
-          {Math.round(quadratureToAbsoluteRef.current * 10000) / 10000}
+          {Math.round(quadratureToAbsoluteRef.current * 1e4) / 1e4}
         </div>
 
         {/* Left Axis that doesn't scroll */}
