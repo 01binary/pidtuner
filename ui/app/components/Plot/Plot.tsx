@@ -224,11 +224,11 @@ export const Plot: FC<PlotProps> = ({
       <section className={styles.plotStrip}>
         {/* Quadrature to Absolute Mapping Indicator */ }
         <div className={styles.absoluteToQuadratureRatio}>
-          <span className={styles.da}>da</span>
+          <span className={styles.da}>δa</span>
           {' / '}
-          <span className={styles.dq}>dq</span>
+          <span className={styles.dq}>δq</span>
           {' '}
-          {Math.round(quadratureToAbsoluteRef.current * 1e4) / 1e4}
+          {Math.round(quadratureToAbsoluteRef.current * 1e6) / 1e6}
         </div>
 
         {/* Left Axis that doesn't scroll */}
