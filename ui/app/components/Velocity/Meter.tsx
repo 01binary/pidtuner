@@ -70,11 +70,11 @@ export const Meter: FC<MeterProps> = ({
       </text>
 
       <text
-        transform="matrix(1 0 0 1 90 73.905)"
+        transform="matrix(1 0 0 1 95 73.905)"
         fontFamily={inter.style.fontFamily}
         fontSize="24px"
       >
-        {value}
+        {Math.round(Math.abs(value))}
       </text>
 
       <g
