@@ -140,7 +140,7 @@ export const DEFAULT_CONFIGURATION = {
   Kp: 1,
   Ki: 0.1,
   Kd: 0.1,
-  iMin: -1,
+  iMin: 0,
   iMax: 1
 }
 
