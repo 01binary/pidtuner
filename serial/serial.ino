@@ -159,11 +159,17 @@ float pulsesPerRevolution = 0;
 // Absolute encoder reading
 float absolute;
 
+// Absolute encoder reading when position command received
+float absoluteStart;
+
 // Absolute encoder
 Encoder* absoluteEncoder;
 
 // Quadrature encoder reading
 int32_t quadrature;
+
+// Quadrature encoder reding when position command received
+int32_t quadratureStart;
 
 // Quadrature encoder
 Encoders* quadratureEncoder;
@@ -414,6 +420,9 @@ void positionCommand(const pidtuner::PositionCommand& msg)
   goal = msg.goal;
   tolerance = msg.tolerance;
 
+  absoluteStart = absolute;
+  quadratureStart = quadrature;
+
   pid.reset();
 }
 
@@ -444,7 +453,11 @@ void positionFeedback()
 {
   if (mode != POSITION) return;
 
-  float error = goal - absolute;
+  float error = pulsesPerRevolution > 0 && elapsed
+    // Use quadrature encoder
+    ? absoluteStart + (quadrature - quadratureStart) * pulsesPerRevolution
+    // Use absolute encoder
+    : goal - absolute;
 
   if (abs(error) < tolerance)
   {
