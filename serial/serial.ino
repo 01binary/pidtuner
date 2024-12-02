@@ -455,7 +455,7 @@ void positionFeedback()
 
   float error = pulsesPerRevolution > 0 && elapsed
     // Use quadrature encoder
-    ? absoluteStart + (quadrature - quadratureStart) * pulsesPerRevolution
+    ? absoluteStart + (quadrature - quadratureStart) / pulsesPerRevolution
     // Use absolute encoder
     : goal - absolute;
 
