@@ -149,6 +149,9 @@ bool absoluteInvert;
 // Whether to invert quadrature encoder readings
 bool quadratureInvert = true;
 
+// Factor used for converting quadrature into absolute
+float pulsesPerRevolution = 0;
+
 //
 // State
 //
@@ -552,6 +555,8 @@ void configurationCommand(const pidtuner::Configuration& msg)
 
   quadratureInvert = msg.quadratureInvert;
 
+  pulsesPerRevolution = msg.pulsesPerRevolution;
+
   absoluteMin = msg.absoluteMin;
   absoluteMax = msg.absoluteMax;
   absoluteInvert = msg.absoluteInvert;
@@ -574,6 +579,7 @@ void configurationServer(
   res.configuration.pwmInvert = pwmInvert;
   res.configuration.absoluteInvert = absoluteInvert;
   res.configuration.quadratureInvert = quadratureInvert;
+  res.configuration.pulsesPerRevolution = pulsesPerRevolution;
   res.configuration.Kp = pid.Kp;
   res.configuration.Ki = pid.Ki;
   res.configuration.Kd = pid.Kd;

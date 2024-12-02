@@ -95,6 +95,11 @@ export const SETTINGS = [
     type: 'boolean'
   },
   {
+    name: 'pulsesPerRevolution',
+    label: 'Quadrature Pulses Per Revolution (PPR)',
+    type: 'number'
+  },
+  {
     name: 'Kp',
     label: 'Proportional gain',
     type: 'number',

@@ -17,6 +17,9 @@ bool pwmInvert          # Whether to invert PWM commands
 bool absoluteInvert     # Whether to invert absolute encoder readings
 bool quadratureInvert   # Whether to invert quadrature encoder readings
 
+# Quadrature to Absolute encoder mapping
+float32 pulsesPerRevolution
+
 # Tuning
 float32 Kp              # P gain
 float32 Ki              # I gain
