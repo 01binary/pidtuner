@@ -206,7 +206,7 @@ export const Position: FC<PositionProps> = ({
             id="kp"
             type="number"
             value={Kp}
-            label="Kp"
+            label={<>K<sub>P</sub></>}
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKp}
@@ -219,7 +219,7 @@ export const Position: FC<PositionProps> = ({
             id="ki"
             type="number"
             value={Ki}
-            label="Ki"
+            label={<>K<sub>I</sub></>}
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKi}
@@ -232,7 +232,7 @@ export const Position: FC<PositionProps> = ({
             id="kd"
             type="number"
             value={Kd}
-            label="Kd"
+            label={<>K<sub>D</sub></>}
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKd}
