@@ -65,6 +65,7 @@ export const Configuration: FC<ConfigurationProps> = ({
     <Module
       title="Configuration"
       image={<img src="/configuration.svg" width="32" height="32" />}
+      expand={false}
     >
       <table cellSpacing="0" className={styles.settings}>
         <tbody>
