@@ -38,10 +38,16 @@ void commandToPwm(float velocity, float min, float max, bool invert, uint8_t& lp
     rpwm = uint8_t(command * MAX_PWM);
     lpwm = 0;
   }
-  else
+  else if (velocity > 0.0)
   {
     // +LPWM
     lpwm = uint8_t(command * MAX_PWM);
+    rpwm = 0;
+  }
+  else
+  {
+    // Stop
+    lpwm = 0;
     rpwm = 0;
   }
 }
