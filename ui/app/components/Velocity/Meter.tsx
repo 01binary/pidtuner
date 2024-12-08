@@ -74,7 +74,7 @@ export const Meter: FC<MeterProps> = ({
         fontFamily={inter.style.fontFamily}
         fontSize="24px"
       >
-        {Math.ceil(Math.abs(value))}
+        {Math.round(Math.abs(value))}
       </text>
 
       <g
