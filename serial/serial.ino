@@ -267,15 +267,13 @@ void initAbsolute()
 
   if (csPin)
   {
+    // Use digital encoder
     absoluteEncoder = new AS5045Encoder(csPin);
-  }
-  else if (adcPin)
-  {
-    absoluteEncoder = new ADCEncoder(ADC_PINS[adcPin]);
   }
   else
   {
-    absoluteEncoder = nullptr;
+    // Use analog potentiometer
+    absoluteEncoder = new ADCEncoder(ADC_PINS[adcPin]);
   }
 }
 
