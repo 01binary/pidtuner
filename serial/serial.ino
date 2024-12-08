@@ -149,8 +149,8 @@ bool absoluteInvert;
 // Whether to invert quadrature encoder readings
 bool quadratureInvert = true;
 
-// Factor used for converting quadrature into absolute
-float pulsesPerRevolution = 0;
+// Factor used for converting quadrature delta into absolute delta
+float quadratureToAbsolute = 0;
 
 //
 // State
@@ -160,7 +160,7 @@ float pulsesPerRevolution = 0;
 float absolute;
 
 // Absolute encoder reading when position command received
-float absoluteStart;
+float lastAbsolute;
 
 // Absolute encoder
 Encoder* absoluteEncoder;
@@ -169,7 +169,7 @@ Encoder* absoluteEncoder;
 int32_t quadrature;
 
 // Quadrature encoder reding when position command received
-int32_t quadratureStart;
+int32_t lastQuadrature;
 
 // Quadrature encoder
 Encoders* quadratureEncoder;
@@ -191,8 +191,11 @@ uint8_t rpwm;
 // Control mode
 Mode mode = VELOCITY;
 
-// PID goal
+// PID reference
 float goal;
+
+// PID measurement
+float feedback;
 
 // PID goal position tolerance
 float tolerance;
@@ -420,8 +423,8 @@ void positionCommand(const pidtuner::PositionCommand& msg)
   goal = msg.goal;
   tolerance = msg.tolerance;
 
-  absoluteStart = absolute;
-  quadratureStart = quadrature;
+  lastAbsolute = absolute;
+  lastQuadrature = quadrature;
 
   pid.reset();
 }
@@ -453,11 +456,15 @@ void positionFeedback()
 {
   if (mode != POSITION) return;
 
-  float error = pulsesPerRevolution > 0 && elapsed
+  feedback = quadratureToAbsolute
     // Use quadrature encoder
-    ? absoluteStart + (quadrature - quadratureStart) / pulsesPerRevolution
+    ? lastAbsolute + (quadrature - lastQuadrature) * quadratureToAbsolute
     // Use absolute encoder
-    : goal - absolute;
+    : absolute;
+
+  float error = goal - feedback;
+
+  lastQuadrature = quadrature;
 
   if (abs(error) < tolerance)
   {
@@ -471,7 +478,7 @@ void positionFeedback()
 
   pidtuner::PositionFeedback msg;
 
-  msg.position = absolute;
+  msg.position = feedback;
   msg.goal = goal;
   msg.tolerance = tolerance;
   msg.pe = pid.pe;
@@ -568,7 +575,7 @@ void configurationCommand(const pidtuner::Configuration& msg)
 
   quadratureInvert = msg.quadratureInvert;
 
-  pulsesPerRevolution = msg.pulsesPerRevolution;
+  quadratureToAbsolute = msg.quadratureToAbsolute;
 
   absoluteMin = msg.absoluteMin;
   absoluteMax = msg.absoluteMax;
@@ -592,7 +599,7 @@ void configurationServer(
   res.configuration.pwmInvert = pwmInvert;
   res.configuration.absoluteInvert = absoluteInvert;
   res.configuration.quadratureInvert = quadratureInvert;
-  res.configuration.pulsesPerRevolution = pulsesPerRevolution;
+  res.configuration.quadratureToAbsolute = quadratureToAbsolute;
   res.configuration.Kp = pid.Kp;
   res.configuration.Ki = pid.Ki;
   res.configuration.Kd = pid.Kd;

@@ -95,8 +95,8 @@ export const SETTINGS = [
     type: 'boolean'
   },
   {
-    name: 'pulsesPerRevolution',
-    label: 'Quadrature Pulses Per Revolution (PPR)',
+    name: 'quadratureToAbsolute',
+    label: 'Delta Quadrature to Delta Absolute ratio',
     type: 'number'
   },
   {
