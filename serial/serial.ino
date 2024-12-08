@@ -371,7 +371,8 @@ void read()
 {
   if (absoluteEncoder)
   {
-    absolute = clamp(absoluteEncoder->read(), absoluteMin, absoluteMax);
+    absolute = (clamp(absoluteEncoder->read(), absoluteMin, absoluteMax) - absoluteMin)
+      / (absoluteMax - absoluteMin);
 
     if (absoluteInvert)
     {
