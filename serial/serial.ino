@@ -16,6 +16,7 @@
 #include <pidtuner/PositionFeedback.h>
 #include <pidtuner/StepCommand.h>
 #include <pidtuner/Configuration.h>
+#include <pidtuner/ConfigurationServer.h>
 #include <pidtuner/EmergencyStop.h>
 #include <QuadratureEncoder.h>
 #include <Adafruit_INA260.h>
@@ -45,6 +46,9 @@ const char STEP_COMMAND[] = "step";
 
 // Configuration topic (see Configuration.msg)
 const char CONFIGURATION_COMMAND[] = "configuration";
+
+// Configuration server (see ConfigurationServer.srv)
+const char CONFIGURATION_SERVER[] = "configuration";
 
 // Emergency stop command topic (see EmergencyStop.msg)
 const char ESTOP_COMMAND[] = "estop";
@@ -87,6 +91,9 @@ void positionFeedback();
 void stepCommand(const pidtuner::StepCommand& msg);
 void stepFeedback();
 void configurationCommand(const pidtuner::Configuration& msg);
+void configurationServer(
+  const pidtuner::ConfigurationServer::Request& req,
+  pidtuner::ConfigurationServer::Response& res);
 void emergencyStop(const pidtuner::EmergencyStop& msg);
 void stop();
 
@@ -142,6 +149,9 @@ bool absoluteInvert;
 // Whether to invert quadrature encoder readings
 bool quadratureInvert = true;
 
+// Factor used for converting quadrature delta into absolute delta
+float quadratureToAbsolute = 0;
+
 //
 // State
 //
@@ -149,11 +159,17 @@ bool quadratureInvert = true;
 // Absolute encoder reading
 float absolute;
 
+// Absolute encoder reading when position command received
+float lastAbsolute;
+
 // Absolute encoder
 Encoder* absoluteEncoder;
 
 // Quadrature encoder reading
 int32_t quadrature;
+
+// Quadrature encoder reding when position command received
+int32_t lastQuadrature;
 
 // Quadrature encoder
 Encoders* quadratureEncoder;
@@ -175,8 +191,11 @@ uint8_t rpwm;
 // Control mode
 Mode mode = VELOCITY;
 
-// PID goal
+// PID reference
 float goal;
+
+// PID measurement
+float feedback;
 
 // PID goal position tolerance
 float tolerance;
@@ -225,6 +244,12 @@ ros::Subscriber<pidtuner::StepCommand> stepSub(
 ros::Subscriber<pidtuner::Configuration> configSub(
   CONFIGURATION_COMMAND, configurationCommand);
 
+// Configuration service
+ros::ServiceServer<
+  pidtuner::ConfigurationServer::Request,
+  pidtuner::ConfigurationServer::Response
+> configServer(CONFIGURATION_SERVER, &configurationServer);
+
 // Emergency stop command subscriber
 ros::Subscriber<pidtuner::EmergencyStop> stopSub(
   ESTOP_COMMAND, emergencyStop);
@@ -242,15 +267,13 @@ void initAbsolute()
 
   if (csPin)
   {
+    // Use digital encoder
     absoluteEncoder = new AS5045Encoder(csPin);
-  }
-  else if (adcPin)
-  {
-    absoluteEncoder = new ADCEncoder(ADC_PINS[adcPin]);
   }
   else
   {
-    absoluteEncoder = nullptr;
+    // Use analog potentiometer
+    absoluteEncoder = new ADCEncoder(ADC_PINS[adcPin]);
   }
 }
 
@@ -284,6 +307,8 @@ void setup()
 
   node.advertise(velocityPub);
   node.advertise(positionPub);
+
+  node.advertiseService(configServer);
 
   node.subscribe(velocitySub);
   node.subscribe(positionSub);
@@ -346,7 +371,8 @@ void read()
 {
   if (absoluteEncoder)
   {
-    absolute = clamp(absoluteEncoder->read(), absoluteMin, absoluteMax);
+    absolute = (clamp(absoluteEncoder->read(), absoluteMin, absoluteMax) - absoluteMin)
+      / (absoluteMax - absoluteMin);
 
     if (absoluteInvert)
     {
@@ -396,6 +422,9 @@ void positionCommand(const pidtuner::PositionCommand& msg)
   goal = msg.goal;
   tolerance = msg.tolerance;
 
+  lastAbsolute = absolute;
+  lastQuadrature = quadrature;
+
   pid.reset();
 }
 
@@ -426,7 +455,15 @@ void positionFeedback()
 {
   if (mode != POSITION) return;
 
-  float error = goal - absolute;
+  feedback = quadratureToAbsolute
+    // Use quadrature encoder
+    ? lastAbsolute + (quadrature - lastQuadrature) * quadratureToAbsolute
+    // Use absolute encoder
+    : absolute;
+
+  float error = goal - feedback;
+
+  lastQuadrature = quadrature;
 
   if (abs(error) < tolerance)
   {
@@ -440,7 +477,7 @@ void positionFeedback()
 
   pidtuner::PositionFeedback msg;
 
-  msg.position = absolute;
+  msg.position = feedback;
   msg.goal = goal;
   msg.tolerance = tolerance;
   msg.pe = pid.pe;
@@ -537,7 +574,34 @@ void configurationCommand(const pidtuner::Configuration& msg)
 
   quadratureInvert = msg.quadratureInvert;
 
+  quadratureToAbsolute = msg.quadratureToAbsolute;
+
   absoluteMin = msg.absoluteMin;
   absoluteMax = msg.absoluteMax;
   absoluteInvert = msg.absoluteInvert;
+}
+
+void configurationServer(
+  const pidtuner::ConfigurationServer::Request& req,
+  pidtuner::ConfigurationServer::Response& res)
+{
+  res.configuration.LPWMpin = lpwmPin;
+  res.configuration.RPWMpin = rpwmPin;
+  res.configuration.ADCpin = adcPin;
+  res.configuration.csPin = csPin;
+  res.configuration.Apin = aPin;
+  res.configuration.Bpin = bPin;
+  res.configuration.pwmMin = pwmMin;
+  res.configuration.pwmMax = pwmMax;
+  res.configuration.absoluteMin = absoluteMin;
+  res.configuration.absoluteMax = absoluteMax;
+  res.configuration.pwmInvert = pwmInvert;
+  res.configuration.absoluteInvert = absoluteInvert;
+  res.configuration.quadratureInvert = quadratureInvert;
+  res.configuration.quadratureToAbsolute = quadratureToAbsolute;
+  res.configuration.Kp = pid.Kp;
+  res.configuration.Ki = pid.Ki;
+  res.configuration.Kd = pid.Kd;
+  res.configuration.iMin = pid.iMin;
+  res.configuration.iMax = pid.iMax;
 }

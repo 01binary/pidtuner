@@ -4,15 +4,17 @@ import styles from "./Module.module.css";
 type ModuleProps = {
   title: string;
   image: ReactNode;
+  expand: boolean;
   children?: ReactNode
 };
 
 export const Module: FC<ModuleProps> = ({
   title,
   image,
+  expand: initialExpanded = true,
   children
 }) => {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(initialExpanded);
 
   const handleToggleHeader = useCallback(() => {
     setExpanded(e => !e);

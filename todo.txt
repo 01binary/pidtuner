@@ -1,8 +1,0 @@
-- Test configuration, switching PWM pins
-- Test configuration, switching from AS5045 to ADC
-- Test configuration, switching quadrature pins
-- Test configuration, changing p i d imin imax parameters
-- Start thinking about the Kalman filter
-    - How do we convert quadrature into absolute for sensor fusion?
-    - How do we declare matrix types in a message?
-    - Add filtered output to velocity feedback message

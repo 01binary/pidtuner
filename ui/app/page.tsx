@@ -24,6 +24,9 @@ import { Velocity } from "./components/Velocity";
 import { Position } from "./components/Position";
 import { Steps } from "./components/Steps";
 
+const RECORD_COMMAND_THRESHOLD = 0.01;
+const RECORD_TIME_THRESHOLD = 1;
+
 const Page = () => {
   const [address, setAddress] = useState(DEFAULT_ADDRESS);
   const [config, setConfig] = useState<ConfigurationCommand>(DEFAULT_CONFIGURATION);
@@ -47,6 +50,7 @@ const Page = () => {
   const firstTimeRef = useRef(0);
 
   useEffect(() => {
+    // Some handlers cannot have state in dependency list
     isCapturingRef.current = isCapturing;
   }, [isCapturing]);
 
@@ -58,11 +62,14 @@ const Page = () => {
     setConnected(false);
   }, []);
 
+  const lastNonZeroVelocityTimeRef = useRef(0);
+
   const handleVelocity = useCallback((velocity: VelocityFeedback) => {
     const time = rosTimeToSec(velocity.time);
     const start = rosTimeToSec(velocity.start);
 
     if (!firstTimeRef.current) {
+      // Allow continuing capture on page reload
       firstTimeRef.current = time;
     }
 
@@ -79,13 +86,34 @@ const Page = () => {
     }
 
     if (isCapturingRef.current) {
-      setData(d => d.concat({
-        time: time - firstTimeRef.current,
-        command: velocity.command,
-        absolute: velocity.absolute,
-        quadrature: velocity.quadrature,
-        goal: goalRef.current
-      }));
+      const isStopped = velocity.mode === ControlMode.STEP
+        ? velocity.estop
+        : Math.abs(velocity.command) < RECORD_COMMAND_THRESHOLD;
+
+      const pause = isStopped &&
+        time - lastNonZeroVelocityTimeRef.current > RECORD_TIME_THRESHOLD
+
+      if (!pause) {
+        // Don't capture if the motor is not doing anything for a while
+        setData(d => d.concat({
+          time: time - firstTimeRef.current,
+          command: velocity.command,
+          absolute: velocity.absolute,
+          quadrature: velocity.quadrature,
+          goal: goalRef.current
+        }));
+      }
+
+      if (velocity.mode !== ControlMode.POSITION) {
+        // Always track position
+        setPosition(velocity.absolute);
+        setGoal(velocity.absolute);
+        goalRef.current = velocity.absolute;
+      }
+
+      if (Math.abs(velocity.command) > RECORD_COMMAND_THRESHOLD) {
+        lastNonZeroVelocityTimeRef.current = time;
+      }
     }
   }, []);
 
@@ -98,9 +126,10 @@ const Page = () => {
   }: PositionFeedback) => {
     // Update normalized position
     setPosition(position);
-
     // Update normalized goal position
     setGoal(goal);
+
+    // Keep reference to goal so velocity handler can log it
     goalRef.current = goal;
 
     // Update current proportional error
@@ -115,6 +144,7 @@ const Page = () => {
     publishPosition,
     publishVelocity,
     publishConfiguration,
+    requestConfiguration,
     publishEstop,
     publishSteps
   } = useMotorControl({
@@ -138,7 +168,17 @@ const Page = () => {
   const handlePublishConfiguration = useCallback((command: ConfigurationCommand) => {
     setConfig(command);
     publishConfiguration(command);
-  }, [publishConfiguration])
+  }, [publishConfiguration]);
+
+  useEffect(() => {
+    // Request initial configuration
+    requestConfiguration()?.then(({ configuration }) => setConfig({
+      ...configuration,
+      Kp: Math.round(configuration.Kp * 1e8) / 1e8,
+      Ki: Math.round(configuration.Ki * 1e8) / 1e8,
+      Kd: Math.round(configuration.Kd * 1e8) / 1e8
+    }));
+  }, [requestConfiguration]);
 
   return (
     <>

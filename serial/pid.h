@@ -33,9 +33,9 @@ public:
 
 public:
   PID():
-    Kp(10.0), Ki(1.0), Kd(1.0),
+    Kp(1), Ki(0.1), Kd(0.1),
     pe(0.0), ie(0.0), de(0.0),
-    iMin(0.0), iMax(1.0),
+    iMin(0), iMax(1.0),
     p(0.0), i(0.0), d(0.0)
   {
   }
@@ -47,7 +47,9 @@ public:
     ie += dt * pe;
 
     // Limit integral error
-    if (Ki && iMax) ie = constrain(ie, iMin / Ki, iMax / Ki);
+    if (Ki && iMax != 0.0 && iMin != 0.0) {
+      ie = constrain(ie, iMin / Ki, iMax / Ki);
+    }
 
     // Calculate derivative error
     de = (error - pe) / dt;
@@ -60,7 +62,9 @@ public:
     i = Ki * ie;
 
     // Limit integral contribution
-    if (Ki && iMax) i = constrain(i, iMin, iMax);
+    if (Ki && iMax != 0.0 && iMin != 0) {
+      i = constrain(i, iMin, iMax);
+    }
 
     // Calculate derivative contribution
     d = Kd * de;

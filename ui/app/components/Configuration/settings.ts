@@ -95,6 +95,11 @@ export const SETTINGS = [
     type: 'boolean'
   },
   {
+    name: 'quadratureToAbsolute',
+    label: 'Delta Quadrature to Delta Absolute ratio',
+    type: 'number'
+  },
+  {
     name: 'Kp',
     label: 'Proportional gain',
     type: 'number',

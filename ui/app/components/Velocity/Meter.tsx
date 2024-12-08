@@ -50,7 +50,7 @@ export const Meter: FC<MeterProps> = ({
   color,
   divisions = DIVISIONS
 }) => {
-  const value = useMovingAverageFilter(rawValue, 128);
+  const value = useMovingAverageFilter(rawValue, 64);
   const [div1, div2, div3, div4, div5] = divisions;
 
   return (

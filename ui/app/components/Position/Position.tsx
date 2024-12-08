@@ -17,7 +17,7 @@ import { LinearIcon } from "./LinearIcon";
 import { PositionSlider } from "./PositionSlider";
 import styles from "./Position.module.css";
 
-const DEFAULT_TOLERANCE = 0.1;
+const DEFAULT_TOLERANCE = 0.05;
 
 type PositionProps = {
   publishPosition: (command: PositionCommand) => void;
@@ -49,14 +49,18 @@ export const Position: FC<PositionProps> = ({
   const { Kp, Ki, Kd, iMin, iMax } = configuration;
 
   useEffect(() => {
+    if (isChangedRef.current) return;
+    setGoal(initialGoal);
+  }, [initialGoal])
+
+  useEffect(() => {
     if (!isChangedRef.current) return;
     publishPosition({ goal, tolerance });
   }, [goal, tolerance, publishPosition]);
 
   const handleChangeGoalInput = useCallback((e) => {
     isChangedRef.current = true;
-    console.log('goal input change')
-    setGoal(e.target.value / 100);
+    setGoal(e.target.valueAsNumber / 100);
   }, []);
 
   const handleChangeGoalKnob = useCallback((value: number) => {
@@ -70,7 +74,7 @@ export const Position: FC<PositionProps> = ({
 
   const handleChangeTolerance = useCallback((e) => {
     isChangedRef.current = true;
-    setTolerance(e.target.value / 100);
+    setTolerance(e.target.valueAsNumber / 100);
   }, []);
 
   const handleToggleLinearRadial = useCallback(() => {
@@ -81,7 +85,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      Kp: e.target.value
+      Kp: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -89,7 +93,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      Ki: e.target.value
+      Ki: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -97,7 +101,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      Kd: e.target.value
+      Kd: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -105,7 +109,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      iMin: e.target.value
+      iMin: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -113,7 +117,7 @@ export const Position: FC<PositionProps> = ({
     isChangedRef.current = true;
     publishConfiguration({
       ...configuration,
-      iMax: e.target.value
+      iMax: e.target.valueAsNumber
     });
   }, [configuration, publishConfiguration]);
 
@@ -202,10 +206,11 @@ export const Position: FC<PositionProps> = ({
             id="kp"
             type="number"
             value={Kp}
-            label="Kp"
+            label={<>K<sub>P</sub></>}
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKp}
+            style={{ width: '9.4rem' }}
           />
         </Group>
 
@@ -214,10 +219,11 @@ export const Position: FC<PositionProps> = ({
             id="ki"
             type="number"
             value={Ki}
-            label="Ki"
+            label={<>K<sub>I</sub></>}
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKi}
+            style={{ width: '9.4rem' }}
           />
         </Group>
 
@@ -226,10 +232,11 @@ export const Position: FC<PositionProps> = ({
             id="kd"
             type="number"
             value={Kd}
-            label="Kd"
+            label={<>K<sub>D</sub></>}
             largeLabel
             labelWidth="4rem"
             onChange={handleChangeKd}
+            style={{ width: '9.4rem' }}
           />
         </Group>
       </Group>
@@ -245,7 +252,7 @@ export const Position: FC<PositionProps> = ({
             id="imin"
             type="number"
             value={iMin}
-            label="Imin"
+            label={<>I<sub>min</sub></>}
             largeLabel
             labelWidth="6rem"
             onChange={handleChangeIMin}
@@ -258,7 +265,7 @@ export const Position: FC<PositionProps> = ({
             id="imax"
             type="number"
             value={iMax}
-            label="Imax"
+            label={<>I<sub>max</sub></>}
             largeLabel
             labelWidth="6rem"
             onChange={handleChangeIMax}
