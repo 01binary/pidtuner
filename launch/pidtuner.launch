@@ -9,5 +9,7 @@
     type="serial_node.py"
     args="/dev/ttyACM0"
     required="true"
-  />
+  >
+    <rosparam command="load" file="$(find pidtuner)/config.yaml" />
+  </node>
 </launch>

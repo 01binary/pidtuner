@@ -305,6 +305,11 @@ void setup()
 
   node.initNode();
 
+  while (!node.connected())
+  {
+    node.spinOnce();
+  }
+
   node.advertise(velocityPub);
   node.advertise(positionPub);
 
@@ -317,6 +322,10 @@ void setup()
   node.subscribe(stopSub);
 
   node.negotiateTopics();
+
+  float pidParams[3] = {0};
+  node.getParam("~pid", pidParams, 3);
+  pid.configure(pidParams[0], pidParams[1], pidParams[2], 1, -1);
 }
 
 ros::Time getTime()
